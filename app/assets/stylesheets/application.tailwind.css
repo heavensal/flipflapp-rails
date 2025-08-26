@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+@theme inline {
+  --color-bg-green: #3A5F0B;
+  --color-bg-green-2: #4B7510;
+  --color-form-green: #2D4608;
+  --color-title-yellow: #F4D35E;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #3A5F0B;
+    --foreground: #ffffff;
+  }
+}

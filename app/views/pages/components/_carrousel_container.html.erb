@@ -1,0 +1,84 @@
+<div id="container-and-slides-indicators" class="h-[80dvh]">
+
+  <!-- Conteneur avec snap horizontal -->
+  <section
+    id="container-slides"
+    class="flex h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide overflow-hidden scroll-smooth overscroll-x-contain"
+    style="scrollbar-width: none; -ms-overflow-style: none;"
+  >
+    <div class="w-full flex-shrink-0 snap-center px-8 sm:px-12 py-8 snap-always">
+      <div class="h-full max-w-4xl mx-auto grid grid-rows-3 grid-cols-1 gap-4">
+
+        <!-- Zone des icônes - 1ère ligne de la grid -->
+        <div class="place-content-center">
+          <%= render "pages/components/icons_slide_1" %>
+        </div>
+
+        <!-- Zone du titre - 2ème ligne de la grid -->
+        <h2 class="text-4xl sm:text-4xl lg:text-4xl text-white text-center leading-tight place-content-center">
+          Organise ton match
+        </h2>
+
+        <!-- Zone de description - 3ème ligne de la grid -->
+        <p class="text-indigo-100/80 leading-relaxed text-center max-w-3xl place-content-start">
+          Planifie rapidement: donne l'heure, l'endroit, le nombre de joueurs. C'est toi qui décide.
+        </p>
+
+      </div>
+    </div>
+
+    <div class="w-full flex-shrink-0 snap-center px-8 sm:px-12 py-8 snap-always">
+      <div class="h-full max-w-4xl mx-auto grid grid-rows-3 grid-cols-1 gap-4">
+
+        <!-- Zone des icônes - 1ère ligne de la grid -->
+        <div class="place-content-center">
+          <%= render "pages/components/icons_slide_2" %>
+        </div>
+
+        <!-- Zone du titre - 2ème ligne de la grid -->
+        <h2 class="text-4xl sm:text-4xl lg:text-4xl text-white text-center leading-tight place-content-center">
+          Invite tes amis
+        </h2>
+
+        <!-- Zone de description - 3ème ligne de la grid -->
+        <p class="text-indigo-100/80 leading-relaxed text-center max-w-3xl place-content-start">
+          Ils sont sur la feuille de match? Sur le banc? Tes amis peuvent facilement rejoindre le match.
+        </p>
+
+      </div>
+    </div>
+
+    <div class="w-full flex-shrink-0 snap-center px-8 sm:px-12 py-8 snap-always">
+      <div class="h-full max-w-4xl mx-auto grid grid-rows-3 grid-cols-1 gap-4">
+
+        <!-- Zone des icônes - 1ère ligne de la grid -->
+        <div class="place-content-center">
+          <%= render "pages/components/icons_slide_3" %>
+        </div>
+
+        <!-- Zone du titre - 2ème ligne de la grid -->
+        <h2 class="text-4xl sm:text-4xl lg:text-4xl text-white text-center leading-tight place-content-center">
+          Le match commence!
+        </h2>
+
+        <!-- Zone de description - 3ème ligne de la grid -->
+        <p class="text-indigo-100/80 leading-relaxed text-center max-w-3xl place-content-start">
+          Pas d'excuse! Les équipes sont faites, les infos sont là. Que le meilleur gagne!
+        </p>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Indicateurs de slides -->
+  <div class="flex justify-center items-center">
+    <div class="flex space-x-3">
+      <div class="w-2 h-2 rounded-full bg-white scale-125"></div>
+      <div class="w-2 h-2 rounded-full bg-white/30"></div>
+      <div class="w-2 h-2 rounded-full bg-white/30"></div>
+    </div>
+  </div>
+
+  <%# render "pages/components/go_to_form" %>
+
+</div>
