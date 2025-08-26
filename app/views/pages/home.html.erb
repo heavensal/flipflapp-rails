@@ -16,7 +16,8 @@
       <!-- Prénom -->
       <div>
         <%= f.label :first_name, "Prénom *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.text_field :first_name, class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:first_name].any?}" %>
+        <%= f.text_field :first_name, placeholder: "Adam", class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all border-form-green
+        #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:first_name].any?}" %>
         <% if @beta_tester.errors[:first_name].any? %>
           <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:first_name].join(', ') %></p>
         <% end %>
@@ -49,14 +50,7 @@
       <div>
         <%= f.label :favorite_social_network, "Réseau social favori *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
         <div class="grid grid-cols-3 gap-2">
-          <% SOCIAL_NETWORKS.each do |network| %>
-            <div class="text-center">
-              <%= button_tag type: "button", class: "place-content-center px-2 py-1 border-2 transition-all focus:outline-none #{'border-yellow-500 bg-form-green' if @beta_tester.favorite_social_network == network}" do %>
-                <%= render "pages/components/svg/social_networks/#{network}" %>
-                <span class="sr-only"><%= network.capitalize %></span>
-              <% end %>
-            </div>
-          <% end %>
+          <%= render 'pages/components/form/favorite_social_network', f: f %>
         </div>
         <% if @beta_tester.errors[:favorite_social_network].any? %>
           <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:favorite_social_network].join(', ') %></p>

@@ -1,8 +1,8 @@
-<div class="text-center">
-  <%= button_tag type: "button", class: "place-content-center px-2 py-1 border-2 transition-all focus:outline-none #{'border-yellow-500 bg-form-green' if @beta_tester.favorite_social_network == 'facebook'}" do %>
-    <%= render "pages/components/svg/social_networks/facebook" %>
-    <span class="sr-only">Facebook</span>
-  <% end %>
+<div class="place-content-center">
+  <label class="block cursor-pointer peer-checked:bg-blue-500">
+    <%= f.radio_button :favorite_social_network, "telegram", class: "peer hidden" %>
+    <%= render 'pages/components/svg/social_networks/telegram' %>
+  </label>
 </div>
 
 <div class="text-center">
