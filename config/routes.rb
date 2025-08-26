@@ -11,4 +11,25 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  #
+  # Routes d'authentication
+  root to: "pages#home"
+  devise_for :users, controllers: {
+    # omniauth_callbacks: "users/omniauth_callbacks",
+    confirmations: "users/confirmations",
+    registrations: "users/registrations",
+    passwords: "users/passwords",
+    unlocks: "users/unlocks",
+    sessions: "users/sessions"
+  }
+  resources :users, only: [ :show, :index ] do
+    collection do
+      get :me
+    end
+  end
+  resources :beta_testers
+  resources :events
+  resources :event_teams, only: [ :edit, :update ]
+  resources :event_participants, only: [ :create, :destroy ]
+  resources :friendships, only: [ :index, :create, :destroy ]
 end
