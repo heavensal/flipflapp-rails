@@ -1,0 +1,46 @@
+<h1 class="text-3xl text-center text-white my-8">
+  Créer une partie de foot
+</h1>
+
+<main class="max-w-4xl mx-auto p-4">
+  <%= form_for @event, html: { class: "space-y-4" } do |f| %>
+    <div>
+      <%= f.label :title, "Titre", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.text_field :title, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :location, "Lieu", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.text_field :location, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :start_time, "Date et Heure de début", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.datetime_field :start_time, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :number_of_participants, "Nombre de participants", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.number_field :number_of_participants, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :price, "Prix", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.number_field :price, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :description, "Description", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.text_area :description, class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :is_private, "Événement privé", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.check_box :is_private, class: "form-checkbox" %>
+    </div>
+
+    <div class="mt-6">
+      <%= f.submit "Créer la partie", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+    </div>
+  <% end %>
+</main>
