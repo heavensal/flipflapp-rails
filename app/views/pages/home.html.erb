@@ -6,78 +6,15 @@
   <%= render 'pages/components/carrousel_container' %>
 
 <section class="min-h-screen p-4">
-  <div class="max-w-md mx-auto">
+  <div class="max-w-md mx-auto" data-controller="home--hide-scroll-btn">
     <!-- Header -->
     <div class="text-center mb-8 pt-8">
       <h2 class="text-3xl text-white mb-2" id="beta-tester-title">Rejoignez les beta testeurs</h2>
     </div>
+
+    <%= render 'pages/components/go_to_btn' %>
     <!-- Formulaire -->
-    <%= form_with model: @beta_tester, url: beta_testers_path, method: :post, local: true, class: "p-6 space-y-6" do |f| %>
-      <!-- Prénom -->
-      <div>
-        <%= f.label :first_name, "Prénom *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.text_field :first_name, placeholder: "Adam", class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all border-form-green
-        #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:first_name].any?}" %>
-        <% if @beta_tester.errors[:first_name].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:first_name].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Nom -->
-      <div>
-        <%= f.label :last_name, "Nom *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.text_field :last_name, class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500' if @beta_tester.errors[:last_name].any?}" %>
-        <% if @beta_tester.errors[:last_name].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:last_name].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Email -->
-      <div>
-        <%= f.label :email, "Email *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.email_field :email, class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:email].any?}" %>
-        <% if @beta_tester.errors[:email].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:email].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Téléphone -->
-      <div>
-        <%= f.label :phone, "Téléphone *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.telephone_field :phone, class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:phone].any?}" %>
-        <% if @beta_tester.errors[:phone].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:phone].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Réseau social favori -->
-      <div>
-        <%= f.label :favorite_social_network, "Réseau social favori *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <div class="grid grid-cols-3 gap-2">
-          <%= render 'pages/components/form/favorite_social_network', f: f %>
-        </div>
-        <% if @beta_tester.errors[:favorite_social_network].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:favorite_social_network].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Nom d'utilisateur réseau social -->
-      <div>
-        <%= f.label :social_network_name, "Nom d'utilisateur *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <%= f.text_field :social_network_name, class: "w-full px-4 py-3 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:social_network_name].any?}" %>
-        <% if @beta_tester.errors[:social_network_name].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:social_network_name].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Âge -->
-      <div>
-        <%= f.label :age, "Âge *", class: "block text-sm font-medium text-indigo-100/80 mb-2" %>
-        <div class="relative">
-          <%= f.number_field :age, class: "w-full px-4 py-3 pr-12 border-2 placeholder:text-form-green focus:ring-2 text-indigo-100/80 focus:ring-yellow-500 focus:ring-inset focus:border-transparent outline-none transition-all #{'border-red-500 focus:ring-red-500 text-red-500' if @beta_tester.errors[:age].any?}", min: 1, step: 1 %>
-          <span class="absolute inset-y-0 right-4 flex items-center text-indigo-100/80 pointer-events-none">ans</span>
-        </div>
-        <% if @beta_tester.errors[:age].any? %>
-          <p class="mt-1 text-sm text-red-600"><%= @beta_tester.errors[:age].join(', ') %></p>
-        <% end %>
-      </div>
-      <!-- Bouton de soumission -->
-      <%= f.submit "Me préinscrire à la beta", class: "w-full py-3 px-4 font-medium transition-all bg-yellow-500 text-white cursor-pointer" %>
-    <% end %>
+    <%= render "beta_testers/form/new", beta_tester: @beta_tester %>
   </div>
 </section>
 </main>
