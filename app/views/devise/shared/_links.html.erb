@@ -1,25 +1,47 @@
-<%- if controller_name != 'sessions' %>
-  <%= link_to "Log in", new_session_path(resource_name) %><br />
-<% end %>
+<div class="flex flex-col space-y-4 mt-6">
+  <div class="grid grid-cols-7 justify-center items-center">
+    <hr class="col-span-3 text-indigo-100/80">
+    <p class="text-indigo-100/80">ou</p>
+    <hr class="col-span-3 text-indigo-100/80">
 
-<%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-  <%= link_to "Sign up", new_registration_path(resource_name) %><br />
-<% end %>
-
-<%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
-  <%= link_to "Forgot your password?", new_password_path(resource_name) %><br />
-<% end %>
-
-<%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
-  <%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name) %><br />
-<% end %>
-
-<%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
-  <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name) %><br />
-<% end %>
-
-<%- if devise_mapping.omniauthable? %>
-  <%- resource_class.omniauth_providers.each do |provider| %>
-    <%= button_to "Sign in with #{OmniAuth::Utils.camelize(provider)}", omniauth_authorize_path(resource_name, provider), data: { turbo: false } %><br />
+  </div>
+  <%- if controller_name != 'sessions' %>
+    <%= link_to "Connexion", new_session_path(resource_name),
+        class: "text-indigo-100/80 hover:text-primary-yellow transition-colors" %>
   <% end %>
-<% end %>
+
+  <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+    <div class="gap-2">
+      <span class="text-indigo-100/80 block">Rejoins l'aventure maintenant!</span>
+      <%= link_to "Inscription", new_registration_path(resource_name),
+          class: "text-primary-yellow hover:text-yellow-400 font-semibold transition-colors" %>
+    </div>
+  <% end %>
+
+  <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+    <%= link_to "Mot de passe oublié?", new_password_path(resource_name),
+        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+  <% end %>
+
+  <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+    <%= link_to "Tu n'as pas reçu d'instructions de confirmation?", new_confirmation_path(resource_name),
+        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+  <% end %>
+
+  <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
+    <%= link_to "Tu n'as pas reçu d'instructions de déverrouillage?", new_unlock_path(resource_name),
+        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+  <% end %>
+
+  <%- if devise_mapping.omniauthable? %>
+    <div class="flex flex-col space-y-2 pt-4">
+      <%- resource_class.omniauth_providers.each do |provider| %>
+        <%= button_to omniauth_authorize_path(resource_name, provider),
+            data: { turbo: false },
+            class: "w-full px-4 py-2 bg-black/25 border-2 border-form-green text-indigo-100/80 hover:border-primary-yellow transition-all flex items-center justify-center gap-2" do %>
+          <%= provider.to_s.titleize %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

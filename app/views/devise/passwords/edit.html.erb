@@ -1,25 +1,27 @@
-<h2>Change your password</h2>
+<h2 class="text-3xl text-center text-white mb-6">Changer mon mot de passe</h2>
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
   <%= f.hidden_field :reset_password_token %>
 
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
+  <div>
+    <%= f.label :password, "Nouveau mot de passe", class: "block text-indigo-100/80 mb-2" %>
     <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
+      <span class="text-sm text-indigo-100/60">(<%= @minimum_password_length %> caractères minimum)</span>
     <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+    <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "form-text-input" %>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  <div>
+    <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Change my password" %>
+  <div class="mt-6">
+    <%= f.submit "Changer mon mot de passe", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+<div class="text-center mt-4">
+  <%= render "devise/shared/links" %>
+</div>

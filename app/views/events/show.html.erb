@@ -1,0 +1,76 @@
+<main class="p-4 min-h-dvh">
+  <h1 class="text-3xl font-bold text-center text-white mt-8">
+    <%= @event.title %>
+    <br>
+  </h1>
+  <small class="italic text-sm text-center block text-indigo-100/80 mb-8">
+    par <%= @event.user.first_name %>
+  </small>
+
+  <section id="infos_event_<%= @event.id %>" class="bg-form-green p-2">
+    <div class="text-indigo-100/80">
+      <p>Date : <%= @event.start_time.strftime("%d/%m/%Y") %></p>
+      <p>Heure : <%= @event.start_time.strftime("%H:%M") %></p>
+      <p>Lieu : <%= @event.location %></p>
+      <p>Nombre de participants : <%= @event.event_participants.count %>/<%= @event.number_of_participants %></p>
+      <p>Prix : <%= number_to_currency(@event.price, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %></p>
+      <p>
+        <%= @event.is_private ? "Privé" : "Public" %>
+      </p>
+
+      <p>
+        <%= @event.description %>
+      </p>
+    </div>
+  </section>
+
+  <section id="grid-teams" class="grid grid-cols-2 gap-4 mt-4">
+
+    <div class="bg-blue-900 p-2">
+
+      <h2 class="text-center text-white">
+        <%= @event.event_teams.first.name %>
+      </h2>
+
+      <div id="all-players-team-1" class="grid grid-cols-1 gap-2 mt-2">
+        <% @event.event_teams.first.event_participants.each do |player| %>
+          <div class="bg-blue-800 p-2 text-center text-indigo-100/80">
+            <%= player.user.first_name %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+
+    <div class="bg-red-900 p-2">
+      <h2 class="text-center text-white">
+        <%= @event.event_teams.second.name %>
+      </h2>
+
+      <div id="all-players-team-2" class="grid grid-cols-1 gap-2 mt-2">
+        <% @event.event_teams.second.event_participants.each do |player| %>
+          <div class="bg-red-800 p-2 text-center text-indigo-100/80">
+            <%= player.user.first_name %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+
+    <div class="bg-gray-600 p-2 col-span-2">
+      <h2 class="text-center text-white">
+        <%= @event.event_teams.third.name %>
+      </h2>
+
+      <div id="all-players-team-3" class="grid grid-cols-2 gap-2 mt-2">
+        <% @event.event_teams.third.event_participants.each do |player| %>
+          <div class="bg-gray-500 p-2 text-center text-indigo-100/80">
+            <%= player.user.first_name %> <%= player.user.last_name %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+  </section>
+
+</main>

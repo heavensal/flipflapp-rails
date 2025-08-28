@@ -1,29 +1,35 @@
-<h2>Sign up</h2>
+<h2 class="text-3xl text-center text-white mb-6">Créer un compte</h2>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+<div class="text-center mb-6">
+  <p class="text-indigo-100/80">Rejoignez la communauté FlipFlapp et commencez à organiser vos matchs !</p>
+</div>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <div>
+    <%= f.label :email, "Adresse email", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "votre@email.com", class: "form-text-input" %>
   </div>
 
-  <div class="field">
-    <%= f.label :password %>
+  <div>
+    <%= f.label :password, "Mot de passe", class: "block text-indigo-100/80 mb-2" %>
     <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
+      <span class="text-sm text-indigo-100/60 block mb-2">(<%= @minimum_password_length %> caractères minimum)</span>
+    <% end %>
+    <%= f.password_field :password, autocomplete: "new-password", class: "form-text-input" %>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  <div>
+    <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Sign up" %>
+  <div class="mt-6">
+    <%= f.submit "S'inscrire", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
   </div>
 <% end %>
 
-<%= render "devise/shared/links" %>
+<div class="text-center mt-4">
+  <%= render "devise/shared/links" %>
+</div>
