@@ -1,0 +1,11 @@
+<% if flash[:notice] %>
+  <div class="bg-green-500 text-indigo-100/80 p-4 fixed top-2 left-1/2 transform -translate-x-1/2 w-[90dvw] z-50">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<% if flash[:alert] %>
+  <div class="bg-red-500 text-indigo-100/80 p-4 fixed top-2 left-1/2 transform -translate-x-1/2 w-[90dvw] z-50">
+    <%= flash[:alert] %>
+  </div>
+<% end %>

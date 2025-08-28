@@ -1,10 +1,13 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/forms";
+
 
 @theme inline {
   --color-bg-green: #3A5F0B;
   --color-bg-green-2: #4B7510;
   --color-form-green: #2D4608;
   --color-title-yellow: #F4D35E;
+  --color-primary-yellow: #cca508;
 }
 
 .scrollbar-hide {
@@ -20,5 +23,14 @@
   :root {
     --background: #3A5F0B;
     --foreground: #ffffff;
+  }
+}
+
+@layer components {
+  .form-text-input {
+    @apply w-full bg-black/25 px-4 py-2 border-2 border-form-green text-indigo-100/80
+           focus:outline-none focus:border-transparent focus:ring-2
+           focus:ring-primary-yellow focus:ring-offset-2
+           transition-all;
   }
 }

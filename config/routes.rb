@@ -28,8 +28,10 @@ Rails.application.routes.draw do
     end
   end
   resources :beta_testers
-  resources :events
-  resources :event_teams, only: [ :edit, :update ]
-  resources :event_participants, only: [ :create, :destroy ]
+
+  resources :events do
+    resources :event_teams, only: [ :edit, :update ]
+    resources :event_participants, only: [ :create, :destroy ]
+  end
   resources :friendships, only: [ :index, :create, :destroy ]
 end

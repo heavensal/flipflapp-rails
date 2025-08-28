@@ -1,0 +1,21 @@
+<%= link_to "#beta-tester-title",
+  aria: { label: "Aller à la section Beta Testers" },
+  data: { controller: "scroll-to", home__hide_scroll_btn_target: "link", action: "scroll@window->home--hide-scroll-btn#toggle" },
+  class: "inline-grid size-12 place-items-center bg-form-green text-yellow-500 shadow-sm motion-safe:animate-bounce fixed bottom-4 right-4 active:scale-95 transition-transform duration-150 ease-out select-none",
+  style: "WebkitTapHighlightColor: transparent; touch-action: manipulation;" do %>
+  <svg
+    viewBox="0 0 8 8"
+    class="size-6"
+    aria-hidden="true"
+    preserveAspectRatio="xMidYMid meet"
+  >
+    <g fill="currentColor" shape-rendering="crispEdges">
+  <rect x="3" y="0" width="2" height="4" />
+  <rect x="1" y="4" width="6" height="1" />
+  <rect x="2" y="5" width="4" height="1" />
+  <rect x="3" y="6" width="2" height="1" />
+    </g>
+  </svg>
+<% end %>
+
+<%# render 'pages/components/go_to_btn' %>
