@@ -1,0 +1,59 @@
+fr:
+  date:
+    formats:
+      default: "%d/%m/%Y"
+      short: "%d %b"
+      long: "%A %d %B %Y"
+      weekday: "%A"
+    day_names:
+      - dimanche
+      - lundi
+      - mardi
+      - mercredi
+      - jeudi
+      - vendredi
+      - samedi
+    abbr_day_names:
+      - dim.
+      - lun.
+      - mar.
+      - mer.
+      - jeu.
+      - ven.
+      - sam.
+    month_names:
+      - ~
+      - janvier
+      - février
+      - mars
+      - avril
+      - mai
+      - juin
+      - juillet
+      - août
+      - septembre
+      - octobre
+      - novembre
+      - décembre
+    abbr_month_names:
+      - ~
+      - janv.
+      - févr.
+      - mars
+      - avr.
+      - mai
+      - juin
+      - juil.
+      - août
+      - sept.
+      - oct.
+      - nov.
+      - déc.
+  time:
+    formats:
+      today_with_time: "Aujourd'hui à %Hh%M"
+      tomorrow_with_time: "Demain à %Hh%M"
+      after_tomorrow_with_time: "Après-demain à %Hh%M"
+      weekday_with_time: "%A à %Hh%M"
+      short_with_time: "%a %d %b à %Hh%M"
+      long_with_time: "%A %d %B %Y à %Hh%M"

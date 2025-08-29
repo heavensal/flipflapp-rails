@@ -2,12 +2,15 @@ class EventsController < ApplicationController
   before_action :authenticate_user!
   # GET /events
   def index
-    @events = Event.all
+    @events = Event.upcoming
   end
 
   # GET /events/:id
   def show
     @event = Event.find(params[:id])
+    @team_1 = @event.event_teams.first
+    @team_2 = @event.event_teams.second
+    @bench = @event.event_teams.third
   end
 
   # GET /events/new
