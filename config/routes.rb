@@ -31,7 +31,8 @@ Rails.application.routes.draw do
 
   resources :events do
     resources :event_teams, only: [ :edit, :update ]
-    resources :event_participants, only: [ :create, :destroy ]
+    resources :event_participants, only: [ :create ]
   end
+  resources :event_participants, only: [ :destroy ]
   resources :friendships, only: [ :index, :create, :destroy ]
 end

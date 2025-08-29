@@ -1,0 +1,9 @@
+<div class="text-center mt-2">
+  <%= button_to "Rejoindre l'équipe",
+    event_event_participants_path(event),
+    params: { event_participant: { event_team_id: team.id } },
+    method: :post,
+    class: "px-4 py-2 bg-primary-yellow text-white active:scale-95 transition" %>
+</div>
+
+<%# render 'event_participants/form_btn', event: event, team: team %>

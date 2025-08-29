@@ -89,4 +89,12 @@
 
   </section>
 
+  <% if @event.in_this_event?(current_user) %>
+
+    <%= link_to "Quitter l'événement", event_event_participant_path([@event, ),data: {
+      turbo_method: :delete,
+      turbo_confirm: "Êtes-vous sûr de vouloir quitter cet événement ?"
+    } %>
+  <% end %>
+
 </main>

@@ -14,8 +14,7 @@ class EventParticipantsController < ApplicationController
   end
 
   def destroy
-    @event = Event.find(params[:event_id])
-    event_participant = @event.event_participants.find_by(user: current_user)
+    event_participant = EventParticipant.find(params[:id])
 
     if event_participant&.destroy
       redirect_to @event, notice: "Vous avez quitté cet événement."
