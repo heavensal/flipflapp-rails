@@ -13,11 +13,7 @@
   </div>
 
   <% unless team_2.in_this_team?(current_user) %>
-    <%= button_to "Rejoindre l'équipe",
-      event_event_participants_path(event),
-      params: { event_participant: { event_team_id: team_2.id } },
-      method: :post,
-    class: "px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 active:scale-95 transition" %>
+    <%= render 'event_participants/form_btn', event: event, team: team_2 %>
   <% end %>
 
 </div>
