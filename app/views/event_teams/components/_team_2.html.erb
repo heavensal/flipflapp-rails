@@ -1,0 +1,25 @@
+<div class="bg-red-900 p-4">
+
+  <h2 class="text-center text-white">
+    <%= team_2.name %>
+  </h2>
+
+  <div id="all-players-team-1" class="grid grid-cols-1 gap-2 mt-2">
+    <% team_2.event_participants.each do |player| %>
+      <div class="bg-red-800 p-2 text-center text-indigo-100/80">
+        <%= player.user.first_name %>
+      </div>
+    <% end %>
+  </div>
+
+  <% unless team_2.in_this_team?(current_user) %>
+    <%= button_to "Rejoindre l'équipe",
+      event_event_participants_path(event),
+      params: { event_participant: { event_team_id: team_2.id } },
+      method: :post,
+    class: "px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 active:scale-95 transition" %>
+  <% end %>
+
+</div>
+
+<%# render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>

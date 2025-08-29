@@ -7,30 +7,30 @@
   </div>
   <%- if controller_name != 'sessions' %>
     <%= link_to "Connexion", new_session_path(resource_name),
-        class: "text-indigo-100/80 hover:text-primary-yellow transition-colors" %>
+        class: "text-indigo-100/80 transition-colors" %>
   <% end %>
 
   <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
     <div class="gap-2">
       <span class="text-indigo-100/80 block">Rejoins l'aventure maintenant!</span>
       <%= link_to "Inscription", new_registration_path(resource_name),
-          class: "text-primary-yellow hover:text-yellow-400 font-semibold transition-colors" %>
+          class: "text-primary-yellow font-semibold transition-colors" %>
     </div>
   <% end %>
 
   <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
     <%= link_to "Mot de passe oublié?", new_password_path(resource_name),
-        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+        class: "text-indigo-100/60 text-sm transition-colors" %>
   <% end %>
 
   <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
     <%= link_to "Tu n'as pas reçu d'instructions de confirmation?", new_confirmation_path(resource_name),
-        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+        class: "text-indigo-100/60 text-sm transition-colors" %>
   <% end %>
 
   <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != 'unlocks' %>
     <%= link_to "Tu n'as pas reçu d'instructions de déverrouillage?", new_unlock_path(resource_name),
-        class: "text-indigo-100/60 hover:text-indigo-100/80 text-sm transition-colors" %>
+        class: "text-indigo-100/60 text-sm transition-colors" %>
   <% end %>
 
   <%- if devise_mapping.omniauthable? %>
@@ -38,7 +38,7 @@
       <%- resource_class.omniauth_providers.each do |provider| %>
         <%= button_to omniauth_authorize_path(resource_name, provider),
             data: { turbo: false },
-            class: "w-full px-4 py-2 bg-black/25 border-2 border-form-green text-indigo-100/80 hover:border-primary-yellow transition-all flex items-center justify-center gap-2" do %>
+            class: "w-full px-4 py-2 bg-black/25 border-2 border-form-green text-indigo-100/80 transition-all flex items-center justify-center gap-2" do %>
           <%= provider.to_s.titleize %>
         <% end %>
       <% end %>
