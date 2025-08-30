@@ -1,35 +1,52 @@
-<h2 class="text-3xl text-center text-white mb-6">Créer un compte</h2>
+<h1 class="text-3xl font-bold text-white text-center my-8">Créer un compte</h1>
+<p class="text-indigo-100/80 text-center">
+  Rejoignez la communauté FlipFlapp et commencez à organiser vos matchs !
+</p>
 
-<div class="text-center mb-6">
-  <p class="text-indigo-100/80">Rejoignez la communauté FlipFlapp et commencez à organiser vos matchs !</p>
-</div>
+<main class="p-4">
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div>
-    <%= f.label :email, "Adresse email", class: "block text-indigo-100/80 mb-2" %>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "votre@email.com", class: "form-text-input" %>
+    <div>
+      <%= f.label :first_name, "Prénom", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.text_field :first_name, autocomplete: "first-name", placeholder: "Cristiano", class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :last_name, "Nom", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.text_field :last_name, autocomplete: "last-name", placeholder: "Ronaldo", class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :email, "Adresse email", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.email_field :email, autocomplete: "email", placeholder: "ton@email.fr", class: "form-text-input" %>
+    </div>
+
+    <div>
+      <div class="text-indigo-100/80 mb-2">
+        <%= f.label :password, "Mot de passe" %>
+        <% if @minimum_password_length %>
+          <span class="text-sm text-indigo-100/60">
+            (<%= @minimum_password_length %> caractères minimum)
+          </span>
+        <% end %>
+      </div>
+      <%= f.password_field :password, autocomplete: "new-password", class: "form-text-input" %>
+    </div>
+
+    <div>
+      <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
+    </div>
+
+    <div class="mt-6">
+      <%= f.submit "S'inscrire", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+    </div>
+  <% end %>
+
+  <div class="text-center mt-4">
+    <%= render "devise/shared/links" %>
   </div>
 
-  <div>
-    <%= f.label :password, "Mot de passe", class: "block text-indigo-100/80 mb-2" %>
-    <% if @minimum_password_length %>
-      <span class="text-sm text-indigo-100/60 block mb-2">(<%= @minimum_password_length %> caractères minimum)</span>
-    <% end %>
-    <%= f.password_field :password, autocomplete: "new-password", class: "form-text-input" %>
-  </div>
-
-  <div>
-    <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-indigo-100/80 mb-2" %>
-    <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
-  </div>
-
-  <div class="mt-6">
-    <%= f.submit "S'inscrire", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
-  </div>
-<% end %>
-
-<div class="text-center mt-4">
-  <%= render "devise/shared/links" %>
-</div>
+</main>

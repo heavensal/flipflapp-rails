@@ -28,6 +28,6 @@
 
 @layer components {
   .form-text-input {
-    @apply w-full px-4 py-2 bg-black/25 border-2 border-form-green text-indigo-100/80 transition-all focus:outline-none focus:border-transparent focus:ring-2 focus:ring-primary-yellow focus:ring-offset-2;
+    @apply w-full px-4 py-2 bg-black/25 border-1 border-form-green text-indigo-100/80 transition-all outline-none focus:border-primary-yellow focus:ring-2 focus:ring-primary-yellow focus:ring-inset;
   }
 }
