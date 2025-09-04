@@ -11,6 +11,7 @@ class EventsController < ApplicationController
     @team_1 = @event.event_teams.first
     @team_2 = @event.event_teams.second
     @bench = @event.event_teams.third
+    @event_participant = @event.event_participants.find_by(user: current_user)
   end
 
   # GET /events/new
