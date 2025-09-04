@@ -14,6 +14,28 @@ fr:
       timeout: "Votre session a expiré. Veuillez vous reconnecter."
       unauthenticated: "Vous devez vous connecter ou vous inscrire pour continuer."
       unconfirmed: "Vous devez confirmer votre compte avant de pouvoir vous connecter."
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            first_name:
+              blank: "Le prénom ne peut pas être vide."
+            last_name:
+              blank: "Le nom ne peut pas être vide."
+          blank: "Veuillez remplir tous les champs obligatoires."
+      messages:
+      blank: "Ce champ ne peut pas être vide."
+      not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
+
+  errors:
+    attributes:
+      first_name:
+        blank: "Le prénom ne peut pas être vide."
+      last_name:
+        blank: "Le nom ne peut pas être vide."
+    messages:
+      blank: "Ce champ ne peut pas être vide."
     mailer:
       confirmation_instructions:
         subject: "Instructions de confirmation"
