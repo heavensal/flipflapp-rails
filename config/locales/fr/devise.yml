@@ -14,6 +14,10 @@ fr:
       timeout: "Votre session a expiré. Veuillez vous reconnecter."
       unauthenticated: "Vous devez vous connecter ou vous inscrire pour continuer."
       unconfirmed: "Vous devez confirmer votre compte avant de pouvoir vous connecter."
+    sessions:
+      signed_in: "Connecté avec succès."
+      signed_out: "Déconnecté avec succès."
+      already_signed_out: "Déjà déconnecté."
   activerecord:
     errors:
       models:
@@ -25,8 +29,8 @@ fr:
               blank: "Le nom ne peut pas être vide."
           blank: "Veuillez remplir tous les champs obligatoires."
       messages:
-      blank: "Ce champ ne peut pas être vide."
-      not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
+        blank: "Ce champ ne peut pas être vide."
+        not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
 
   errors:
     attributes:

@@ -1,21 +1,17 @@
-<div class="bg-blue-900 p-4">
-
-  <h2 class="text-center text-white">
+<div class="rounded-2xl bg-blue-900/80 backdrop-blur-md shadow-xl p-4 flex flex-col gap-1">
+  <h2 class="text-center text-2xl font-bold tracking-tight text-white mb-2">
     <%= team_1.name %>
   </h2>
-
-  <div id="all-players-team-1" class="grid grid-cols-1 gap-2 mt-2">
-    <% team_1.event_participants.each do |player| %>
-      <div class="bg-blue-800 p-2 text-center text-indigo-100/80">
-        <%= player.user.first_name %>
-      </div>
+  <div class="grid grid-cols-1 gap-1">
+    <% team_1.event_participants.each do |event_participant| %>
+      <%= render 'event_participants/one_player_team_1_card', event_participant: event_participant %>
     <% end %>
   </div>
-
   <% unless team_1.in_this_team?(current_user) %>
-    <%= render 'event_participants/form_btn', event: event, team: team_1 %>
+    <div class="mt-4">
+      <%= render 'event_participants/form_btn', event: event, team: team_1 %>
+    </div>
   <% end %>
-
 </div>
 
 <%# render 'event_teams/components/team_1', event: @event, team_1: @team_1 %>

@@ -31,3 +31,50 @@
     @apply w-full px-4 py-2 bg-black/25 border-1 border-form-green text-indigo-100/80 transition-all outline-none focus:border-primary-yellow focus:ring-2 focus:ring-primary-yellow focus:ring-inset;
   }
 }
+
+/* ::view-transition-old(root), ::view-transition-new(root) {
+  animation-duration: 0.150s;
+} */
+
+/* app/assets/stylesheets/view_transitions.css */
+
+/* Réglages iOS-ish */
+:root {
+  --vt-duration: 260ms; /* ajuste 150–320ms */
+  --vt-ease: cubic-bezier(.22,.61,.36,1);
+  --vt-shift: 12%;      /* parallaxe de la vue sortante */
+  --vt-dim: .96;        /* léger assombrissement */
+  --vt-scale: .985;     /* micro-scale de la vue sortante */
+}
+
+/* FORWARD (par défaut) — nouvelle vue glisse de droite */
+::view-transition-old(root) {
+  animation: vt-old var(--vt-duration) var(--vt-ease) both;
+}
+::view-transition-new(root) {
+  animation: vt-new var(--vt-duration) var(--vt-ease) both;
+}
+
+/* BACK — inverse la direction si vous posez l’attribut ci-dessous sur <html> */
+html[data-transition-direction="back"] ::view-transition-old(root) {
+  animation: vt-new var(--vt-duration) var(--vt-ease) reverse both;
+}
+html[data-transition-direction="back"] ::view-transition-new(root) {
+  animation: vt-old var(--vt-duration) var(--vt-ease) reverse both;
+}
+
+/* Clés d’anim (style iOS) */
+@keyframes vt-old {
+  from { transform: translateX(0) scale(1);    filter: brightness(1); }
+  to   { transform: translateX(calc(-1 * var(--vt-shift))) scale(var(--vt-scale));
+         filter: brightness(var(--vt-dim)); }
+}
+@keyframes vt-new {
+  from { transform: translateX(100%); box-shadow: 0 0 0 rgba(0,0,0,0); }
+  to   { transform: translateX(0);    box-shadow: 0 0 24px rgba(0,0,0,.12); }
+}
+
+/* Respecte l’accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
