@@ -1,21 +1,22 @@
-<div class="bg-gray-600 p-4 col-span-2">
-
-  <h2 class="text-center text-white">
+<div class="rounded-2xl bg-slate-700/80 backdrop-blur-md shadow-xl p-6 flex flex-col gap-4 col-span-2">
+  <h2 class="text-center text-2xl font-bold tracking-tight text-white mb-2">
     <%= bench.name %>
   </h2>
-
-  <div id="all-players-team-1" class="grid grid-cols-1 gap-2 mt-2">
+  <div class="grid grid-cols-1 gap-3">
     <% bench.event_participants.each do |player| %>
-      <div class="bg-gray-500 p-2 text-center text-indigo-100/80">
-        <%= player.user.first_name %> <%= player.user.last_name %>
+      <div class="flex items-center gap-3 bg-slate-600/80 rounded-lg px-4 py-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-500 to-slate-300 flex items-center justify-center text-white font-bold shadow-md">
+          <%= player.user.first_name.first %>
+        </div>
+        <span class="text-white text-lg font-medium"><%= player.user.first_name %> <%= player.user.last_name %></span>
       </div>
     <% end %>
   </div>
-
   <% unless bench.in_this_team?(current_user) %>
-    <%= render 'event_participants/form_btn', event: event, team: bench %>
+    <div class="mt-4">
+      <%= render 'event_participants/form_btn', event: event, team: bench %>
+    </div>
   <% end %>
-
 </div>
 
 <%# render 'event_teams/components/bench', event: @event, bench: @bench %>
