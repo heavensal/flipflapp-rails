@@ -16,7 +16,7 @@ class EventParticipantsController < ApplicationController
   def destroy
     @event_participant = EventParticipant.find(params[:id])
     if @event_participant.nil?
-      redirect_to events_path, alert: "Participant introuvable ou accès non autorisé." and return
+      redirect_to authenticated_root_path, alert: "Participant introuvable ou accès non autorisé." and return
     end
 
     @event = @event_participant.event

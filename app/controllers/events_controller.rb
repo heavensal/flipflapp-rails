@@ -54,7 +54,7 @@ class EventsController < ApplicationController
   def destroy
     @event = Event.find(params[:id])
     @event.destroy
-    redirect_to events_url, notice: "Event was successfully destroyed."
+    redirect_to authenticated_root_path, alert: "L'événement a été annulé"
   end
 
   private
