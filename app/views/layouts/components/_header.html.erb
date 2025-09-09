@@ -11,7 +11,7 @@
 
       <!-- Logo centré -->
       <div class="flex justify-center col-span-4">
-        <% user_signed_in? ? path = events_path : path = root_path %>
+        <% user_signed_in? ? path = authenticated_root_path : path = unauthenticated_root_path %>
         <%= link_to path, class: "flex items-center space-x-2" do %>
           <%= image_tag 'flipflapp_logo.png',
                 alt: 'Logo Flipflapp',
