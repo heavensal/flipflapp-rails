@@ -1,77 +1,43 @@
 <main class="min-h-dvh text-white px-4 py-8">
-  <div class="max-w-3xl mx-auto">
-    <header class="mb-8 flex flex-col items-center gap-2">
-      <div class="flex items-center gap-3">
-        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-form-green via-primary-yellow to-red-500 flex items-center justify-center shadow-lg">
-          <span class="text-xl font-bold"><%= @event.user.first_name.first %></span>
-        </div>
-        <span class="text-lg font-semibold text-indigo-100/80">par <%= @event.user.first_name %></span>
-      </div>
-      <h1 class="text-4xl font-extrabold tracking-tight text-center mt-2 mb-1"><%= @event.title %></h1>
-    </header>
+  <h1 class="text-3xl font-bold text-center my-4"><%= @event.title %></h1>
 
-    <section class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8 flex flex-col gap-4">
-      <div class="flex flex-wrap gap-6 justify-between items-center">
-        <div class="flex items-center gap-2">
-          <%= render 'events/components/svg/calendar' %>
-          <span class="font-medium text-indigo-100/80"><%= human_future_date(@event.start_time) %></span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-          </svg>
-          <span class="font-medium text-indigo-100/80"><%= @event.location %></span>
-        </div>
-        <div class="flex items-center gap-2">
-          <%= render 'events/components/svg/people' %>
-          <% if @event.event_participants.count < (@event.number_of_participants * 2 / 3) %>
-            <span class="text-green-400 font-bold">
-              <%= @event.event_participants.count %> / <%= @event.number_of_participants %>
-            </span>
-          <% elsif @event.event_participants.count >= (@event.number_of_participants * 2 / 3) && @event.event_participants.count < @event.number_of_participants %>
-            <span class="text-yellow-400 font-bold">
-              <%= @event.event_participants.count %> / <%= @event.number_of_participants %>
-            </span>
-          <% elsif @event.event_participants.count >= @event.number_of_participants %>
-            <span class="text-red-500 font-bold">Complet</span>
-          <% end %>
-        </div>
-        <div class="flex items-center gap-2">
-          <%= render 'events/components/svg/dollar' %>
-          <% if @event.price.zero? %>
-            <span class="font-medium text-indigo-100/80">Gratuit</span>
-          <% else %>
-            <span class="font-bold text-primary-yellow">
-              <%= number_to_currency(@event.price, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %>
-            </span>
-          <% end %>
-        </div>
-        <div class="flex items-center gap-2">
-          <span class="bg-form-green/80 px-2 py-1 rounded-full text-xs flex items-center gap-1">
-            <%= render 'events/components/svg/lock' if @event.is_private %>
-            <%= render 'events/components/svg/unlock' unless @event.is_private %>
-            <%= @event.is_private ? 'Privé' : 'Public' %>
-          </span>
-        </div>
-      </div>
-      <p class="mt-4 text-indigo-100/80 text-lg font-light whitespace-pre-line"><%= @event.description %></p>
-    </section>
+  <section class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8 flex flex-col gap-4">
+    <%= render 'events/components/show_event_info_card', event: @event %>
+  </section>
 
-    <section id="grid-teams" class="grid grid-cols-2 gap-6 mt-4">
-      <%= render 'event_teams/components/team_1', event: @event, team_1: @team_1 %>
-      <%= render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>
-      <%= render 'event_teams/components/bench', event: @event, bench: @bench %>
-    </section>
+  <section id="grid-teams" class="grid grid-cols-2 gap-2 mt-4">
+    <%= render 'event_teams/components/team_1', event: @event, team_1: @team_1 %>
+    <%= render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>
+    <%= render 'event_teams/components/bench', event: @event, bench: @bench %>
+  </section>
 
-    <% if @event.in_this_event?(current_user) %>
-      <div class="flex justify-center mt-10">
-        <%= link_to event_participant_path(EventParticipant.find_by(event: @event, user: current_user)), data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir quitter cet événement ?" }, class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg transition-all duration-200 border-none focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Quitter l'événement
-        <% end %>
-      </div>
-    <% end %>
-  </div>
+  <% if @event.am_i_the_author?(current_user) %>
+    <div class="flex justify-center mt-10">
+      <%= render 'events/components/destroy_event_btn', event: @event %>
+    </div>
+
+  <% elsif @event.in_this_event?(current_user) %>
+    <div class="flex justify-center mt-10">
+      <%= link_to event_participant_path(EventParticipant.find_by(event: @event, user: current_user)),
+        data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir quitter cet événement ?" },
+        class: "w-12 h-12 flex items-center justify-center
+                rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white shadow-md
+                active:scale-95 transition" do %>
+        <!-- Icône Exit -->
+        <svg xmlns="http://www.w3.org/2000/svg"
+            class="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2">
+          <!-- Porte -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h12v16H3z" />
+          <!-- Flèche sortie -->
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12H9m6-6l6 6-6 6" />
+        </svg>
+      <% end %>
+    </div>
+
+  <% end %>
+
 </main>

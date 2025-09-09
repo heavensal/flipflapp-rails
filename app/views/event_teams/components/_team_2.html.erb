@@ -1,22 +1,23 @@
-<div class="rounded-2xl bg-red-900/80 backdrop-blur-md shadow-xl p-6 flex flex-col gap-4">
-  <h2 class="text-center text-2xl font-bold tracking-tight text-white mb-2">
-    <%= team_2.name %>
-  </h2>
-  <div class="grid grid-cols-1 gap-3">
-    <% team_2.event_participants.each do |player| %>
-      <div class="flex items-center gap-3 bg-red-800/80 rounded-lg px-4 py-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-red-600 to-red-400 flex items-center justify-center text-white font-bold shadow-md">
-          <%= player.user.first_name.first %>
-        </div>
-        <span class="text-white text-lg font-medium"><%= player.user.first_name %></span>
+  <!-- Team B -->
+  <div class="rounded-2xl bg-team-b/90 backdrop-blur-md shadow-md p-3 flex flex-col gap-2">
+    <h2 class="text-center font-bold text-white">
+      <%= team_2.name %>
+    </h2>
+
+    <div class="flex flex-col gap-1">
+      <% if team_2.event_participants.empty? %>
+        <p class="text-center text-gray-400">Aucun joueur dans cette équipe</p>
+      <% end %>
+      <% team_2.event_participants.each do |event_participant| %>
+        <%= render 'event_participants/one_player_team_2_card', event_participant: event_participant %>
+      <% end %>
+    </div>
+
+    <% unless team_2.in_this_team?(current_user) %>
+      <div class="mt-auto">
+        <%= render 'event_participants/form_btn', event: event, team: team_2 %>
       </div>
     <% end %>
   </div>
-  <% unless team_2.in_this_team?(current_user) %>
-    <div class="mt-4">
-      <%= render 'event_participants/form_btn', event: event, team: team_2 %>
-    </div>
-  <% end %>
-</div>
 
 <%# render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>

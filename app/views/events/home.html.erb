@@ -1,0 +1,33 @@
+<h1 class="text-3xl font-bold text-white text-center my-8" id="prochains-evenements">
+  Prochains Événements
+</h1>
+
+<main class="p-4" aria-labelledby="prochains-evenements">
+
+  <%# Bouton pour créer un événement %>
+  <%= link_to new_event_path,
+    class: "z-80 fixed bottom-4 right-4 inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 text-white animate-bounce shadow-md transition transform active:scale-95 active:shadow-none",
+    title: "Créer un nouvel événement",
+    aria_label: "Créer un nouvel événement" do %>
+    <svg viewBox="0 0 8 8"
+         class="w-6 h-6"
+         aria-hidden="true"
+         focusable="false"
+         preserveAspectRatio="xMidYMid meet">
+      <g fill="currentColor" shape-rendering="crispEdges">
+        <rect x="3" y="0" width="2" height="8"/>
+        <rect x="0" y="3" width="8" height="2"/>
+      </g>
+    </svg>
+    <span class="sr-only">Créer un nouvel événement</span>
+  <% end %>
+
+  <%= turbo_frame_tag "events", src: events_path, loading: "lazy" do %>
+    <section class="grid grid-cols-1 space-y-2">
+      <% 5.times do %>
+        <%= render "events/components/one_event_card_skeleton" %>
+      <% end %>
+    </section>
+  <% end %>
+
+</main>

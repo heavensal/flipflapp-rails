@@ -8,6 +8,8 @@
   --color-form-green: #2D4608;
   --color-title-yellow: #F4D35E;
   --color-primary-yellow: #cca508;
+  --color-team-a: #1E3A8A;
+  --color-team-b: #7F1D1D;
 }
 
 .scrollbar-hide {
@@ -77,4 +79,30 @@ html[data-transition-direction="back"] ::view-transition-new(root) {
 /* Respecte l’accessibilité */
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
+}
+
+/* Animation de fondu concernant les notices */
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+.notice {
+  animation: fadeOut 0.5s ease-in-out 3s forwards;
+}
+
+@keyframes slideGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-slide-gradient {
+  animation: slideGradient 5s ease-in-out infinite;
+  background-size: 200% 200%;
 }

@@ -1,0 +1,3 @@
+<%= link_to 'Annuler l\'événement', event_path(@event), data: { turbo_method: :delete, turbo_confirm: "Êtes-vous sûr de vouloir annuler cet événement ?" }, class: "shadow-md bg-gradient-to-r from-red-600 to-red-800 text-white py-2 px-4 rounded-2xl active:scale-95 transition" %>
+
+<%# render 'events/components/destroy_event_btn', event: @event %>

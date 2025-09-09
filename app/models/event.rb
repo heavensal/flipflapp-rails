@@ -34,6 +34,10 @@ class Event < ApplicationRecord
     event_participants.joins(:event_team).where.not(event_teams: { name: "Sur le Banc" }).count
   end
 
+  def am_i_the_author?(user)
+    self.user == user
+  end
+
   def in_this_event?(user)
     event_participants.exists?(user: user)
   end

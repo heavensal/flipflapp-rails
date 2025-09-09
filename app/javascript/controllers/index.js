@@ -7,8 +7,8 @@ import { application } from "./application"
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
-import ScrollTo from '@stimulus-components/scroll-to'
-application.register("scroll-to", ScrollTo)
+import Home__HideScrollBtnController from "./home/hide_scroll_btn_controller"
+application.register("home--hide-scroll-btn", Home__HideScrollBtnController)
 
-import HideScrollBtnController from "./home/hide_scroll_btn_controller"
-application.register("home--hide-scroll-btn", HideScrollBtnController)
+import NavbarController from "./navbar_controller"
+application.register("navbar", NavbarController)

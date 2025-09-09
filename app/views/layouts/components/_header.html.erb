@@ -1,0 +1,100 @@
+<header class="sticky top-0 left-0 w-full z-90">
+  <!-- Navbar principal -->
+  <nav class="bg-bg-green text-white w-full z-90 shadow-md flex items-center justify-between" data-controller="navbar">
+    <!-- Grille de navigation -->
+    <div class="grid grid-cols-6 items-center w-full p-2">
+
+      <!-- Colonne gauche (vide ou bouton retour) -->
+      <div id="empty-col">
+        <!-- Espace réservé pour un éventuel bouton retour -->
+      </div>
+
+      <!-- Logo centré -->
+      <div class="flex justify-center col-span-4">
+        <% user_signed_in? ? path = events_path : path = root_path %>
+        <%= link_to path, class: "flex items-center space-x-2" do %>
+          <%= image_tag 'flipflapp_logo.png',
+                alt: 'Logo Flipflapp',
+                class: 'h-12 relative bottom-2' %>
+          <span class="text-lg font-semibold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent animate-slide-gradient">
+            FlipFlapp
+          </span>
+        <% end %>
+      </div>
+
+      <!-- Bouton menu (hamburger) -->
+      <%= render "layouts/components/buttons/open_menu" %>
+
+    </div>
+
+    <!-- Menu latéral (off-canvas) -->
+    <div id="off-canvas"
+         class="w-3/4 fixed top-0 right-0 h-full bg-bg-green/95 backdrop-blur-md shadow-lg translate-x-full z-50 p-4 transition-transform duration-300"
+         data-navbar-target="menu">
+
+      <!-- Bouton fermeture du menu -->
+      <%= render "layouts/components/buttons/close_menu" %>
+
+
+      <% if user_signed_in? %>
+        <div id="user-info" class="flex items-center space-x-4 border-b border-white/20 pb-4 mb-4">
+          <div>
+            <%= image_tag 'placeholder-avatar.png', class: 'h-10 w-10 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1' %>
+          </div>
+
+          <div>
+            <p class="font-semibold"><%= current_user.first_name %></p>
+            <p class="text-sm text-indigo-100/80"><%= current_user.username %></p>
+            <p class="text-sm text-indigo-100/80"><%= current_user.email %></p>
+          </div>
+
+        </div>
+
+
+
+        <!-- Liste des liens du menu -->
+        <ul class="flex flex-col py-4 space-y-2" id="menu">
+
+          <li>
+            <%= link_to "Notifications (bientôt)", "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+          </li>
+
+          <li>
+            <%= link_to "Événements", events_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+          </li>
+          <li>
+            <%= link_to 'Mon Profil (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+          </li>
+          <li>
+            <%= link_to 'Mes Amis (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+          </li>
+          <li>
+            <%= link_to 'Déconnexion', destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+          </li>
+
+        </ul>
+
+
+      <% else %>
+        <ul class="flex flex-col py-4 space-y-2" id="menu">
+
+          <li>
+            <%= link_to "Connexion", new_user_session_path, data: { action: "click->navbar#closeMenu" } %>
+          </li>
+          <li>
+            <%= link_to 'S\'inscrire', new_user_registration_path, data: { action: "click->navbar#closeMenu" } %>
+          </li>
+
+        </ul>
+
+      <% end %>
+
+    </div>
+
+    <!-- Overlay pour fermer le menu en cliquant à l'extérieur -->
+    <div class="fixed top-0 left-0 w-full h-full bg-black/50 hidden z-20"
+         data-action="click->navbar#closeMenu"
+         data-navbar-target="overlay">
+    </div>
+  </nav>
+</header>

@@ -13,7 +13,13 @@ Rails.application.routes.draw do
   # root "posts#index"
   #
   # Routes d'authentication
-  root to: "pages#home"
+  authenticated :user do
+    root to: "events#home", as: :authenticated_root
+  end
+
+  unauthenticated do
+    root to: "pages#home", as: :unauthenticated_root
+  end
   devise_for :users, controllers: {
     # omniauth_callbacks: "users/omniauth_callbacks",
     confirmations: "users/confirmations",

@@ -1,9 +1,14 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!
   # GET /events
+  #
+  # GET /events/home
+  def home
+  end
   def index
     @events = Event.upcoming
   end
+
 
   # GET /events/:id
   def show
