@@ -15,9 +15,11 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 WORKDIR /rails
 
 # Install base packages
-RUN apt-get update -qq && \
+RUN echo "➡️ Installation des dépendances système de base..." && \
+    apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
+    echo "✅ Dépendances système de base installées avec succès"
 
 # Set production environment
 ENV RAILS_ENV="production" \
@@ -29,53 +31,74 @@ ENV RAILS_ENV="production" \
 FROM base AS build
 
 # Install packages needed to build gems and node modules
-RUN apt-get update -qq && \
+RUN echo "➡️ Installation des outils de développement pour la compilation..." && \
+    apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev node-gyp pkg-config python-is-python3 && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives && \
+    echo "✅ Outils de développement installés avec succès"
 
 # Install JavaScript dependencies
 ARG NODE_VERSION=22.14.0
-ARG YARN_VERSION=1.22.22
 ENV PATH=/usr/local/node/bin:$PATH
-RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
+RUN echo "➡️ Installation de Node.js version ${NODE_VERSION}..." && \
+    curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
-    npm install -g yarn@$YARN_VERSION && \
-    rm -rf /tmp/node-build-master
+    rm -rf /tmp/node-build-master && \
+    echo "✅ Node.js ${NODE_VERSION} installé avec succès" && \
+    node --version && npm --version
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN echo "➡️ Installation des gems Ruby (bundle install)..." && \
+    bundle install && \
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+    bundle exec bootsnap precompile --gemfile && \
+    echo "✅ Gems Ruby installées avec succès" && \
+    echo "📦 $(bundle list | wc -l) gems installées"
 
 # Install node modules
-COPY package.json yarn.lock ./
-RUN yarn install --immutable
+COPY package.json ./
+RUN echo "➡️ Installation des dépendances JavaScript (npm install)..." && \
+    npm install --omit=dev && \
+    echo "✅ Dépendances JavaScript installées avec succès" && \
+    echo "📦 $(ls node_modules | wc -l) packages JavaScript installés"
 
 # Copy application code
 COPY . .
+RUN echo "✅ Code de l'application copié dans le conteneur"
 
 # Precompile bootsnap code for faster boot times
-RUN bundle exec bootsnap precompile app/ lib/
+RUN echo "➡️ Précompilation du cache Bootsnap pour des démarrages plus rapides..." && \
+    bundle exec bootsnap precompile app/ lib/ && \
+    echo "✅ Cache Bootsnap précompilé avec succès"
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
-RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
+RUN echo "➡️ Précompilation des assets (CSS, JS, images) pour la production..." && \
+    SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile && \
+    echo "✅ Assets précompilés avec succès" && \
+    echo "📊 Taille des assets: $(du -sh public/assets 2>/dev/null || echo 'N/A')"
 
-
-RUN rm -rf node_modules
+# Clean up node_modules to reduce image size
+RUN echo "➡️ Nettoyage des fichiers de développement..." && \
+    rm -rf node_modules && \
+    echo "✅ Fichiers de développement supprimés (node_modules)"
 
 
 # Final stage for app image
 FROM base
+RUN echo "🚀 Construction de l'image finale de production..."
 
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
+RUN echo "✅ Artifacts de build copiés dans l'image finale"
 
 # Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
+RUN echo "➡️ Configuration de l'utilisateur non-root pour la sécurité..." && \
+    groupadd --system --gid 1000 rails && \
     useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
+    chown -R rails:rails db log storage tmp && \
+    echo "✅ Utilisateur 'rails' configuré avec succès"
 USER 1000:1000
 
 # Entrypoint prepares the database.
@@ -83,4 +106,12 @@ ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 EXPOSE 80
+RUN echo "🎯 Image prête ! L'application sera accessible sur le port 80"
+RUN echo "📋 Résumé de l'image:"
+RUN echo "   - Ruby: $(ruby --version)"
+RUN echo "   - Rails: $(bundle exec rails --version 2>/dev/null || echo 'N/A')"
+RUN echo "   - Environnement: ${RAILS_ENV}"
+RUN echo "   - Utilisateur: rails (UID 1000)"
+RUN echo "✨ Construction terminée avec succès !"
+
 CMD ["./bin/thrust", "./bin/rails", "server"]
