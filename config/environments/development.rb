@@ -38,8 +38,22 @@ Rails.application.configure do
   config.action_mailer.perform_caching = false
 
   # Set localhost to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.raise_delivery_errors = false
+  config.action_mailer.default_url_options = { host: "flipflapp.fr", protocol: "https" }
 
+  config.action_mailer.smtp_settings = {
+    address: "mail.flipflapp.fr",
+    port: 587,
+    domain: "flipflapp.fr",
+    user_name: ENV["SMTP_USERNAME"],
+    password: ENV["SMTP_PASSWORD"],
+    authentication: :login,
+    enable_starttls_auto: true,
+    open_timeout: 10,
+    read_timeout: 10
+  }
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

@@ -40,6 +40,8 @@ env:
     - CLOUDINARY_API_SECRET
     - GOOGLE_CLIENT_ID
     - GOOGLE_CLIENT_SECRET
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
 
   # clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
