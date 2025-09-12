@@ -67,10 +67,10 @@
             <%= link_to "Événements", authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to 'Mon Profil (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to 'Mon Profil', me_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to 'Mes Amis (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to 'Mes Amis', friendships_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
 
         </ul>

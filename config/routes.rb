@@ -28,8 +28,8 @@ Rails.application.routes.draw do
     unlocks: "users/unlocks",
     sessions: "users/sessions"
   }
+  get "me", to: "users#me", as: :me
   resources :users, only: [ :show ]
-  get "me", to: "users#show", as: :me
 
   resources :beta_testers
 
@@ -38,5 +38,5 @@ Rails.application.routes.draw do
     resources :event_participants, only: [ :create ]
   end
   resources :event_participants, only: [ :destroy ]
-  resources :friendships, only: [ :index, :create, :destroy ]
+  resources :friendships, only: [ :index, :create, :update, :destroy ]
 end
