@@ -1,6 +1,6 @@
-<header class="sticky top-0 left-0 w-full z-90">
+<header class="sticky top-0 left-0 w-full z-90 min-h-[10dvh]">
   <!-- Navbar principal -->
-  <nav class="bg-bg-green text-white w-full z-90 shadow-md flex items-center justify-between" data-controller="navbar">
+  <nav class="bg-bg-green text-white w-full z-90 shadow-md flex items-center justify-between h-[10dvh]" data-controller="navbar">
     <!-- Grille de navigation -->
     <div class="grid grid-cols-6 items-center w-full p-2">
 
@@ -56,22 +56,27 @@
         <ul class="flex flex-col py-4 space-y-2" id="menu">
 
           <li>
-            <%= link_to "Notifications (bientôt)", "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+            <%= link_to "Notifications (bientôt)", "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
 
           <li>
-            <%= link_to "Événements", authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+            <%= link_to "Événements", authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to 'Mon Profil (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+            <%= link_to 'Mon Profil (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to 'Mes Amis (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
-          </li>
-          <li>
-            <%= link_to 'Déconnexion', destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full" %>
+            <%= link_to 'Mes Amis (bientôt)', "#", data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
 
+        </ul>
+
+        <hr class="my-4 border-white/20">
+
+        <ul class="flex flex-col py-4 space-y-2" id="menu-disconnect">
+          <li>
+            <%= link_to 'Déconnexion', destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+          </li>
         </ul>
 
 
@@ -79,10 +84,10 @@
         <ul class="flex flex-col py-4 space-y-2" id="menu">
 
           <li>
-            <%= link_to "Connexion", new_user_session_path, data: { action: "click->navbar#closeMenu" } %>
+            <%= link_to "Connexion", new_user_session_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to 'S\'inscrire', new_user_registration_path, data: { action: "click->navbar#closeMenu" } %>
+            <%= link_to 'S\'inscrire', new_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
 
         </ul>
