@@ -4,9 +4,13 @@
   flex items-center gap-2 rounded-lg px-4 py-2 shadow bg-gradient-to-r from-blue-400/20 to-blue-600/20">
   <!-- Avatar -->
   <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-white font-bold shadow <%= is_me ? 'border-amber-400 border' : '' %>">
-    <svg width="16" height="16" viewBox="0 0 0.6 0.6" xmlns="http://www.w3.org/2000/svg" fill="white" class="text-white">
-      <path d="M.44.06a.06.06 0 1 1-.12 0 .06.06 0 0 1 .12 0m0 .38a.04.04 0 1 0 0 .08.04.04 0 0 0 0-.08M.514.244.438.168A.02.02 0 0 0 .423.161H.14a.02.02 0 0 0 0 .04h.108L.12.452V.46a.02.02 0 0 0 .04.008L.2.4h.08L.203.57.2.58a.02.02 0 0 0 .04.008L.428.213l.058.059A.02.02 0 0 0 .514.244"/>
-    </svg>
+    <% if event_participant.user.avatar? %>
+      <%= cl_image_tag event_participant.user.avatar, class: 'h-8 w-8 rounded-full object-cover' %>
+    <% else %>
+      <svg width="16" height="16" viewBox="0 0 0.6 0.6" xmlns="http://www.w3.org/2000/svg" fill="white" class="text-white">
+        <path d="M.44.06a.06.06 0 1 1-.12 0 .06.06 0 0 1 .12 0m0 .38a.04.04 0 1 0 0 .08.04.04 0 0 0 0-.08M.514.244.438.168A.02.02 0 0 0 .423.161H.14a.02.02 0 0 0 0 .04h.108L.12.452V.46a.02.02 0 0 0 .04.008L.2.4h.08L.203.57.2.58a.02.02 0 0 0 .04.008L.428.213l.058.059A.02.02 0 0 0 .514.244"/>
+      </svg>
+    <% end %>
   </div>
 
   <!-- Nom -->

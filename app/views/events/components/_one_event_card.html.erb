@@ -70,7 +70,13 @@
     <div class="flex items-center justify-end gap-2 mt-2">
       <%# fake avatar %>
       <p class="text-indigo-100/80 text-xs"><%= event.user.first_name %></p>
-      <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+      <div class="size-16 bg-gray-300 rounded-full">
+        <% if event.user.avatar? %>
+          <%= cl_image_tag event.user.avatar, class: 'size-16 rounded-full object-cover' %>
+        <% else %>
+          <%= image_tag 'placeholder-avatar.png', class: 'size-16 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1' %>
+        <% end %>
+      </div>
     </div>
 
   </div>

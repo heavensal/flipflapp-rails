@@ -14,32 +14,6 @@ fr:
       timeout: "Votre session a expiré. Veuillez vous reconnecter."
       unauthenticated: "Vous devez vous connecter ou vous inscrire pour continuer."
       unconfirmed: "Vous devez confirmer votre compte avant de pouvoir vous connecter."
-    sessions:
-      signed_in: "Connecté avec succès."
-      signed_out: "Déconnecté avec succès."
-      already_signed_out: "Déjà déconnecté."
-  activerecord:
-    errors:
-      models:
-        user:
-          attributes:
-            first_name:
-              blank: "Le prénom ne peut pas être vide."
-            last_name:
-              blank: "Le nom ne peut pas être vide."
-          blank: "Veuillez remplir tous les champs obligatoires."
-      messages:
-        blank: "Ce champ ne peut pas être vide."
-        not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
-
-  errors:
-    attributes:
-      first_name:
-        blank: "Le prénom ne peut pas être vide."
-      last_name:
-        blank: "Le nom ne peut pas être vide."
-    messages:
-      blank: "Ce champ ne peut pas être vide."
     mailer:
       confirmation_instructions:
         subject: "Instructions de confirmation"
@@ -64,11 +38,38 @@ fr:
       signed_up_but_unconfirmed: "Vous vous êtes inscrit avec succès. Cependant, nous n'avons pas pu vous connecter car votre compte n'est pas encore confirmé."
       update_needs_confirmation: "Vous devez confirmer votre nouvelle adresse e-mail avant de pouvoir vous connecter."
       updated: "Votre compte a été mis à jour avec succès."
+      user:
+        signed_up: "Bienvenue ! Vous vous êtes inscrit avec succès."
     sessions:
       signed_in: "Connecté avec succès."
       signed_out: "Déconnecté avec succès."
       already_signed_out: "Déjà déconnecté."
+      user:
+        signed_in: "Vous êtes connecté(e)."
     unlocks:
       send_instructions: "Vous allez recevoir un e-mail contenant des instructions pour déverrouiller votre compte."
       send_paranoid_instructions: "Si votre adresse e-mail existe dans notre base de données, vous recevrez un e-mail contenant des instructions pour déverrouiller votre compte."
       unlocked: "Votre compte a été déverrouillé avec succès."
+
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            first_name:
+              blank: "Le prénom ne peut pas être vide."
+            last_name:
+              blank: "Le nom ne peut pas être vide."
+          blank: "Veuillez remplir tous les champs obligatoires."
+      messages:
+        blank: "Ce champ ne peut pas être vide."
+        not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
+
+  errors:
+    attributes:
+      first_name:
+        blank: "Le prénom ne peut pas être vide."
+      last_name:
+        blank: "Le nom ne peut pas être vide."
+    messages:
+      blank: "Ce champ ne peut pas être vide."

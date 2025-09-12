@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  mount_uploader :avatar, AvatarUploader
   # Include default devise modules.
   devise :database_authenticatable, :registerable,
           :recoverable, :rememberable, :validatable,
@@ -9,6 +10,9 @@ class User < ApplicationRecord
 
   before_create :set_uid_and_provider
   after_create :set_username
+
+  has_many :events, dependent: :destroy
+  has_many :event_participants, dependent: :destroy
 
   def set_username
     self.username = "#{first_name.downcase}#{last_name.upcase.first}#{rand(1000..9999)}"

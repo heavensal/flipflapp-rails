@@ -29,9 +29,10 @@ class EventsController < ApplicationController
     @event = Event.new(event_params)
     @event.user = current_user
     if @event.save
-      redirect_to @event, notice: "Event was successfully created."
+      redirect_to @event, notice: "Événement créé avec succès."
     else
-      render :new
+      flash.now[:alert] = "Impossible de créer l'événement. Veuillez corriger les erreurs ci-dessous."
+      render :new, status: :unprocessable_entity
     end
   end
 
@@ -44,17 +45,21 @@ class EventsController < ApplicationController
   def update
     @event = Event.find(params[:id])
     if @event.update(event_params)
-      redirect_to @event, notice: "Event was successfully updated."
+      redirect_to @event, notice: "Événement modifié avec succès."
     else
-      render :edit
+      flash.now[:alert] = "Impossible de modifier l'événement. Veuillez corriger les erreurs ci-dessous."
+      render :edit, status: :unprocessable_entity
     end
   end
 
   # DELETE /events/:id
   def destroy
     @event = Event.find(params[:id])
-    @event.destroy
-    redirect_to authenticated_root_path, alert: "L'événement a été annulé"
+    if @event.destroy
+      redirect_to authenticated_root_path, alert: "L'événement a bien été supprimé."
+    else
+      redirect_to @event, alert: "Impossible de supprimer l'événement."
+    end
   end
 
   private

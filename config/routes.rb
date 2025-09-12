@@ -28,11 +28,9 @@ Rails.application.routes.draw do
     unlocks: "users/unlocks",
     sessions: "users/sessions"
   }
-  resources :users, only: [ :show, :index ] do
-    collection do
-      get :me
-    end
-  end
+  resources :users, only: [ :show ]
+  get "me", to: "users#show", as: :me
+
   resources :beta_testers
 
   resources :events do

@@ -1,49 +1,54 @@
     <div class="flex flex-wrap gap-6 justify-between items-center">
       <div class="flex items-center gap-2">
         <%= render 'events/components/svg/calendar' %>
-        <span class="font-medium text-indigo-100/80"><%= human_future_date(@event.start_time) %></span>
+        <span class="font-medium text-indigo-100/80"><%= human_future_date(event.start_time) %></span>
       </div>
       <div class="flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
         </svg>
-        <span class="font-medium text-indigo-100/80"><%= @event.location %></span>
+        <span class="font-medium text-indigo-100/80"><%= event.location %></span>
       </div>
       <div class="flex items-center gap-2">
         <%= render 'events/components/svg/people' %>
-        <% if @event.event_participants.count < (@event.number_of_participants * 2 / 3) %>
+        <% if event.event_participants.count < (event.number_of_participants * 2 / 3) %>
           <span class="text-green-400 font-bold">
-            <%= @event.event_participants.count %> / <%= @event.number_of_participants %>
+            <%= event.event_participants.count %> / <%= event.number_of_participants %>
           </span>
-        <% elsif @event.event_participants.count >= (@event.number_of_participants * 2 / 3) && @event.event_participants.count < @event.number_of_participants %>
+        <% elsif event.event_participants.count >= (event.number_of_participants * 2 / 3) && event.event_participants.count < event.number_of_participants %>
           <span class="text-yellow-400 font-bold">
-            <%= @event.event_participants.count %> / <%= @event.number_of_participants %>
+            <%= event.event_participants.count %> / <%= event.number_of_participants %>
           </span>
-        <% elsif @event.event_participants.count >= @event.number_of_participants %>
+        <% elsif event.event_participants.count >= event.number_of_participants %>
           <span class="text-red-500 font-bold">Complet</span>
         <% end %>
       </div>
       <div class="flex items-center gap-2">
         <%= render 'events/components/svg/dollar' %>
-        <% if @event.price.zero? %>
+        <% if event.price.zero? %>
           <span class="font-medium text-indigo-100/80">Gratuit</span>
         <% else %>
           <span class="font-bold text-indigo-100/80">
-            <%= number_to_currency(@event.price, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %>
+            <%= number_to_currency(event.price, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %>
           </span>
         <% end %>
       </div>
       <div class="flex items-center gap-2">
         <span class="bg-form-green/80 px-2 py-1 rounded-full text-xs flex items-center gap-1">
-          <%= render 'events/components/svg/lock' if @event.is_private %>
-          <%= render 'events/components/svg/unlock' unless @event.is_private %>
-          <%= @event.is_private ? 'Privé' : 'Public' %>
+          <%= render 'events/components/svg/lock' if event.is_private %>
+          <%= render 'events/components/svg/unlock' unless event.is_private %>
+          <%= event.is_private ? 'Privé' : 'Public' %>
         </span>
       </div>
     </div>
-    <p class="mt-4 text-indigo-100/80 text-lg font-light whitespace-pre-line"><%= @event.description %></p>
-    <div class="mt-2 place-content-end text-indigo-100/80 text-sm">
-      <legend class="block text-right">
-        Organisé par <%= event.user.first_name %>
+    <p class="mt-4 text-indigo-100/80 text-lg font-light whitespace-pre-line"><%= event.description %></p>
+    <div class="mt-2 justify-end flex item-center space-x-4 text-indigo-100/80">
+      <legend class="place-self-center">
+        Organisé par <%= event.user == current_user ? "Moi" : event.user.first_name %>
       </legend>
+
+      <% if event.am_i_the_author?(current_user) %>
+        <%= render "events/components/edit_event_btn", event: event %>
+      <% end %>
+
     </div>
