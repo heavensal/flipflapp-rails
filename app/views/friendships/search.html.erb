@@ -1,0 +1,139 @@
+<main class="min-h-dvh px-4" role="main">
+  <h1 class="text-3xl font-bold text-white text-center my-8">
+    Rechercher des amis
+  </h1>
+
+  <%= link_to "← Retour aux amis", friendships_path,
+      class: "mb-4 inline-block bg-gray-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-gray-700 transition",
+      aria: { label: "Retour aux amis" } %>
+
+  <!-- Formulaire de recherche -->
+  <section class="mb-8">
+    <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6">
+      <%= search_form_for @q, url: search_friendships_path, html: { class: "flex", role: "search" } do |f| %>
+        <%= f.label :first_name_or_last_name_or_username_or_email_cont, "Rechercher un joueur", class: "sr-only" %>
+        <%= f.search_field :first_name_or_last_name_or_username_or_email_cont,
+              placeholder: "Rechercher un joueur...",
+              aria: { label: "Rechercher un joueur" },
+              class: "flex-grow px-4 py-3 rounded-s-lg bg-white/10 border border-white/20 text-white placeholder-indigo-100/60 focus:outline-none focus:ring-inset focus:ring focus:ring-amber-400" %>
+
+        <%= f.button type: "submit",
+              class: "bg-primary-yellow p-3 rounded-e-lg flex items-center justify-center hover:bg-yellow-500 active:bg-yellow-600 transition-colors",
+              aria: { label: "Lancer la recherche" } do %>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-white"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            role="img"
+            aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z" />
+          </svg>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- Résultats de recherche -->
+  <section class="my-8">
+    <div id="header-search-results" class="grid grid-cols-6 gap-1 mb-4 items-center">
+      <div class="col-span-1 place-self-center">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-6 text-indigo-100/80"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          role="img"
+          aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+
+      <h2 class="text-xl col-span-4 text-white">
+        Résultats de recherche
+      </h2>
+
+      <% if @users&.any? && @q.present? %>
+        <div class="col-span-1 place-self-center">
+          <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
+            <%= @users.count %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+
+    <% if params[:q].blank? %>
+      <div class="text-center py-8 text-indigo-100/80">
+        <p>Utilisez le formulaire ci-dessus pour rechercher des amis</p>
+      </div>
+    <% elsif @users.empty? && @q.present? %>
+      <div class="text-center py-8 text-indigo-100/80">
+        <p>Aucun utilisateur trouvé pour cette recherche</p>
+      </div>
+    <% else %>
+      <div class="grid grid-cols-1 gap-4">
+        <% @users.each do |user| %>
+          <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-4 hover:bg-white/10 transition-colors">
+            <div class="grid grid-cols-6 items-center gap-2">
+              <!-- Avatar -->
+              <div class="size-10 rounded-full shadow-lg col-span-1 place-self-center">
+                <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-r from-bg-green to-bg-green-2 flex items-center justify-center">
+                  <% if user.avatar? %>
+                    <%= cl_image_tag user.avatar,
+                        class: "w-full h-full object-cover rounded-full",
+                        alt: "#{user.first_name} #{user.last_name}" %>
+                  <% else %>
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 0.6 0.6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      class="text-white"
+                      role="img"
+                      aria-label="Avatar par défaut">
+                      <path d="M.44.06a.06.06 0 1 1-.12 0 .06.06 0 0 1 .12 0m0 .38a.04.04 0 1 0 0 .08.04.04 0 0 0 0-.08M.514.244.438.168A.02.02 0 0 0 .423.161H.14a.02.02 0 0 0 0 .04h.108L.12.452V.46a.02.02 0 0 0 .04.008L.2.4h.08L.203.57.2.58a.02.02 0 0 0 .04.008L.428.213l.058.059A.02.02 0 0 0 .514.244"/>
+                    </svg>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Informations utilisateur -->
+              <ul class="col-span-4">
+                <%= link_to user_path(user), class: "focus:outline-none focus:ring-2 focus:ring-primary-yellow" do %>
+                  <li class="font-semibold text-white">
+                    <%= user.first_name %> <%= user.last_name %>
+                  </li>
+                  <li class="text-indigo-100/80 text-sm">
+                    @<%= user.username %>
+                  </li>
+                <% end %>
+              </ul>
+
+              <!-- Bouton d'ajout d'ami -->
+              <div class="col-span-1 place-self-center">
+                <%= button_to friendships_path, params: { id: user.id },
+                      class: "flex-1 bg-primary-yellow active:bg-yellow-600 text-white font-medium p-2 rounded-lg transition-colors place-content-center",
+                      aria: { label: "Ajouter #{user.first_name} comme ami" } do %>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="size-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    role="img"
+                    aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+</main>

@@ -10,14 +10,26 @@ class FriendshipsController < ApplicationController
     @received_friendships = current_user.received_friendships.includes(:sender)
   end
 
+  def search
+    @q = User.users_without_friendship(current_user).ransack(params[:q])
+
+    @users =
+      if params[:q].present?
+        @q.result.select(:id, :first_name, :last_name, :username, :email).distinct
+      else
+        User.none
+      end
+  end
+
+
+
   def create
-    receiver = User.find(params[:id])
-    friendship = current_user.pending_requests.build(receiver: receiver, status: "pending")
-    @user = receiver
+    @user = User.find(params[:id])
+    friendship = current_user.pending_requests.build(sender: current_user, receiver: @user, status: "pending")
     if friendship.save
-      redirect_to users_path(@user), notice: "Demande d'amitié envoyée."
+      redirect_to user_path(@user), notice: "Demande d'amitié envoyée."
     else
-      redirect_to users_path(@user), alert: "Impossible d'envoyer la demande d'amitié."
+      redirect_to user_path(@user), alert: "Impossible d'envoyer la demande d'amitié."
     end
   end
 

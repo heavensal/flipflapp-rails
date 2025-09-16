@@ -15,6 +15,16 @@ class User < ApplicationRecord
   has_many :event_participants, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
+  ########################## RECHERCHE AVEC RANSACK ##########################
+  def self.ransackable_attributes(auth_object = nil)
+    %w(first_name last_name email username) + _ransackers.keys
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+  ############################################################################
+
   ########################## FRIENDSHIPS EN ATTENTE ##########################
   # Friendships où l'user est sender et c'est pending
   has_many :sent_friendships,
@@ -59,6 +69,30 @@ class User < ApplicationRecord
     end
     friends - event.event_participants.map(&:user)
   end
+
+  # Retrouver tous les users qui n'ont aucun friendship avec moi
+  def self.users_without_friendship(current_user)
+    # Récupérer tous les user_ids avec lesquels l'utilisateur actuel a une amitié
+    friendship_user_ids = Friendship.where("sender_id = :id OR receiver_id = :id", id: current_user.id)
+                                    .pluck(:sender_id, :receiver_id).flatten.uniq
+
+    # Ajouter l'ID de l'utilisateur actuel pour l'exclure des résultats
+    friendship_user_ids << current_user.id
+
+    # Trouver tous les utilisateurs dont l'ID n'est pas dans la liste des amitiés
+    User.where.not(id: friendship_user_ids)
+  end
+
+  ########################## FRIENDSHIPS EN ATTENTE ##########################
+
+  # Toutes les requêtes d'amitié en attente (envoyées et reçues)
+  def pending_requests
+    Friendship.where(status: "pending")
+              .where("sender_id = :id OR receiver_id = :id", id: self.id)
+  end
+
+  ###########################################################################
+
 
   def set_username
     self.username = "#{first_name.downcase}#{last_name.upcase.first}#{rand(1000..9999)}"
