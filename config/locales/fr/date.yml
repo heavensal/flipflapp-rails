@@ -57,3 +57,32 @@ fr:
       weekday_with_time: "%A à %Hh%M"
       short_with_time: "%a %d %b à %Hh%M"
       long_with_time: "%A %d %B %Y à %Hh%M"
+  datetime:
+    distance_in_words:
+      less_than_x_minutes:
+        one: "moins d’une minute"
+        other: "moins de %{count} minutes"
+      x_minutes:
+        one: "1 minute"
+        other: "%{count} minutes"
+      about_x_hours:
+        one: "environ 1 heure"
+        other: "environ %{count} heures"
+      x_days:
+        one: "1 jour"
+        other: "%{count} jours"
+      about_x_months:
+        one: "environ 1 mois"
+        other: "environ %{count} mois"
+      x_months:
+        one: "1 mois"
+        other: "%{count} mois"
+      about_x_years:
+        one: "environ 1 an"
+        other: "environ %{count} ans"
+      over_x_years:
+        one: "plus d’un an"
+        other: "plus de %{count} ans"
+      almost_x_years:
+        one: "presqu’un an"
+        other: "presque %{count} ans"

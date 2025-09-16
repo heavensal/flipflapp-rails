@@ -13,6 +13,7 @@ class User < ApplicationRecord
 
   has_many :events, dependent: :destroy
   has_many :event_participants, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   ########################## FRIENDSHIPS EN ATTENTE ##########################
   # Friendships où l'user est sender et c'est pending

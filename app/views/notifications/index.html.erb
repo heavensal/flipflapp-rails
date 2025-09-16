@@ -1,0 +1,14 @@
+<%= turbo_frame_tag "notifications" do %>
+  <section class="grid grid-cols-1 space-y-2">
+    <% if @notifications.empty? %>
+      <p class="text-indigo-100/80 text-center">Aucune notification</p>
+      <% 20.times do %>
+        <%= render "notifications/components/one_notification_skeleton" %>
+      <% end %>
+    <% end %>
+    <% @notifications.each do |notification| %>
+      <%= render "notifications/components/one_notification", notification: notification %>
+    <% end %>
+  </section>
+
+<% end %>

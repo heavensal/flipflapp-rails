@@ -39,4 +39,7 @@ Rails.application.routes.draw do
   end
   resources :event_participants, only: [ :destroy ]
   resources :friendships, only: [ :index, :create, :update, :destroy ]
+
+  resources :notifications, only: [ :index ]
+  get "list", to: "notifications#list", as: :notifications_list
 end

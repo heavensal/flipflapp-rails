@@ -1,0 +1,15 @@
+<h1 class="text-3xl font-bold text-white text-center my-8">
+  Notifications
+</h1>
+
+<main class="p-4" aria-labelledby="notifications">
+
+  <%= turbo_frame_tag "notifications", src: notifications_path, loading: "lazy" do %>
+    <section class="grid grid-cols-1 space-y-2">
+      <% 20.times do %>
+        <%= render "notifications/components/one_notification_skeleton" %>
+      <% end %>
+    </section>
+  <% end %>
+
+</main>

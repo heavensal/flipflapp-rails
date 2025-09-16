@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_12_223242) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_15_233129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -72,12 +72,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_12_223242) do
 
   create_table "notifications", force: :cascade do |t|
     t.bigint "user_id", null: false
-    t.string "notif_type", null: false
-    t.text "message", null: false
     t.boolean "read", default: false, null: false
-    t.string "redirect_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "notifiable_type"
+    t.bigint "notifiable_id"
+    t.integer "kind", default: 0, null: false
+    t.jsonb "payload", default: {}
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["user_id", "notifiable_type", "notifiable_id"], name: "idx_on_user_id_notifiable_type_notifiable_id_ffac34041e"
+    t.index ["user_id", "read"], name: "index_notifications_on_user_id_and_read"
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
