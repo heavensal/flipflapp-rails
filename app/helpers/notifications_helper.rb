@@ -25,6 +25,8 @@ module NotificationsHelper
           "#{field.humanize} : #{old_val} → #{new_val}"
         end
       end.join(", ")
+    when "invited"
+      "#{notification.payload['sender']} t'a invité à l'événement \"#{notification.payload['title']}\" prévu #{human_future_date(notification.payload['start_time'])}."
     when "canceled"
       "L'événement \"#{notification.payload['title']}\" prévu #{human_future_date(notification.payload['start_time'])} et organisé par #{notification.payload['author']} a été annulé."
     else

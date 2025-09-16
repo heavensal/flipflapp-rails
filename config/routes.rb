@@ -36,6 +36,9 @@ Rails.application.routes.draw do
   resources :events do
     resources :event_teams, only: [ :edit, :update ]
     resources :event_participants, only: [ :create ]
+    scope module: :events do
+      resources :invitations, only: [ :create ]
+    end
   end
   resources :event_participants, only: [ :destroy ]
   resources :friendships, only: [ :index, :create, :update, :destroy ]

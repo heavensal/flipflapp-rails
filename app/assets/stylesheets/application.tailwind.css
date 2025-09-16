@@ -120,3 +120,49 @@ html[data-transition-direction="back"] ::view-transition-new(root) {
   animation: slideGradient 5s ease-in-out infinite;
   background-size: 200% 200%;
 }
+
+/* Prevent scrolling while dialog is open */
+body:has(dialog[data-dialog-target="dialog"][open]) {
+  overflow: hidden;
+}
+
+
+@keyframes fade-in-dialog {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out-dialog {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Add animations */
+dialog[data-dialog-target="dialog"][open] {
+  animation: fade-in-dialog 200ms forwards;
+}
+
+dialog[data-dialog-target="dialog"][closing] {
+  animation: fade-out-dialog 200ms forwards;
+}
+
+dialog::backdrop {
+  @apply bg-black/0 transition-colors duration-300 ease-out;
+}
+
+dialog[open]::backdrop {
+  @apply bg-black/50;
+}
+
+
+/* dialog::backdrop {
+  animation: fade-in-dialog 200ms forwards;
+} */

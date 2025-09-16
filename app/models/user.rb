@@ -52,9 +52,13 @@ class User < ApplicationRecord
               .where("sender_id = :id OR receiver_id = :id", id: self.id)
   end
 
-
-
-
+  # Amis qui ne sont pas des event_participants
+  def get_my_friends_but_not_participants(event)
+    friends = accepted_friendships.map do |friendship|
+      friendship.sender == self ? friendship.receiver : friendship.sender
+    end
+    friends - event.event_participants.map(&:user)
+  end
 
   def set_username
     self.username = "#{first_name.downcase}#{last_name.upcase.first}#{rand(1000..9999)}"

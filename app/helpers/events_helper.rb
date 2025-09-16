@@ -2,8 +2,15 @@ module EventsHelper
   def human_future_date(date)
     return "" if date.blank?
 
-    today = Date.current
-    target = date.to_date
+    date =
+          case date
+          when String  then Time.zone.parse(date)
+          when Integer then Time.zone.at(date)
+          else date
+          end
+
+        today = Date.current
+        target = date.to_date
 
     case target
     when today

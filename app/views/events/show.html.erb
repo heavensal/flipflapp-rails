@@ -1,7 +1,7 @@
 <main class="min-h-dvh text-white px-4 py-8">
   <h1 class="text-3xl font-bold text-center my-4"><%= @event.title %></h1>
 
-  <section class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8 flex flex-col gap-4">
+  <section id="event-info-section" class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8 flex flex-col gap-4">
     <%= render 'events/components/show_event_info_card', event: @event %>
   </section>
 
@@ -10,6 +10,8 @@
     <%= render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>
     <%= render 'event_teams/components/bench', event: @event, bench: @bench %>
   </section>
+
+
 
   <% if @event.am_i_the_author?(current_user) %>
     <div class="flex justify-center mt-10">

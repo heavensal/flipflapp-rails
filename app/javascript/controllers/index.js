@@ -3,6 +3,7 @@
 // ./bin/rails generate stimulus controllerName
 
 import { application } from "./application"
+import Dialog from '@stimulus-components/dialog'
 
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
@@ -12,3 +13,5 @@ application.register("home--hide-scroll-btn", Home__HideScrollBtnController)
 
 import NavbarController from "./navbar_controller"
 application.register("navbar", NavbarController)
+
+application.register("dialog", Dialog)
