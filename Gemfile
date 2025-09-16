@@ -75,3 +75,5 @@ gem "omniauth-google-oauth2"
 
 gem "cloudinary"
 gem "carrierwave"
+
+gem "ransack"
