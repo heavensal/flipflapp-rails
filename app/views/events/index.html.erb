@@ -6,7 +6,8 @@
       <%= link_to "Créer le premier événement", new_event_path,
           class: "inline-block mt-4 px-4 py-2 bg-form-green text-white rounded-lg transition-colors",
           role: "button",
-          aria_label: "Créer le premier événement" %>
+          aria_label: "Créer le premier événement",
+          data: { turbo_frame: "_top" } %>
     </section>
     <% end %>
 
