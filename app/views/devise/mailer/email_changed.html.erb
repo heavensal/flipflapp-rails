@@ -1,105 +1,17 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="x-apple-disable-message-reformatting">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Email modifié - Flipflapp</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #fafafa;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #333;
-      line-height: 1.5;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-    }
-    header img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-    h1 {
-      font-size: 24px;
-      text-align: center;
-      margin: 20px 0;
-      color: #000;
-    }
-    p {
-      font-size: 16px;
-      margin: 10px 0;
-    }
-    .btn {
-      display: inline-block;
-      margin: 20px auto;
-      padding: 12px 24px;
-      background: #ff7c00;
-      color: #fff;
-      font-size: 18px;
-      font-weight: bold;
-      text-decoration: none;
-      border-radius: 16px;
-      text-align: center;
-    }
-    footer {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 30px;
-      color: #666;
-    }
-    footer a {
-      color: #5C68E2;
-    }
-    @media (max-width: 600px) {
-      h1 { font-size: 20px; }
-      p { font-size: 14px; }
-      .btn { font-size: 16px; padding: 10px 20px; }
-    }
-  </style>
-</head>
-<body>
-  <section class="container" role="main">
-    <header>
-      <%= image_tag "mailer/flipflapp_email.jpg", alt: "Flipflapp - Organise tes matchs de foot" %>
-    </header>
+<%= content_for :title do %>
+  Changement d'adresse email sur Flipflapp
+<% end %>
 
-    <main>
-      <h1>Salut <%= @resource.first_name %>,<br> ton adresse email a été modifiée !</h1>
+<h1>Salut <%= @resource.first_name %>,<br> ton email a été modifié !</h1>
 
-      <% if @resource.try(:unconfirmed_email?) %>
-        <p>Nous te contactons pour te notifier que ton adresse email est en cours de changement.</p>
-        <p><strong>Nouvelle adresse email :</strong> <%= @resource.unconfirmed_email %></p>
-        <p>Tu vas recevoir un email de confirmation à cette nouvelle adresse pour finaliser le changement.</p>
-      <% else %>
-        <p>Nous te contactons pour te notifier que ton adresse email a été modifiée avec succès.</p>
-        <p><strong>Nouvelle adresse email :</strong> <%= @resource.email %></p>
-        <p>Cette modification a été effectuée depuis ton compte Flipflapp.</p>
-      <% end %>
+<% if @resource.try(:unconfirmed_email?) %>
+  <p>Nous te contactons pour t'informer que ton email est en cours de changement pour <%= @resource.unconfirmed_email %>.</p>
 
-      <p>
-        RDV sur <%= link_to 'Flipflapp', unauthenticated_root_url %> pour organiser tes prochains matchs de foot avec tes amis !
-      </p>
+  <p>Ce changement sera effectif une fois que tu auras confirmé la nouvelle adresse.</p>
+<% else %>
+  <p>Nous te contactons pour t'informer que ton email a été changé avec succès pour <%= @resource.email %>.</p>
 
+  <p>Tu peux maintenant utiliser cette nouvelle adresse pour te connecter sur Flipflapp.</p>
+<% end %>
 
-      <p style="text-align: center; margin: 30px 0;">
-        <strong>Si tu n'es pas à l'origine de cette modification, contacte-nous immédiatement.</strong>
-      </p>
-
-      <p style="text-align: center;">Tu peux continuer à organiser tes matchs de foot avec ton compte mis à jour !</p>
-    </main>
-
-    <footer role="contentinfo">
-      <p>Projet propulsé par <%= link_to '#1344 Solutions', 'https://www.1344.fr', target: '_blank' %></p>
-      <%= image_tag "mailer/flipflapp_logo.png", alt: "Logo Flipflapp", width: 100, style: "margin-top:15px;" %>
-    </footer>
-  </section>
-</body>
-</html>
+<p style="text-align: center;">Si tu n'es pas à l'origine de ce changement, contacte-nous immédiatement.</p>

@@ -2,12 +2,81 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title><%= content_for(:title) || "Flipflapp" %></title>
     <style>
-      /* Email styles need to be inline */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa;
+        font-family: Arial, Helvetica, sans-serif;
+        color: #333;
+        line-height: 1.5;
+      }
+      .container {
+        max-width: 600px;
+        margin: auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+      }
+      header img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+      }
+      h1 {
+        font-size: 24px;
+        text-align: center;
+        margin: 20px 0;
+        color: #000;
+      }
+      p {
+        font-size: 16px;
+        margin: 10px 0;
+      }
+      .btn {
+        display: inline-block;
+        margin: 20px auto;
+        padding: 12px 24px;
+        background: #ff7c00;
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+        border-radius: 16px;
+        text-align: center;
+      }
+      footer {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 30px;
+        color: #666;
+      }
+      footer a {
+        color: #5C68E2;
+      }
+      @media (max-width: 600px) {
+        h1 { font-size: 20px; }
+        p { font-size: 14px; }
+        .btn { font-size: 16px; padding: 10px 20px; }
+      }
     </style>
   </head>
 
   <body>
-    <%= yield %>
+    <section class="container" role="main">
+      <header>
+        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_email.jpg", alt: "Flipflapp - Organise tes matchs de foot" %>
+      </header>
+
+      <main>
+        <%= yield %>
+      </main>
+
+      <footer role="contentinfo">
+        <p>Projet propulsé par <%= link_to '#1344 Solutions', 'https://www.1344.fr', target: '_blank' %></p>
+        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_logo.png", alt: "Logo Flipflapp", width: 100, style: "margin-top:15px;" %>
+      </footer>
+    </section>
   </body>
 </html>
