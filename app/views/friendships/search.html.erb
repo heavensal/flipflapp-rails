@@ -41,7 +41,7 @@
       <div class="col-span-1 place-self-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="size-6 text-indigo-100/80"
+          class="size-6 text-secondary-text"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -65,11 +65,11 @@
     </div>
 
     <% if params[:q].blank? %>
-      <div class="text-center py-8 text-indigo-100/80">
+      <div class="text-center py-8 text-secondary-text">
         <p>Utilisez le formulaire ci-dessus pour rechercher des amis</p>
       </div>
     <% elsif @users.empty? && @q.present? %>
-      <div class="text-center py-8 text-indigo-100/80">
+      <div class="text-center py-8 text-secondary-text">
         <p>Aucun utilisateur trouvé pour cette recherche</p>
       </div>
     <% else %>
@@ -106,7 +106,7 @@
                   <li class="font-semibold text-white">
                     <%= user.first_name %> <%= user.last_name %>
                   </li>
-                  <li class="text-indigo-100/80 text-sm">
+                  <li class="text-secondary-text text-sm">
                     @<%= user.username %>
                   </li>
                 <% end %>
@@ -114,7 +114,7 @@
 
               <!-- Bouton d'ajout d'ami -->
               <div class="col-span-1 place-self-center">
-                <%= button_to friendships_path, params: { id: user.id },
+                <%= button_to friendships_path, params: { user_id: user.id },
                       class: "flex-1 bg-primary-yellow active:bg-yellow-600 text-white font-medium p-2 rounded-lg transition-colors place-content-center",
                       aria: { label: "Ajouter #{user.first_name} comme ami" } do %>
                   <svg

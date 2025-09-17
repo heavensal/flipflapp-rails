@@ -1,18 +1,18 @@
 <div class="flex flex-col space-y-4 mt-6">
   <div class="grid grid-cols-7 justify-center items-center">
-    <hr class="col-span-3 text-indigo-100/80">
-    <p class="text-indigo-100/80">ou</p>
-    <hr class="col-span-3 text-indigo-100/80">
+    <hr class="col-span-3 text-secondary-text">
+    <p class="text-secondary-text">ou</p>
+    <hr class="col-span-3 text-secondary-text">
 
   </div>
   <%- if controller_name != 'sessions' %>
     <%= link_to "Connexion", new_session_path(resource_name),
-        class: "text-indigo-100/80 transition-colors" %>
+        class: "text-secondary-text transition-colors" %>
   <% end %>
 
   <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
     <div class="gap-2">
-      <span class="text-indigo-100/80 block">Rejoins l'aventure maintenant!</span>
+      <span class="text-secondary-text block">Rejoins l'aventure maintenant!</span>
       <%= link_to "Inscription", new_registration_path(resource_name),
           class: "text-primary-yellow font-semibold transition-colors" %>
     </div>
@@ -38,7 +38,7 @@
       <%- resource_class.omniauth_providers.each do |provider| %>
         <%= button_to omniauth_authorize_path(resource_name, provider),
             data: { turbo: false },
-            class: "w-full px-4 py-2 bg-black/25 border-2 border-form-green text-indigo-100/80 transition-all flex items-center justify-center gap-2" do %>
+            class: "w-full px-4 py-2 bg-black/25 border-2 border-form-green text-secondary-text transition-all flex items-center justify-center gap-2" do %>
           <%= provider.to_s.titleize %>
         <% end %>
       <% end %>

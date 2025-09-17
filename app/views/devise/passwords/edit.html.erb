@@ -5,7 +5,7 @@
   <%= f.hidden_field :reset_password_token %>
 
   <div>
-    <%= f.label :password, "Nouveau mot de passe", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.label :password, "Nouveau mot de passe", class: "block text-secondary-text mb-2" %>
     <% if @minimum_password_length %>
       <span class="text-sm text-indigo-100/60">(<%= @minimum_password_length %> caractères minimum)</span>
     <% end %>
@@ -13,7 +13,7 @@
   </div>
 
   <div>
-    <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-secondary-text mb-2" %>
     <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
   </div>
 

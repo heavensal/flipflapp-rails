@@ -1,14 +1,14 @@
 <h2 class="text-3xl text-center text-white mb-6">Mot de passe oublié ?</h2>
 
 <div class="text-center mb-6">
-  <p class="text-indigo-100/80">Entrez votre email et nous vous enverrons les instructions pour réinitialiser votre mot de passe.</p>
+  <p class="text-secondary-text">Entrez votre email et nous vous enverrons les instructions pour réinitialiser votre mot de passe.</p>
 </div>
 
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div>
-    <%= f.label :email, "Adresse email", class: "block text-indigo-100/80 mb-2" %>
+    <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
     <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-text-input", placeholder: "votre@email.com" %>
   </div>
 

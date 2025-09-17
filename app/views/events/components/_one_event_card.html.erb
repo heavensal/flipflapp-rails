@@ -4,14 +4,14 @@
     <!-- En-tête avec titre et statut -->
     <div class="flex justify-between items-start mb-4">
       <h2 class="text-xl text-white truncate"><%= event.title %></h2>
-      <span class="bg-form-green px-2 py-1 rounded-full text-indigo-100/80 text-xs">
+      <span class="bg-form-green px-2 py-1 rounded-full text-secondary-text text-xs">
         <%= render 'events/components/svg/lock' if event.is_private %>
         <%= render 'events/components/svg/unlock' if !event.is_private %>
       </span>
     </div>
 
     <!-- Informations principales -->
-    <div class="space-y-2 text-indigo-100/80">
+    <div class="space-y-2 text-secondary-text">
       <!-- Date -->
       <div class="flex items-center gap-2">
         <%= render 'events/components/svg/calendar' %>
@@ -69,7 +69,7 @@
 
     <div class="flex items-center justify-end gap-2 mt-2">
       <%# fake avatar %>
-      <p class="text-indigo-100/80 text-xs"><%= event.user.first_name %></p>
+      <p class="text-secondary-text text-xs"><%= event.user.first_name %></p>
       <div class="size-16 bg-gray-300 rounded-full">
         <% if event.user.avatar? %>
           <%= cl_image_tag event.user.avatar, class: 'size-16 rounded-full object-cover' %>

@@ -4,19 +4,19 @@
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
     <div>
-      <%= f.label :email, "Adresse email", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
       <%= f.email_field :email, autocomplete: "email", class: "form-text-input" %>
     </div>
 
     <div>
-      <%= f.label :password, "Mot de passe", class: "block text-indigo-100/80 mb-2" %>
+      <%= f.label :password, "Mot de passe", class: "block text-secondary-text mb-2" %>
       <%= f.password_field :password, autocomplete: "current-password", class: "form-text-input" %>
     </div>
 
     <% if devise_mapping.rememberable? %>
       <div class="flex items-center">
         <%= f.check_box :remember_me, class: "form-checkbox-input" %>
-        <%= f.label :remember_me, "Se souvenir de moi", class: "ml-2 text-indigo-100/80" %>
+        <%= f.label :remember_me, "Se souvenir de moi", class: "ml-2 text-secondary-text" %>
       </div>
     <% end %>
 

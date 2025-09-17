@@ -24,10 +24,10 @@ class FriendshipsController < ApplicationController
 
 
   def create
-    @user = User.find(params[:id])
+    @user = User.find(params[:user_id])
     friendship = current_user.pending_requests.build(sender: current_user, receiver: @user, status: "pending")
     if friendship.save
-      redirect_to user_path(@user), notice: "Demande d'amitié envoyée."
+      redirect_to user_path(@user), notice: "Demande d'amitié envoyée à #{@user.first_name}."
     else
       redirect_to user_path(@user), alert: "Impossible d'envoyer la demande d'amitié."
     end

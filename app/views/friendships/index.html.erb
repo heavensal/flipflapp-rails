@@ -8,7 +8,7 @@
 
       <div id="header-recieved-requests" class="grid grid-cols-6 gap-1 mb-4 items-center">
         <div class="col-span-1 place-self-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-indigo-100/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0H4m16 0l-2-2m0 0l-2-2m2 2l2-2M4 13l2-2m0 0l2-2m-2 2l-2-2" />
           </svg>
         </div>
@@ -29,7 +29,7 @@
       </div>
 
       <% if @received_friendships.empty? %>
-        <div class="text-center py-8 text-indigo-100/80">
+        <div class="text-center py-8 text-secondary-text">
           <p>Aucune demande d'amitié reçue</p>
         </div>
 
@@ -57,7 +57,7 @@
                 <ul class="col-span-3">
                   <%= link_to user_path(friendship.sender) do %>
                     <li class="font-semibold text-white"><%= friendship.sender.first_name %></li>
-                    <li class="text-indigo-100/80 text-sm">@<%= friendship.sender.username %></li>
+                    <li class="text-secondary-text text-sm">@<%= friendship.sender.username %></li>
                   <% end %>
                 </ul>
 
@@ -93,7 +93,7 @@
 
       <div id="header-sent-requests" class="grid grid-cols-6 gap-1 mb-4 items-center">
         <div class="col-span-1 place-self-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-indigo-100/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
           </svg>
         </div>
@@ -113,7 +113,7 @@
       </div>
 
       <% if @sent_friendships.empty? %>
-        <div class="text-center py-8 text-indigo-100/80">
+        <div class="text-center py-8 text-secondary-text">
           <p>Aucune demande d'amitié envoyée</p>
         </div>
 
@@ -141,7 +141,7 @@
                 <ul class="col-span-4">
                   <%= link_to user_path(friendship.receiver) do %>
                     <li class="font-semibold text-white"><%= friendship.receiver.first_name %></li>
-                    <li class="text-indigo-100/80 text-sm">@<%= friendship.receiver.username %></li>
+                    <li class="text-secondary-text text-sm">@<%= friendship.receiver.username %></li>
                   <% end %>
                 </ul>
 
@@ -164,7 +164,7 @@
 
       <div id="header-accepted-friends" class="grid grid-cols-6 gap-1 mb-4 items-center">
         <div class="col-span-1 place-self-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-indigo-100/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="size-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
         </div>
@@ -184,7 +184,7 @@
       </div>
 
       <% if @accepted_friendships.empty? %>
-        <div class="text-center py-12 text-indigo-100/80">
+        <div class="text-center py-12 text-secondary-text">
           <p class="text-lg">Vous n'avez pas encore d'amis</p>
           <p class="text-sm mt-2">Commencez à envoyer des demandes d'amitié !</p>
         </div>
@@ -214,7 +214,7 @@
                 <ul class="col-span-3">
                   <%= link_to user_path(friend) do %>
                     <li class="font-semibold text-white"><%= friend.first_name %></li>
-                    <li class="text-indigo-100/80 text-sm">@<%= friend.username %></li>
+                    <li class="text-secondary-text text-sm">@<%= friend.username %></li>
                   <% end %>
                 </ul>
 
