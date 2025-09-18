@@ -6,10 +6,9 @@ export default class extends Controller {
   static targets = ["address", "latitude", "longitude"]
 
   async connect() {
-    console.log("GOOGLE MAPS KEY:", import.meta.env.VITE_GOOGLE_MAPS_KEY)
 
     const loader = new Loader({
-      apiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY,
+      apiKey: window.googleMapsKey,
       libraries: ["places"],
     })
 

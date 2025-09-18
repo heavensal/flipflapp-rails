@@ -1,3 +1,9 @@
+<%= content_for :head do %>
+  <script>
+    window.googleMapsKey = "<%= ENV["GOOGLE_MAPS_KEY"] %>";
+  </script>
+<% end %>
+
 <h1 class="text-3xl text-center text-white my-4 font-bold">
   Modifier mon événement
 </h1>
@@ -9,9 +15,11 @@
       <%= f.text_field :title, class: "form-text-input", placeholder: "Foot à Frais Vallon", required: true %>
     </div>
 
-    <div>
+    <div data-controller="maps--autocomplete">
       <%= f.label :location, "Lieu", class: "block text-secondary-text mb-2" %>
-      <%= f.text_field :location, class: "form-text-input", placeholder: "Stade de France", required: true %>
+      <%= f.text_field :location, class: "form-text-input", placeholder: "Stade de France", required: true, data: { maps__autocomplete_target: "address" } %>
+      <%= f.hidden_field :latitude, id: "event_latitude", class: "form-text-input", placeholder: "48.8566", required: true, data: { maps__autocomplete_target: "latitude" } %>
+      <%= f.hidden_field :longitude, id: "event_longitude", class: "form-text-input", placeholder: "2.3522", required: true, data: { maps__autocomplete_target: "longitude" } %>
     </div>
 
     <div>
