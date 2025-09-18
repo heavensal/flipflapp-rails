@@ -15,3 +15,6 @@ application.register("maps--autocomplete", Maps__AutocompleteController)
 
 import NavbarController from "./navbar_controller"
 application.register("navbar", NavbarController)
+
+import Dialog from '@stimulus-components/dialog'
+application.register('dialog', Dialog)
