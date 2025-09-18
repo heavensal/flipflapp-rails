@@ -6,11 +6,12 @@
     "esbuild": "^0.25.9"
   },
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets",
-    "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
-    "dev": "concurrently \"npm run build -- --watch\" \"npm run build:css -- --watch\""
-  },
+  "build": "GOOGLE_MAPS_KEY=$GOOGLE_MAPS_KEY esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets --define:import.meta.env.VITE_GOOGLE_MAPS_KEY=\\\"$GOOGLE_MAPS_KEY\\\"",
+  "build:css": "npx @tailwindcss/cli -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify",
+  "dev": "concurrently \"npm run build -- --watch\" \"npm run build:css -- --watch\""
+},
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.10",
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.16",
     "@stimulus-components/dialog": "^1.0.1",

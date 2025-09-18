@@ -167,3 +167,33 @@ dialog[open]::backdrop {
 /* dialog::backdrop {
   animation: fade-in-dialog 200ms forwards;
 } */
+
+/* Styles pour l’autocomplétion Google Maps */
+.pac-container {
+  background-color: #2D4608 !important; /* fond sombre translucide */
+  border: 1px solid var(--color-form-green) !important;
+  border-radius: 0.375rem !important; /* arrondi */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5) !important;
+  font-family: inherit !important;
+  color: white !important; /* même couleur que tes inputs */
+  z-index: 9999 !important; /* au-dessus de tout */
+}
+
+.pac-item {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.9rem !important;
+  background-color: transparent !important;
+}
+
+.pac-item span {
+  color: rgba(224, 231, 255, 0.8) !important; /* couleur secondaire */
+}
+
+.pac-item:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  cursor: pointer;
+}
+
+.pac-item-query {
+  color: #fff !important; /* mot clé mis en avant */
+}
