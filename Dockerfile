@@ -45,9 +45,13 @@ RUN printf "\033[1;33m⚡ Installation des gems Ruby... ⚡\033[0m\n" && \
 
 # JS packages
 COPY package.json ./
+ARG GOOGLE_MAPS_KEY
+ENV GOOGLE_MAPS_KEY=$GOOGLE_MAPS_KEY
+
 RUN printf "\033[1;33m⚡ Installation des dépendances JavaScript... ⚡\033[0m\n" && \
     npm install --omit=dev && \
-    printf "\033[1;33m⚡ ✅ Dépendances JavaScript installées ⚡\033[0m\n"
+    npm run build && \
+    printf "\033[1;33m⚡ ✅ Dépendances JavaScript installées et buildées ⚡\033[0m\n"
 
 # Code
 COPY . .
