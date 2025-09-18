@@ -10,8 +10,10 @@
 
 # Créer 20 utilisateurs avec des noms de personnages de manga
 
+# User.where.not(id: [31, 38, 40, 41, 42]).destroy_all
+
 # manga_characters = [
-#   { first: "Monkey D.", last: "Luffy", manga: "One Piece" },
+#   { first: "Monkey", last: "Luffy", manga: "One Piece" },
 #   { first: "Roronoa", last: "Zoro", manga: "One Piece" },
 #   { first: "Nami", last: "Navigator", manga: "One Piece" },
 #   { first: "Usopp", last: "Sniper", manga: "One Piece" },
@@ -38,19 +40,29 @@
 #   { first: "Alphonse", last: "Elric", manga: "Fullmetal Alchemist" }
 # ]
 
-# 20.times do |i|
-#   character = manga_characters[i] || manga_characters.sample
-
-#   seed_user = User.create_with(
-#     password: 'password',
-#     password_confirmation: 'password',
-#     first_name: character[:first],
-#     last_name: character[:last]
-#   ).find_or_create_by!(email: "#{character[:first].downcase.gsub(/[^a-z]/, '')}.#{character[:last].downcase.gsub(/[^a-z]/, '')}#{i}@manga-sports.com")
-
-#   seed_user.confirm unless seed_user.confirmed?
-#   puts "User created: #{seed_user.first_name} #{seed_user.last_name} - (#{seed_user.email})"
+# manga_characters.each do |character|
+#   begin
+#     seed_user = User.new(
+#       password: '123456',
+#       password_confirmation: '123456',
+#       first_name: character[:first],
+#       last_name: character[:last],
+#       email: "#{character[:first].downcase}#{character[:last].downcase}@#{character[:manga].downcase.gsub(' ', '')}.com",
+#       uid: "#{character[:first].downcase}#{character[:last].downcase}@#{character[:manga].downcase.gsub(' ', '')}.com",
+#       provider: "email",
+#       username: "#{character[:first].downcase}#{character[:last].downcase.first}#{rand(1000..9999)}"
+#     )
+#     seed_user.confirmed_at = Time.now
+#     seed_user.save!
+#     puts "✅ User created: #{seed_user.first_name} #{seed_user.last_name} - (#{seed_user.email})"
+#   rescue ActiveRecord::RecordInvalid => e
+#     puts "❌ Impossible de créer #{character[:first]} #{character[:last]} (#{character[:manga]})"
+#     puts "   → Erreurs: #{e.record.errors.full_messages.join(", ")}"
+#   end
 # end
+# puts "Total users: #{User.count}"
+
+
 
 # Créer 20 events
 #   create_table "events", force: :cascade do |t|
@@ -95,11 +107,13 @@
 #       "#{Faker::Address.street_address}, #{Faker::Address.city}"
 #     ].sample,
 
+#     latitude: Faker::Address.latitude,
+#     longitude: Faker::Address.longitude,
+
 #     # Horaires plus variés
 #     start_time: Faker::Time.between(
 #       from: 1.week.from_now,
 #       to: 2.months.from_now,
-#       format: :default
 #     ),
 
 #     # Nombre de participants varié
@@ -135,37 +149,37 @@
 ###########FRIENDSHIPS SEED##############
 
 # récupérer tous les id des users
-user_ids = User.pluck(:id)
+# user_ids = User.pluck(:id)
 
-# s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
-# il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
+# # s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
+# # il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
 
-# créer des amitiés aléatoires
-user_ids.combination(2).to_a.sample(10).each do |pair|
-  # il faut aléatoirement définir le statut de l'amitié entre "pending" et "accepted"
-  status = ["pending", "accepted"].sample
-  Friendship.create!(sender_id: pair.first, receiver_id: pair.last, status: status)
-  puts "Friendship created between User #{User.find(pair.first).first_name} and User #{User.find(pair.last).first_name} with status #{status}"
-end
+# # créer des amitiés aléatoires
+# user_ids.combination(2).to_a.sample(10).each do |pair|
+#   # il faut aléatoirement définir le statut de l'amitié entre "pending" et "accepted"
+#   status = ["pending", "accepted"].sample
+#   Friendship.create!(sender_id: pair.first, receiver_id: pair.last, status: status)
+#   puts "Friendship created between User #{User.find(pair.first).first_name} and User #{User.find(pair.last).first_name} with status #{status}"
+# end
 
-# il faut des amitiés aléatoire avec le user 31 (moi)
-# je dois aléatoirement être le sender ou le receiver
-# cela doit générer 15 friendships, peu importe le statut
-# s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
-# il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
+# # il faut des amitiés aléatoire avec le user 31 (moi)
+# # je dois aléatoirement être le sender ou le receiver
+# # cela doit générer 15 friendships, peu importe le statut
+# # s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
+# # il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
 
-user_31_id = 31
-(user_ids - [user_31_id]).sample(15).each do |other_user_id|
-  status = ["pending", "accepted"].sample
-  if [true, false].sample
-    Friendship.create!(sender_id: user_31_id, receiver_id: other_user_id, status: status)
-    puts "Friendship created: User #{User.find(user_31_id).first_name} sent a friend request to User #{User.find(other_user_id).first_name} with status #{status}"
-  else
-    Friendship.create!(sender_id: other_user_id, receiver_id: user_31_id, status: status)
-    puts "Friendship created: User #{User.find(other_user_id).first_name} is now friends with User #{User.find(user_31_id).first_name} with status #{status}"
-  end
-rescue ActiveRecord::RecordNotUnique
-  puts "Friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name} already exists."
-rescue ActiveRecord::RecordInvalid => e
-  puts "Failed to create friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name}: #{e.message}"
-end
+# user_31_id = 31
+# (user_ids - [user_31_id]).sample(15).each do |other_user_id|
+#   status = ["pending", "accepted"].sample
+#   if [true, false].sample
+#     Friendship.create!(sender_id: user_31_id, receiver_id: other_user_id, status: status)
+#     puts "Friendship created: User #{User.find(user_31_id).first_name} sent a friend request to User #{User.find(other_user_id).first_name} with status #{status}"
+#   else
+#     Friendship.create!(sender_id: other_user_id, receiver_id: user_31_id, status: status)
+#     puts "Friendship created: User #{User.find(other_user_id).first_name} is now friends with User #{User.find(user_31_id).first_name} with status #{status}"
+#   end
+# rescue ActiveRecord::RecordNotUnique
+#   puts "Friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name} already exists."
+# rescue ActiveRecord::RecordInvalid => e
+#   puts "Failed to create friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name}: #{e.message}"
+# end

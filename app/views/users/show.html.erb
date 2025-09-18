@@ -2,11 +2,11 @@
   <div class="max-w-2xl mx-auto">
 
     <!-- Header de profil -->
-    <header class="text-center mb-8">
+    <section class="text-center mb-8">
       <!-- Avatar principal -->
       <div class="relative inline-block mb-6">
         <div class="size-32 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 p-1 shadow-xl">
-          <div class="w-full h-full rounded-full overflow-hidden bg-gray-800 flex items-center justify-center">
+          <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-bg-green to-bg-green-2 flex items-center justify-center">
             <% if @user.avatar? %>
               <%= cl_image_tag @user.avatar, class: "w-full h-full object-cover rounded-full" %>
             <% else %>
@@ -26,7 +26,69 @@
         <%= @user.first_name %> <%= @user.last_name %>
       </h1>
       <p class="text-secondary-text text-xl mb-4">@<%= @user.username %></p>
-    </header>
+    </section>
+
+    <!-- Actions -->
+    <section id="actions-btn" class="text-center mb-8">
+
+<%# si c'est moi même %>
+      <% if current_user == @user %>
+        <%= link_to edit_user_registration_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary-yellow text-white font-bold shadow-lg hover:bg-yellow-600 transition-all duration-200" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Modifier mon profil
+        <% end %>
+
+<%# si c'est un autre user, que je n'ai pas en ami %>
+      <% elsif current_user.has_no_friendship_with?(@user) %>
+        <%= button_to friendships_path, params: { user_id: @user.id }, class: "inline-flex items-center gap-2 btn-primary" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          Ajouter en ami
+        <% end %>
+
+<%# Si il m'a demande en ami et que je n'ai pas encore accepté %>
+    <%# je peux accepter %>
+      <% elsif current_user.has_pending_request_from?(@user) %>
+        <%= button_to friendship_path(@friendship), method: :patch, class: "inline-flex items-center gap-2 btn-primary" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Accepter la demande
+        <% end %>
+
+    <%# ou je peux refuser %>
+        <%= link_to friendship_path(@friendship), class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-red-600 text-white font-bold shadow-lg hover:bg-red-700 transition-all duration-200", data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr de vouloir refuser cette demande d'ami ?" } do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          Refuser la demande
+        <% end %>
+
+<%# Si j'ai demande en ami et que je n'ai pas encore été accepté %>
+    <%# je peux annuler %>
+      <% elsif current_user.has_asked_to_be_friend_with?(@user) %>
+        <%= link_to friendship_path(@friendship), class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-700 text-white font-bold shadow-lg hover:bg-gray-600 transition-all duration-200", data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr de vouloir annuler ta demande d'ami ?" } do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Annuler la demande
+        <% end %>
+
+<%# Si on est deja amis %>
+    <%# je peux le supprimer %>
+      <% elsif current_user.is_friend_with?(@user) %>
+        <%= link_to friendship_path(@friendship), class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-700 text-white font-bold shadow-lg hover:bg-gray-600 transition-all duration-200", data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr de vouloir supprimer cet utilisateur de tes amis ?" } do %>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Supprimer de mes amis
+        <% end %>
+
+      <% end %>
+    </section>
 
     <!-- Informations du profil -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -97,40 +159,6 @@
     </section>
 
     <!-- Derniers événements -->
-    <section class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8">
-      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-        </svg>
-        Derniers événements organisés
-      </h2>
 
-    </section>
-
-    <!-- Actions -->
-    <div class="flex justify-center gap-4">
-      <% if current_user == @user %>
-        <%= link_to edit_user_registration_path, class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary-yellow text-white font-bold shadow-lg hover:bg-yellow-600 transition-all duration-200" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-          </svg>
-          Modifier mon profil
-        <% end %>
-      <% else %>
-        <%= link_to "#", class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-form-green text-white font-bold shadow-lg hover:bg-green-600 transition-all duration-200" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-          </svg>
-          Ajouter en ami
-        <% end %>
-      <% end %>
-
-      <%= link_to :back, class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-700 text-white font-medium shadow-lg hover:bg-gray-600 transition-all duration-200" do %>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-        </svg>
-        Retour
-      <% end %>
-    </div>
   </div>
 </main>

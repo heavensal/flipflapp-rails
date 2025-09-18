@@ -33,19 +33,19 @@
         <%= render 'events/components/svg/people' %>
 
         <%# le nombre de participant en vert %>
-        <% if event.event_participants.count < (event.number_of_participants * 2 / 3) %>
+        <% if event.participants_count < (event.number_of_participants * 2 / 3) %>
           <span class="text-green-500">
-            <%= event.event_participants.count %> / <%= event.number_of_participants %>
+            <%= event.participants_count %> / <%= event.number_of_participants %>
           </span>
 
         <%# ou le nombre de participant en jaune si il y a - de 1/3 de places dispo %>
-        <% elsif event.event_participants.count >= (event.number_of_participants * 2 / 3) && event.event_participants.count < event.number_of_participants %>
+        <% elsif event.participants_count >= (event.number_of_participants * 2 / 3) && event.participants_count < event.number_of_participants %>
           <span class="text-primary-yellow">
-            <%= event.event_participants.count %> / <%= event.number_of_participants %>
+            <%= event.participants_count %> / <%= event.number_of_participants %>
           </span>
 
         <%# ou COMPLET en rouge si il n'y a plus de place %>
-        <% elsif event.event_participants.count >= event.number_of_participants %>
+        <% elsif event.participants_count >= event.number_of_participants %>
           <span class="text-red-500">
             Complet
           </span>

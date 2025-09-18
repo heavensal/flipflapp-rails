@@ -47,6 +47,22 @@
     border-color: var(--color-primary-yellow);
     box-shadow: 0 0 0 2px var(--color-primary-yellow) inset;
   }
+
+  .btn-primary {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-radius: 1rem;
+    background-image: linear-gradient(to right, #F59E0B, #D97706);
+    color: #ffffff;
+    font-weight: bold;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+  }
+  .btn-primary:active {
+    transform: scale(0.95);
+  }
 }
 
 /* ::view-transition-old(root), ::view-transition-new(root) {

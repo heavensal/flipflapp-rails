@@ -70,6 +70,8 @@ class User < ApplicationRecord
     friends - event.event_participants.map(&:user)
   end
 
+
+
   # Retrouver tous les users qui n'ont aucun friendship avec moi
   def self.users_without_friendship(current_user)
     # Récupérer tous les user_ids avec lesquels l'utilisateur actuel a une amitié
@@ -81,6 +83,28 @@ class User < ApplicationRecord
 
     # Trouver tous les utilisateurs dont l'ID n'est pas dans la liste des amitiés
     User.where.not(id: friendship_user_ids)
+  end
+
+  # Cette personne n'a aucun lien d'amitié avec moi
+  def has_no_friendship_with?(other_user)
+    !Friendship.exists?(sender: self, receiver: other_user) &&
+      !Friendship.exists?(sender: other_user, receiver: self)
+  end
+
+  # Cette personne m'a envoyé une demande d'amitié
+  def has_pending_request_from?(other_user)
+    Friendship.exists?(sender: other_user, receiver: self, status: "pending")
+  end
+
+  # J'ai envoyé une demande d'amitié à cette personne
+  def has_asked_to_be_friend_with?(other_user)
+    Friendship.exists?(sender: self, receiver: other_user, status: "pending")
+  end
+
+  # Cette personne est déjà mon amie
+  def is_friend_with?(other_user)
+    Friendship.exists?(sender: self, receiver: other_user, status: "accepted") ||
+      Friendship.exists?(sender: other_user, receiver: self, status: "accepted")
   end
 
   ########################## FRIENDSHIPS EN ATTENTE ##########################
