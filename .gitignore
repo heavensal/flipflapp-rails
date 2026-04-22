@@ -8,7 +8,7 @@
 /.bundle
 
 # Ignore all environment files.
-/.env*
+/.env
 /.kamal/secrets
 .kamal/secrets
 # ignore le fichier /home/adam/code/heavensal/SAAS/flipflapp-fullstack/.kamal/secrets

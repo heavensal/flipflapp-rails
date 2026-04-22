@@ -7,7 +7,7 @@ image: adam1344/flipflapp_rails
 # Deploy to these servers.
 servers:
   web:
-    - 51.68.127.8
+    - 51.75.124.208
   # job:
   #   hosts:
   #     - 192.168.0.1
