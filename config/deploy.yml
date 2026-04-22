@@ -98,7 +98,7 @@ builder:
 
 # Use a different ssh user than root
 ssh:
-  user: deploy
+  user: ubuntu
 
 # Use accessory services (secrets come from .kamal/secrets).
 # accessories:
