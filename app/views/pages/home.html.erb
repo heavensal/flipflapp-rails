@@ -1,17 +1,21 @@
-<%# 80dvh %>
-<main class="flex-1 p-4 sm:px-8 ">
-  <%= render 'pages/components/carrousel_container' %>
+<main class="flex-1 p-4 sm:px-8">
+  <%= render "pages/components/carrousel_container" %>
 
-<section class="min-h-screen p-4">
-  <div class="max-w-md mx-auto" data-controller="home--hide-scroll-btn">
-    <!-- Header -->
-    <div class="text-center mb-8 pt-8">
-      <h2 class="text-3xl text-white mb-2" id="beta-tester-title">Rejoignez les beta testeurs</h2>
+  <section class="min-h-screen p-4">
+    <div class="max-w-md mx-auto text-center pt-8">
+      <h2 class="text-3xl text-white mb-4">Prêt à jouer ?</h2>
+      <p class="text-secondary-text mb-8">
+        Crée un compte ou connecte-toi pour organiser tes matchs et inviter tes amis.
+      </p>
+
+      <div class="flex flex-col gap-4">
+        <%= link_to "S'inscrire",
+              new_user_registration_path,
+              class: "block w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 text-white font-semibold shadow-md active:scale-95 transition" %>
+        <%= link_to "Se connecter",
+              new_user_session_path,
+              class: "block w-full py-3 px-4 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold active:scale-95 transition" %>
+      </div>
     </div>
-
-    <%= render 'pages/components/go_to_btn' %>
-    <!-- Formulaire -->
-    <%= render "beta_testers/form/new", beta_tester: @beta_tester %>
-  </div>
-</section>
+  </section>
 </main>

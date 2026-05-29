@@ -31,8 +31,6 @@ Rails.application.routes.draw do
   get "me", to: "users#me", as: :me
   resources :users, only: [ :show ]
 
-  resources :beta_testers
-
   resources :events do
     resources :event_teams, only: [ :edit, :update ]
     resources :event_participants, only: [ :create ]

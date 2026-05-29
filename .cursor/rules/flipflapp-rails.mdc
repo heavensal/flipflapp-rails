@@ -1,0 +1,41 @@
+---
+description: FlipFlapp Rails — project context and coding instructions
+alwaysApply: true
+---
+
+# FlipFlapp Rails
+
+Sports event organizer for friends (events, teams, participants, friendships, notifications). UI copy in French; code/comments in English.
+
+- **Stack**: Rails 8, PostgreSQL, Devise, Hotwire, Tailwind 4, esbuild, Propshaft, Kamal/Docker
+- **Tests**: RSpec + Factory Bot (`spec/`)
+- **Style**: RuboCop Rails Omakase
+- **Production branch**: `master` → CI + Kamal deploy
+- **Full agent guide**: `AGENTS.md`
+- **Project skill**: `.cursor/skills/flipflapp-rails/SKILL.md`
+
+## Local commands
+
+```bash
+bundle install && npm install && bin/rails db:prepare
+bin/dev
+bundle exec rspec
+```
+
+## Conventions
+
+- MVC + REST; strong parameters; domain logic in models.
+- Stimulus in `app/javascript/controllers/` — register in `index.js`.
+- Shared ERB partials under `app/views/**/components/`.
+- TDD: add/update specs with every behavior change (see `.cursor/rules/rspec.mdc`).
+
+## Git
+
+- Do not commit or push unless explicitly asked.
+- Never commit `.env`, `config/master.key`, `.kamal/secrets`.
+
+## Custom rules
+
+1. Prefer I18n for new user-facing strings (locale `fr` when added).
+2. New Stimulus controllers must be registered in `app/javascript/controllers/index.js`.
+3. Use Factory Bot in specs — no new YAML fixtures.

@@ -1,0 +1,13 @@
+---
+description: RSpec TDD conventions for FlipFlapp
+globs: spec/**/*
+alwaysApply: false
+---
+
+# RSpec / TDD
+
+- Red → green → refactor; model spec first for new domain behavior.
+- **Only** `spec/models/` — validations, uniqueness, CRUD callbacks, data side effects.
+- No request, view, or helper specs (display is not gated by CI).
+- Factories in `spec/factories/`; traits for variants (`:unconfirmed`).
+- No `pending` scaffolds — delete or implement.

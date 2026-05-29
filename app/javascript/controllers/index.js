@@ -7,9 +7,6 @@ import { application } from "./application"
 import HelloController from "./hello_controller"
 application.register("hello", HelloController)
 
-import Home__HideScrollBtnController from "./home/hide_scroll_btn_controller"
-application.register("home--hide-scroll-btn", Home__HideScrollBtnController)
-
 import Maps__AutocompleteController from "./maps/autocomplete_controller"
 application.register("maps--autocomplete", Maps__AutocompleteController)
 

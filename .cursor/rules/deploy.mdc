@@ -1,0 +1,14 @@
+---
+description: Kamal deploy and GitHub Actions CI/CD
+globs: "{config/deploy.yml,.github/workflows/**,.kamal/**,Dockerfile}"
+alwaysApply: false
+---
+
+# Deploy (Kamal + GitHub Actions)
+
+- Push to `master`: Brakeman → RuboCop → RSpec → `bin/kamal deploy`.
+- Workflow: `.github/workflows/ci.yml`; secrets doc: `docs/DEPLOYMENT.md`.
+- CI secrets file: copy `.kamal/secrets.cd` → `.kamal/secrets` (env vars from GitHub Secrets).
+- Local deploy: `.kamal/secrets` from `.kamal/secrets.example` (gitignored).
+- Health check route: `GET /up`.
+- Image: `adam1344/flipflapp_rails`; host: `flipflapp.fr`.
