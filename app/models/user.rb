@@ -17,7 +17,7 @@ class User < ApplicationRecord
 
   ########################## RECHERCHE AVEC RANSACK ##########################
   def self.ransackable_attributes(auth_object = nil)
-    %w(first_name last_name email username) + _ransackers.keys
+    %w[first_name last_name email username] + _ransackers.keys
   end
 
   def self.ransackable_associations(auth_object = nil)

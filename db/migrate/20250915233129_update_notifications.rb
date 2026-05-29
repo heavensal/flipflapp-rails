@@ -10,7 +10,6 @@ class UpdateNotifications < ActiveRecord::Migration[8.0]
     end
 
     add_index :notifications, [ :user_id, :read ]
-    add_index :notifications, [:user_id, :notifiable_type, :notifiable_id]
-
+    add_index :notifications, [ :user_id, :notifiable_type, :notifiable_id ]
   end
 end

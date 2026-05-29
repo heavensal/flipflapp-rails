@@ -35,6 +35,4 @@ class EventParticipant < ApplicationRecord
       }
     )
   end
-
-
 end

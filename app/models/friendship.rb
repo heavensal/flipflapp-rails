@@ -30,5 +30,4 @@ class Friendship < ApplicationRecord
   def decline
     update(status: "declined")
   end
-
 end

@@ -66,18 +66,18 @@
 
 # Créer 20 events
 #   create_table "events", force: :cascade do |t|
-  #   t.string "title", null: false
-  #   t.text "description"
-  #   t.string "location", null: false
-  #   t.datetime "start_time", null: false
-  #   t.integer "number_of_participants", default: 10, null: false
-  #   t.decimal "price", precision: 10, scale: 2, default: "10.0", null: false
-  #   t.boolean "is_private", default: true, null: false
-  #   t.bigint "user_id", null: false
-  #   t.datetime "created_at", null: false
-  #   t.datetime "updated_at", null: false
-  #   t.index ["user_id"], name: "index_events_on_user_id"
-  # end
+#   t.string "title", null: false
+#   t.text "description"
+#   t.string "location", null: false
+#   t.datetime "start_time", null: false
+#   t.integer "number_of_participants", default: 10, null: false
+#   t.decimal "price", precision: 10, scale: 2, default: "10.0", null: false
+#   t.boolean "is_private", default: true, null: false
+#   t.bigint "user_id", null: false
+#   t.datetime "created_at", null: false
+#   t.datetime "updated_at", null: false
+#   t.index ["user_id"], name: "index_events_on_user_id"
+# end
 # 20.times do |i|
 #   seed_event = Event.create!(
 #     # Titres d'événements sportifs plus réalistes
@@ -146,7 +146,7 @@
 # end
 
 
-###########FRIENDSHIPS SEED##############
+# ##########FRIENDSHIPS SEED##############
 
 # récupérer tous les id des users
 # user_ids = User.pluck(:id)

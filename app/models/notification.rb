@@ -30,7 +30,4 @@ class Notification < ApplicationRecord
     return unless clickable?
     Rails.application.routes.url_helpers.polymorphic_path(notifiable)
   end
-
-
-
 end
