@@ -10,7 +10,7 @@
       </div>
 
       <!-- Logo centré -->
-      <div class="flex justify-center col-span-4">
+      <div class="flex flex-col items-center justify-center col-span-4">
         <% user_signed_in? ? path = authenticated_root_path : path = unauthenticated_root_path %>
         <%= link_to path, class: "flex items-center space-x-2" do %>
           <%= image_tag 'flipflapp_logo.png',
@@ -20,6 +20,9 @@
             FlipFlapp
           </span>
         <% end %>
+        <p class="text-[0.65rem] leading-none text-white/70">
+          Dernier deploy reussi : 29/05/2026
+        </p>
       </div>
 
       <!-- Bouton menu (hamburger) -->
