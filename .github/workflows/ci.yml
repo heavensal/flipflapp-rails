@@ -90,7 +90,10 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Add deploy host to known_hosts
-        run: ssh-keyscan -H 51.75.124.208 >> ~/.ssh/known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keygen -R 51.75.124.208 || true
+          ssh-keyscan -H 51.75.124.208 >> ~/.ssh/known_hosts
 
       - name: Prepare Kamal secrets for CI
         run: cp .kamal/secrets.cd .kamal/secrets
