@@ -1,28 +1,22 @@
-# Tests (RSpec)
+# Tests
 
-Les specs **bloquent le deploy** (job CI `test` sur `master`). Elles couvrent uniquement :
+See `spec/AGENTS.md` and `docs/TESTING.md` for the full testing policy.
 
-- **Règles métier / validations** (données invalides refusées)
-- **Intégrité CRUD** (unicité, callbacks qui modifient la data, notifications liées aux enregistrements)
+FlipFlapp uses strict TDD with RSpec and Factory Bot.
 
-Pas de tests de vues, helpers ni request specs (affichage HTTP).
+## Scope
 
-## Run
+- Model specs only by default: `spec/models/`.
+- Cover validations, uniqueness, callbacks, CRUD data effects, notifications, friendship rules, event rules, and team rules.
+- Do not add request, view, helper, system, or display-only specs unless explicitly requested.
+- Do not use YAML fixtures.
+- Do not leave pending examples.
+
+## Commands
+
+Do not run commands unless explicitly requested.
 
 ```bash
 bundle exec rspec
 bundle exec rspec spec/models/event_spec.rb
 ```
-
-## Layout
-
-| Directory | Purpose |
-|-----------|---------|
-| `spec/models/` | Validations, contraintes logiques, effets CRUD sur la DB |
-| `spec/factories/` | Factory Bot |
-
-## TDD workflow
-
-1. Écrire un exemple model qui échoue (validation ou effet data).
-2. Implémenter le minimum dans `app/models/`.
-3. `bundle exec rspec` + `bin/rubocop`.

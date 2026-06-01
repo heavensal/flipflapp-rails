@@ -1,28 +1,34 @@
 # FlipFlapp Rails — GitHub Copilot
 
-Read `AGENTS.md` for full project context. Summary:
+Read [AGENTS.md](../AGENTS.md) first. Same rules apply to Copilot, Cursor Agent, and Codex.
 
-## Product
+## Core rules
 
-Rails 8 app for organizing sports events with friends (teams, participants, friendships, notifications). User-facing copy in French.
+- Technical text, comments, commits, and branch names in **English**.
+- Strict TDD: model specs in `spec/models/` for business behavior.
+- No migrations unless explicitly requested.
+- Rails-native ERB and Tailwind CSS 4; Hotwire/Stimulus only when needed.
+- No commit, push, branches, or PRs unless explicitly requested.
 
-## When editing Ruby
+## Reference docs
 
-- Prefer RSpec model specs (validations, CRUD data rules) with behavior changes — no view/request specs.
-- Run `bundle exec rspec`, `bin/rubocop`, `bin/brakeman` before suggesting a PR is ready.
-- Match RuboCop Rails Omakase (`.rubocop.yml`).
+| Topic | File |
+|-------|------|
+| Agent guide | [AGENTS.md](../AGENTS.md) |
+| Architecture | [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) |
+| Testing | [docs/TESTING.md](../docs/TESTING.md) |
+| Frontend | [docs/FRONTEND.md](../docs/FRONTEND.md) |
+| Development | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) |
+| Codex playbook | [docs/CODEX_PLAYBOOK.md](../docs/CODEX_PLAYBOOK.md) |
+| Deployment | [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) |
 
-## When editing front-end
+## Layer context
 
-- Stimulus controllers under `app/javascript/controllers/`; register in `index.js`.
-- Tailwind CSS 4 utilities; build with `npm run build:css`.
-- Avoid inline JavaScript in ERB when a Stimulus controller fits.
+- Models: [app/models/AGENTS.md](../app/models/AGENTS.md)
+- Views: [app/views/AGENTS.md](../app/views/AGENTS.md)
+- JavaScript: [app/javascript/AGENTS.md](../app/javascript/AGENTS.md)
+- Specs: [spec/AGENTS.md](../spec/AGENTS.md)
 
-## Security
+## Pull requests
 
-- Never suggest committing secrets, `master.key`, or `.kamal/secrets`.
-- Use strong parameters; keep authorization checks in controllers.
-
-## Deploy
-
-Production deploys on push to `master` via GitHub Actions + Kamal (`config/deploy.yml`).
+Human and Bugbot reviews follow [.cursor/BUGBOT.md](../.cursor/BUGBOT.md). Model changes require `spec/models/` updates. Do not add request/view specs by default.
