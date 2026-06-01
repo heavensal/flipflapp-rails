@@ -1,0 +1,17 @@
+---
+description: Stimulus and JavaScript
+globs: app/javascript/**/*
+alwaysApply: false
+---
+
+# JavaScript
+
+Read [app/javascript/AGENTS.md](../../app/javascript/AGENTS.md) and [docs/FRONTEND.md](../../docs/FRONTEND.md).
+
+- Default: server-rendered HTML; add JS only when needed.
+- Stimulus in `app/javascript/controllers/`; register in `index.js`.
+- Prefer `data-*` attributes over fragile selectors.
+- No new npm deps unless explicitly requested.
+- Do not run build commands unless explicitly requested.
+
+PR reviews: [app/javascript/.cursor/BUGBOT.md](../../app/javascript/.cursor/BUGBOT.md).

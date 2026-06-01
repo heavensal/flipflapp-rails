@@ -1,0 +1,16 @@
+---
+description: Rails controllers — params and authorization
+globs: app/controllers/**/*
+alwaysApply: false
+---
+
+# Controllers
+
+Read [AGENTS.md](../../AGENTS.md) and [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+
+- Thin controllers: coordinate request/response; domain logic in models.
+- Strong parameters on all writes.
+- Explicit auth for events, friendships, participants, profile data.
+- Do not run commands unless explicitly requested.
+
+PR reviews: [app/controllers/.cursor/BUGBOT.md](../../app/controllers/.cursor/BUGBOT.md).

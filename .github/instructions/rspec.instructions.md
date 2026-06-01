@@ -2,9 +2,11 @@
 applyTo: "spec/**/*"
 ---
 
-# RSpec — modèles et data uniquement
+# RSpec (model / data only)
 
-- `spec/models/` only: validations, uniqueness, CRUD callbacks, data integrity.
-- Factory Bot (`create`, `build`) — no YAML fixtures.
-- Do not add request, view, or system specs for CI/deploy gates.
-- Assert `valid?` / `errors` and record counts (`change { Model.count }`).
+Read [spec/AGENTS.md](../../spec/AGENTS.md) and [docs/TESTING.md](../../docs/TESTING.md).
+
+- `spec/models/` only unless the user changes testing policy.
+- Factory Bot (`create`, `build`); no YAML fixtures; no `pending` examples.
+- Test validations, uniqueness, callbacks, and data side effects — not HTTP or HTML.
+- PR policy: [.cursor/BUGBOT.md](../../.cursor/BUGBOT.md) and [spec/.cursor/BUGBOT.md](../../spec/.cursor/BUGBOT.md).
