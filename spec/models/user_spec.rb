@@ -95,6 +95,22 @@ RSpec.describe User, type: :model do
       expect(current_user.is_friend_with?(other_user)).to be(true)
     end
 
+    it "detects pending requests sent by the user" do
+      current_user = create(:user)
+      other_user = create(:user)
+      create(:friendship, sender: current_user, receiver: other_user, status: "pending")
+
+      expect(current_user.has_asked_to_be_friend_with?(other_user)).to be(true)
+    end
+
+    it "returns false when unsaved users have no friendship" do
+      current_user = build(:user)
+      other_user = build(:user)
+
+      expect(current_user.has_pending_request_from?(other_user)).to be(false)
+      expect(current_user.has_asked_to_be_friend_with?(other_user)).to be(false)
+    end
+
     it "returns accepted friends who are not event participants" do
       current_user = create(:user)
       invited_friend = create(:user)

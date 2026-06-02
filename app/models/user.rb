@@ -118,13 +118,13 @@ class User < ApplicationRecord
   # Cette personne m'a envoyé une demande d'amitié
   def has_pending_request_from?(other_user)
     friendship = friendship_with(other_user)
-    friendship&.sender_id == other_user.id && friendship.receiver_id == id && friendship.status == "pending"
+    friendship.present? && friendship.sender_id == other_user.id && friendship.receiver_id == id && friendship.status == "pending"
   end
 
   # J'ai envoyé une demande d'amitié à cette personne
   def has_asked_to_be_friend_with?(other_user)
     friendship = friendship_with(other_user)
-    friendship&.sender_id == id && friendship.receiver_id == other_user.id && friendship.status == "pending"
+    friendship.present? && friendship.sender_id == id && friendship.receiver_id == other_user.id && friendship.status == "pending"
   end
 
   # Cette personne est déjà mon amie
