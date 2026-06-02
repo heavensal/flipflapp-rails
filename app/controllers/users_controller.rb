@@ -3,7 +3,7 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    @friendship = Friendship.find_by(sender: current_user, receiver: @user) || Friendship.find_by(sender: @user, receiver: current_user)
+    @friendship = current_user.friendship_with(@user)
   end
 
   def me

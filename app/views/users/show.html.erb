@@ -41,7 +41,7 @@
         <% end %>
 
 <%# si c'est un autre user, que je n'ai pas en ami %>
-      <% elsif current_user.has_no_friendship_with?(@user) %>
+      <% elsif @friendship.blank? %>
         <%= button_to friendships_path, params: { user_id: @user.id }, class: "inline-flex items-center gap-2 btn-primary" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -51,7 +51,7 @@
 
 <%# Si il m'a demande en ami et que je n'ai pas encore accepté %>
     <%# je peux accepter %>
-      <% elsif current_user.has_pending_request_from?(@user) %>
+      <% elsif @friendship.sender == @user && @friendship.receiver == current_user && @friendship.status == "pending" %>
         <%= button_to friendship_path(@friendship), method: :patch, class: "inline-flex items-center gap-2 btn-primary" do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -69,7 +69,7 @@
 
 <%# Si j'ai demande en ami et que je n'ai pas encore été accepté %>
     <%# je peux annuler %>
-      <% elsif current_user.has_asked_to_be_friend_with?(@user) %>
+      <% elsif @friendship.sender == current_user && @friendship.receiver == @user && @friendship.status == "pending" %>
         <%= link_to friendship_path(@friendship), class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-700 text-white font-bold shadow-lg hover:bg-gray-600 transition-all duration-200", data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr de vouloir annuler ta demande d'ami ?" } do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -79,7 +79,7 @@
 
 <%# Si on est deja amis %>
     <%# je peux le supprimer %>
-      <% elsif current_user.is_friend_with?(@user) %>
+      <% elsif @friendship.status == "accepted" %>
         <%= link_to friendship_path(@friendship), class: "inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gray-700 text-white font-bold shadow-lg hover:bg-gray-600 transition-all duration-200", data: { turbo_method: :delete, turbo_confirm: "Es-tu sûr de vouloir supprimer cet utilisateur de tes amis ?" } do %>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -103,10 +103,12 @@
         </h2>
 
         <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-indigo-100/60">Email</span>
-            <span class="font-medium"><%= @user.email %></span>
-          </div>
+          <% if current_user == @user %>
+            <div class="flex justify-between items-center">
+              <span class="text-indigo-100/60">Email</span>
+              <span class="font-medium"><%= @user.email %></span>
+            </div>
+          <% end %>
 
           <div class="flex justify-between items-center">
             <span class="text-indigo-100/60">Rôle</span>

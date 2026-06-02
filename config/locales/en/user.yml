@@ -1,0 +1,22 @@
+en:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            first_name:
+              blank: "First name is required."
+            last_name:
+              blank: "Last name is required."
+            username:
+              blank: "Username is required."
+              taken: "This username is already taken."
+            provider:
+              blank: "Authentication provider is required."
+            uid:
+              blank: "Authentication identifier is required."
+              taken: "This authentication identifier is already taken."
+            role:
+              inclusion: "This role is not allowed."
+            status:
+              inclusion: "This status is not allowed."

@@ -52,7 +52,9 @@ This app is strict TDD.
 ## I18n Policy
 
 - New user-facing app copy should be designed for translation.
-- Prefer model-scoped translation files and keys when adding app content.
+- New translation files must be organized as `config/locales/<locale>/<feature>.yml`, for example `config/locales/fr/user.yml`.
+- Do not create new locale files named `feature.fr.yml` or `feature.en.yml`.
+- Prefer feature-scoped translation files and keys when adding app content.
 - Keep technical docs and developer-facing text in English.
 - If translation scope is unclear, ask before adding broad locale structures.
 
@@ -75,6 +77,7 @@ This app is strict TDD.
 - Development setup: `docs/DEVELOPMENT.md`
 - Architecture and domain: `docs/ARCHITECTURE.md`
 - Testing policy: `docs/TESTING.md`
+- I18n policy: `docs/I18N.md`
 - Frontend policy: `docs/FRONTEND.md`
 - Codex workflow prompts: `docs/CODEX_PLAYBOOK.md`
 - Deployment: `docs/DEPLOYMENT.md`

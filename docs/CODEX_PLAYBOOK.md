@@ -44,6 +44,16 @@ Keep copy translation-ready.
 Do not add display tests.
 ```
 
+## I18n Prompt
+
+```text
+Add or update translations for [feature].
+Use docs/I18N.md.
+Create files as config/locales/<locale>/<feature>.yml.
+Do not create feature.fr.yml or feature.en.yml files.
+Keep technical documentation in English.
+```
+
 ## Migration Prompt
 
 ```text

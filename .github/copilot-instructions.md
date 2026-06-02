@@ -17,6 +17,7 @@ Read [AGENTS.md](../AGENTS.md) first. Same rules apply to Copilot, Cursor Agent,
 | Agent guide | [AGENTS.md](../AGENTS.md) |
 | Architecture | [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) |
 | Testing | [docs/TESTING.md](../docs/TESTING.md) |
+| I18n | [docs/I18N.md](../docs/I18N.md) |
 | Frontend | [docs/FRONTEND.md](../docs/FRONTEND.md) |
 | Development | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) |
 | Codex playbook | [docs/CODEX_PLAYBOOK.md](../docs/CODEX_PLAYBOOK.md) |
@@ -32,3 +33,7 @@ Read [AGENTS.md](../AGENTS.md) first. Same rules apply to Copilot, Cursor Agent,
 ## Pull requests
 
 Human and Bugbot reviews follow [.cursor/BUGBOT.md](../.cursor/BUGBOT.md). Model changes require `spec/models/` updates. Do not add request/view specs by default.
+
+## I18n
+
+Create new translation files as `config/locales/<locale>/<feature>.yml`, for example `config/locales/fr/user.yml`. Do not create new `feature.fr.yml` or `feature.en.yml` files.

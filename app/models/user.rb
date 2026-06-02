@@ -1,4 +1,9 @@
+require "securerandom"
+
 class User < ApplicationRecord
+  ROLES = %w[player admin].freeze
+  STATUSES = %w[private public].freeze
+
   mount_uploader :avatar, AvatarUploader
   # Include default devise modules.
   devise :database_authenticatable, :registerable,
@@ -7,9 +12,14 @@ class User < ApplicationRecord
 
   validates :first_name, presence: true
   validates :last_name, presence: true
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
+  validates :provider, presence: true
+  validates :uid, presence: true, uniqueness: { scope: :provider, case_sensitive: false }
+  validates :role, inclusion: { in: ROLES }
+  validates :status, inclusion: { in: STATUSES }
 
-  before_create :set_uid_and_provider
-  after_create :set_username
+  before_validation :set_uid_and_provider
+  before_validation :set_username, on: :create
 
   has_many :events, dependent: :destroy
   has_many :event_participants, dependent: :destroy
@@ -17,7 +27,7 @@ class User < ApplicationRecord
 
   ########################## RECHERCHE AVEC RANSACK ##########################
   def self.ransackable_attributes(auth_object = nil)
-    %w[first_name last_name email username] + _ransackers.keys
+    %w[first_name last_name username] + _ransackers.keys
   end
 
   def self.ransackable_associations(auth_object = nil)
@@ -25,36 +35,43 @@ class User < ApplicationRecord
   end
   ############################################################################
 
-  ########################## FRIENDSHIPS EN ATTENTE ##########################
-  # Friendships où l'user est sender et c'est pending
   has_many :sent_friendships,
-          -> { where(friendships: { status: "pending" }) },
           class_name: "Friendship",
           foreign_key: "sender_id",
+          inverse_of: :sender,
           dependent: :destroy
 
-  # Friendships où l'user est receiver et c'est pending
   has_many :received_friendships,
-          -> { where(friendships: { status: "pending" }) },
           class_name: "Friendship",
           foreign_key: "receiver_id",
+          inverse_of: :receiver,
           dependent: :destroy
+
+  ########################## FRIENDSHIPS EN ATTENTE ##########################
+  has_many :pending_sent_friendships,
+          -> { pending },
+          class_name: "Friendship",
+          foreign_key: "sender_id",
+          inverse_of: :sender
+
+  has_many :pending_received_friendships,
+          -> { pending },
+          class_name: "Friendship",
+          foreign_key: "receiver_id",
+          inverse_of: :receiver
 
   ########################## FRIENDSHIPS ACCEPTÉES ##########################
-  # Requêtes d'amitié envoyées par l'user (sender)
-  # Friendships acceptées envoyées
-  has_many :sent_accepted_friendships,
-          -> { where(status: "accepted") },
+  has_many :accepted_sent_friendships,
+          -> { accepted },
           class_name: "Friendship",
           foreign_key: "sender_id",
-          dependent: :destroy
+          inverse_of: :sender
 
-  # Friendships acceptées reçues
-  has_many :received_accepted_friendships,
-          -> { where(status: "accepted") },
+  has_many :accepted_received_friendships,
+          -> { accepted },
           class_name: "Friendship",
           foreign_key: "receiver_id",
-          dependent: :destroy
+          inverse_of: :receiver
 
   # Méthode pour combiner les deux
   def accepted_friendships
@@ -64,10 +81,10 @@ class User < ApplicationRecord
 
   # Amis qui ne sont pas des event_participants
   def get_my_friends_but_not_participants(event)
-    friends = accepted_friendships.map do |friendship|
-      friendship.sender == self ? friendship.receiver : friendship.sender
-    end
-    friends - event.event_participants.map(&:user)
+    friend_ids = accepted_friendships.pluck(:sender_id, :receiver_id).flatten.uniq - [ id ]
+    participant_ids = event.event_participants.pluck(:user_id)
+
+    User.where(id: friend_ids - participant_ids)
   end
 
 
@@ -85,26 +102,34 @@ class User < ApplicationRecord
     User.where.not(id: friendship_user_ids)
   end
 
+  def friendship_with(other_user)
+    return if other_user.blank?
+
+    Friendship.where(sender: self, receiver: other_user)
+              .or(Friendship.where(sender: other_user, receiver: self))
+              .first
+  end
+
   # Cette personne n'a aucun lien d'amitié avec moi
   def has_no_friendship_with?(other_user)
-    !Friendship.exists?(sender: self, receiver: other_user) &&
-      !Friendship.exists?(sender: other_user, receiver: self)
+    friendship_with(other_user).blank?
   end
 
   # Cette personne m'a envoyé une demande d'amitié
   def has_pending_request_from?(other_user)
-    Friendship.exists?(sender: other_user, receiver: self, status: "pending")
+    friendship = friendship_with(other_user)
+    friendship&.sender_id == other_user.id && friendship.receiver_id == id && friendship.status == "pending"
   end
 
   # J'ai envoyé une demande d'amitié à cette personne
   def has_asked_to_be_friend_with?(other_user)
-    Friendship.exists?(sender: self, receiver: other_user, status: "pending")
+    friendship = friendship_with(other_user)
+    friendship&.sender_id == id && friendship.receiver_id == other_user.id && friendship.status == "pending"
   end
 
   # Cette personne est déjà mon amie
   def is_friend_with?(other_user)
-    Friendship.exists?(sender: self, receiver: other_user, status: "accepted") ||
-      Friendship.exists?(sender: other_user, receiver: self, status: "accepted")
+    friendship_with(other_user)&.status == "accepted"
   end
 
   ########################## FRIENDSHIPS EN ATTENTE ##########################
@@ -119,14 +144,26 @@ class User < ApplicationRecord
 
 
   def set_username
-    self.username = "#{first_name.downcase}#{last_name.upcase.first}#{rand(1000..9999)}"
-    self.save!
+    return if username.present?
+
+    loop do
+      candidate = "#{username_base}#{SecureRandom.alphanumeric(8).downcase}"
+      next if User.where("LOWER(username) = ?", candidate.downcase).exists?
+
+      self.username = candidate
+      break
+    end
   end
 
   def set_uid_and_provider
-    if provider.blank? || uid.blank?
-      self.provider = "email"
-      self.uid = email
-    end
+    self.provider = "email" if provider.blank?
+    self.uid = email if provider == "email" && email.present?
+  end
+
+  private
+
+  def username_base
+    base = "#{first_name.to_s.parameterize(separator: "")}#{last_name.to_s.first.to_s.parameterize(separator: "")}"
+    base.presence || "user"
   end
 end

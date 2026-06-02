@@ -1,0 +1,15 @@
+---
+description: I18n locale files
+globs: config/locales/**/*.yml
+alwaysApply: false
+---
+
+# I18n
+
+Read [docs/I18N.md](../../docs/I18N.md).
+
+- New translation files use `config/locales/<locale>/<feature>.yml`.
+- Do not create new `feature.fr.yml` or `feature.en.yml` files.
+- The YAML root must match the locale folder.
+- Keep user-facing copy translated through locale keys when touching related code.
+- Keep technical documentation and developer-facing text in English.
