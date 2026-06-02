@@ -20,6 +20,7 @@ Read [AGENTS.md](../../AGENTS.md) first — source of truth shared with Codex an
 |-------|-----|
 | Architecture | [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) |
 | Testing | [docs/TESTING.md](../../docs/TESTING.md) |
+| I18n | [docs/I18N.md](../../docs/I18N.md) |
 | Frontend | [docs/FRONTEND.md](../../docs/FRONTEND.md) |
 | Development | [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md) |
 | Codex prompts | [docs/CODEX_PLAYBOOK.md](../../docs/CODEX_PLAYBOOK.md) |

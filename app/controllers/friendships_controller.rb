@@ -6,8 +6,8 @@ class FriendshipsController < ApplicationController
 
   def index
     @accepted_friendships = current_user.accepted_friendships.includes(:sender, :receiver)
-    @sent_friendships = current_user.sent_friendships.includes(:receiver)
-    @received_friendships = current_user.received_friendships.includes(:sender)
+    @sent_friendships = current_user.pending_sent_friendships.includes(:receiver)
+    @received_friendships = current_user.pending_received_friendships.includes(:sender)
   end
 
   def search
@@ -15,7 +15,7 @@ class FriendshipsController < ApplicationController
 
     @users =
       if params[:q].present?
-        @q.result.select(:id, :first_name, :last_name, :username, :email).distinct
+        @q.result.select(:id, :first_name, :last_name, :username).distinct
       else
         User.none
       end
@@ -25,7 +25,7 @@ class FriendshipsController < ApplicationController
 
   def create
     @user = User.find(params[:user_id])
-    friendship = current_user.pending_requests.build(sender: current_user, receiver: @user, status: "pending")
+    friendship = current_user.sent_friendships.build(receiver: @user, status: "pending")
     if friendship.save
       redirect_to user_path(@user), notice: "Demande d'amitié envoyée à #{@user.first_name}."
     else

@@ -1,0 +1,22 @@
+fr:
+  activerecord:
+    errors:
+      models:
+        user:
+          attributes:
+            first_name:
+              blank: "Le prénom est obligatoire."
+            last_name:
+              blank: "Le nom est obligatoire."
+            username:
+              blank: "Le nom d'utilisateur est obligatoire."
+              taken: "Ce nom d'utilisateur est déjà utilisé."
+            provider:
+              blank: "Le fournisseur d'authentification est obligatoire."
+            uid:
+              blank: "L'identifiant d'authentification est obligatoire."
+              taken: "Cet identifiant d'authentification est déjà utilisé."
+            role:
+              inclusion: "Ce rôle n'est pas autorisé."
+            status:
+              inclusion: "Ce statut n'est pas autorisé."

@@ -11,7 +11,7 @@ Read [app/views/AGENTS.md](../../app/views/AGENTS.md) and [docs/FRONTEND.md](../
 - ERB + Rails helpers + Tailwind CSS 4 first.
 - No business logic in templates; no inline JS when Stimulus fits.
 - Shared partials under `app/views/**/components/` when reuse is real.
-- User-facing copy ready for I18n; technical text in English.
+- User-facing copy ready for I18n; follow [docs/I18N.md](../../docs/I18N.md) for locale files.
 - No view specs unless policy explicitly changes.
 
 PR reviews: [app/views/.cursor/BUGBOT.md](../../app/views/.cursor/BUGBOT.md).

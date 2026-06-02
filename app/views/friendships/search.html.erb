@@ -11,8 +11,8 @@
   <section class="mb-8">
     <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6">
       <%= search_form_for @q, url: search_friendships_path, html: { class: "flex", role: "search" } do |f| %>
-        <%= f.label :first_name_or_last_name_or_username_or_email_cont, "Rechercher un joueur", class: "sr-only" %>
-        <%= f.search_field :first_name_or_last_name_or_username_or_email_cont,
+      <%= f.label :first_name_or_last_name_or_username_cont, "Rechercher un joueur", class: "sr-only" %>
+      <%= f.search_field :first_name_or_last_name_or_username_cont,
               placeholder: "Rechercher un joueur...",
               aria: { label: "Rechercher un joueur" },
               class: "flex-grow px-4 py-3 rounded-s-lg bg-white/10 border border-white/20 text-white placeholder-indigo-100/60 focus:outline-none focus:ring-inset focus:ring focus:ring-amber-400" %>
