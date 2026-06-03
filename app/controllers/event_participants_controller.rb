@@ -31,7 +31,8 @@ class EventParticipantsController < ApplicationController
     @event = @event_participant.event
 
     if @event_participant.destroy
-      redirect_to @event, alert: "Vous ne participez plus à cet événement."
+      redirect_path = @event.viewable_by?(current_user) ? @event : authenticated_root_path
+      redirect_to redirect_path, alert: "Vous ne participez plus à cet événement."
     else
       flash.now[:alert] = "Une erreur est survenue lors de votre désinscription."
       render @event, status: :unprocessable_entity
