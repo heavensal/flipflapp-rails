@@ -9,6 +9,8 @@ Read [AGENTS.md](../../AGENTS.md) first — source of truth shared with Codex an
 
 ## Defaults
 
+- Keep config boring: explicit `ENV["NAME"]` in `database.yml`, no ERB helpers unless asked.
+- Do not abstract a handful of lines; only extract large repeated blocks.
 - Technical documentation and code comments in **English**.
 - Rails MVC, ERB, Rails helpers, Tailwind CSS 4 first.
 - Strict TDD: model specs in `spec/models/` for business behavior.

@@ -7,6 +7,8 @@ All new project documentation, code comments, branch names, commit messages, and
 ## Core Rules
 
 - Optimize for precise, small changes that match the existing Rails codebase.
+- Prefer obvious, boring code over clever abstractions. Do not refactor config files (e.g. `config/database.yml`) with ERB helpers, shared methods, or `abort` blocks unless the user asks — use plain Rails YAML and explicit `ENV["VARIABLE_NAME"]` keys that match `.env.example`.
+- Extract duplication only when it removes a **large** repeated block; a few similar lines are fine to leave explicit.
 - Use Rails-native MVC, RESTful controllers, strong parameters, ERB, and Tailwind CSS 4 first.
 - Keep business logic in models unless the existing code clearly uses another pattern.
 - Do not introduce service objects, interactors, presenters, decorators, or new architectural layers unless explicitly requested.

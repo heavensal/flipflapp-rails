@@ -107,7 +107,7 @@ class Event < ApplicationRecord
     tracked_changes = saved_changes.slice(*TRACKED_NOTIFICATION_FIELDS)
     return if tracked_changes.empty?
 
-    players.where.not(id: user_id).distinct.find_each do |player|
+    players.where.not(id: user_id).find_each do |player|
       tracked_changes.each do |field, (old_value, new_value)|
         Notification.create!(
           user: player,

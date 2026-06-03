@@ -54,7 +54,7 @@ jobs:
         env:
           RAILS_ENV: test
           CI: true
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/flipflapp_test
+          TEST_NEON_DB: postgres://postgres:postgres@localhost:5432/flipflapp_test
         run: |
           bin/rails db:test:prepare
           bundle exec rspec
@@ -108,7 +108,7 @@ jobs:
         env:
           KAMAL_REGISTRY_PASSWORD: ${{ secrets.KAMAL_REGISTRY_PASSWORD }}
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-          NEON_DB: ${{ secrets.NEON_DB }}
+          PRODUCTION_NEON_DB: ${{ secrets.PRODUCTION_NEON_DB }}
           CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
