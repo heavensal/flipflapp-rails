@@ -46,13 +46,13 @@ RSpec.describe User, type: :model do
     end
 
     it "sets a unique username before validation" do
-      create(:user, first_name: "Jane", last_name: "Doe", username: "janedabc12345")
-      allow(SecureRandom).to receive(:alphanumeric).with(8).and_return("abc12345", "def67890")
+      create(:user, first_name: "Jane", last_name: "Doe", username: "janed#0007")
 
       user = build(:user, first_name: "Jane", last_name: "Doe", username: nil)
+      allow(user).to receive(:rand).with(0..9999).and_return(7, 42)
       user.valid?
 
-      expect(user.username).to eq("janeddef67890")
+      expect(user.username).to eq("janed#0042")
     end
   end
 
