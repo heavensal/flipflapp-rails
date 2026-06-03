@@ -8,6 +8,18 @@ en:
               blank: "First name is required."
             last_name:
               blank: "Last name is required."
+            email:
+              blank: "Email is required."
+              taken: "This email is already taken."
+              invalid: "Email is not valid."
+              not_found: "No account matches this email."
+            password:
+              blank: "Password is required."
+              too_short: "Password is too short (minimum %{count} characters)."
+            password_confirmation:
+              confirmation: "Password confirmation does not match."
+            avatar:
+              extension_allowlist_error: "File format not allowed. Accepted formats: jpg, jpeg, png, gif."
             username:
               blank: "Username is required."
               taken: "This username is already taken."

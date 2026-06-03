@@ -4,6 +4,11 @@ en:
   devise:
     confirmations:
       confirmed: "Your email address has been successfully confirmed."
+      email_label: "Email address"
+      email_placeholder: "you@example.com"
+      resend_description: "Enter your account email address to receive a new confirmation link."
+      resend_submit: "Resend confirmation email"
+      resend_title: "Resend confirmation email"
       send_instructions: "You will receive an email with instructions for how to confirm your email address in a few minutes."
       send_paranoid_instructions: "If your email address exists in our database, you will receive an email with instructions for how to confirm your email address in a few minutes."
     failure:
@@ -63,3 +68,4 @@ en:
       not_saved:
         one: "1 error prohibited this %{resource} from being saved:"
         other: "%{count} errors prohibited this %{resource} from being saved:"
+      extension_allowlist_error: "File format not allowed. Accepted formats: jpg, jpeg, png, gif."

@@ -13,5 +13,14 @@ application.register("maps--autocomplete", Maps__AutocompleteController)
 import NavbarController from "./navbar_controller"
 application.register("navbar", NavbarController)
 
+import FormImagePreviewController from "./form/image_preview_controller"
+application.register("form--image-preview", FormImagePreviewController)
+
+import FormRegistrationController from "./form/registration_controller"
+application.register("form--registration", FormRegistrationController)
+
+import FormEmailValidationController from "./form/email_validation_controller"
+application.register("form--email-validation", FormEmailValidationController)
+
 import Dialog from '@stimulus-components/dialog'
 application.register('dialog', Dialog)

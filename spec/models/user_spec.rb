@@ -46,19 +46,37 @@ RSpec.describe User, type: :model do
     end
 
     it "sets a unique username before validation" do
-      create(:user, first_name: "Jane", last_name: "Doe", username: "janedabc12345")
-      allow(SecureRandom).to receive(:alphanumeric).with(8).and_return("abc12345", "def67890")
+      create(:user, first_name: "Jane", last_name: "Doe", username: "janed#0007")
 
       user = build(:user, first_name: "Jane", last_name: "Doe", username: nil)
+      allow(user).to receive(:rand).with(0..9999).and_return(7, 42)
       user.valid?
 
-      expect(user.username).to eq("janeddef67890")
+      expect(user.username).to eq("janed#0042")
     end
   end
 
   describe ".ransackable_attributes" do
     it "does not expose email search" do
       expect(described_class.ransackable_attributes).not_to include("email")
+    end
+  end
+
+  describe ".find_for_confirmation_email" do
+    it "finds a user by email without case or surrounding whitespace sensitivity" do
+      user = create(:user, email: "player@example.com")
+
+      expect(described_class.find_for_confirmation_email(" Player@Example.com ")).to eq(user)
+    end
+
+    it "finds a user by pending reconfirmation email" do
+      user = create(:user, unconfirmed_email: "next@example.com")
+
+      expect(described_class.find_for_confirmation_email("next@example.com")).to eq(user)
+    end
+
+    it "returns nil when no confirmation email matches" do
+      expect(described_class.find_for_confirmation_email("missing@example.com")).to be_nil
     end
   end
 

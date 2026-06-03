@@ -35,6 +35,13 @@ class User < ApplicationRecord
   end
   ############################################################################
 
+  def self.find_for_confirmation_email(email)
+    normalized_email = email.to_s.strip.downcase
+    return if normalized_email.blank?
+
+    where("LOWER(email) = :email OR LOWER(unconfirmed_email) = :email", email: normalized_email).first
+  end
+
   has_many :sent_friendships,
           class_name: "Friendship",
           foreign_key: "sender_id",
@@ -146,8 +153,11 @@ class User < ApplicationRecord
   def set_username
     return if username.present?
 
+    base = username_base
+
     loop do
-      candidate = "#{username_base}#{SecureRandom.alphanumeric(8).downcase}"
+      number = rand(0..9999).to_s.rjust(4, "0")
+      candidate = "#{base}##{number}"
       next if User.where("LOWER(username) = ?", candidate.downcase).exists?
 
       self.username = candidate
@@ -163,7 +173,7 @@ class User < ApplicationRecord
   private
 
   def username_base
-    base = "#{first_name.to_s.parameterize(separator: "")}#{last_name.to_s.first.to_s.parameterize(separator: "")}"
+    base = "#{first_name.to_s.parameterize(separator: "")}#{last_name.to_s.first.to_s.downcase}"
     base.presence || "user"
   end
 end

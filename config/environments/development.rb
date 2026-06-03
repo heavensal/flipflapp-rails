@@ -34,7 +34,7 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
-  config.action_mailer.asset_host = "http://flipflapp.fr"
+  config.action_mailer.asset_host = "http://localhost:3000"
 
 
   # Make template changes take effect immediately.
@@ -44,7 +44,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.perform_deliveries = true
   config.action_mailer.raise_delivery_errors = false
-  config.action_mailer.default_url_options = { host: "flipflapp.fr", protocol: "https" }
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000, protocol: "http" }
 
   config.action_mailer.smtp_settings = {
     address: "mail.flipflapp.fr",
