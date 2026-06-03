@@ -1,0 +1,8 @@
+en:
+  events:
+    authorization:
+      inaccessible: "This event is not accessible."
+      owner_required: "You are not authorized to edit this event."
+      invitation_required: "You are not authorized to invite people to this event."
+    teams:
+      not_found: "Team not found."

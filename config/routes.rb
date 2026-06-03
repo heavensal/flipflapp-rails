@@ -42,6 +42,8 @@ Rails.application.routes.draw do
   resources :friendships, only: [ :index, :create, :update, :destroy ]
   get "friendships/search", to: "friendships#search", as: :search_friendships
 
-  resources :notifications, only: [ :index ]
+  resources :notifications, only: [ :index ] do
+    patch :read, on: :member
+  end
   get "list", to: "notifications#list", as: :notifications_list
 end

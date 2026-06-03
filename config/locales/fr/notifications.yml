@@ -1,0 +1,14 @@
+fr:
+  notifications:
+    messages:
+      joined: "%{player} a rejoint ton événement \"%{title}\"."
+      left: "%{player} a quitté ton événement \"%{title}\"."
+      invited: "%{sender} t'a invité à l'événement \"%{title}\" prévu %{start_time}."
+      canceled: "L'événement \"%{title}\" prévu %{start_time} et organisé par %{author} a été annulé."
+      default: "Vous avez une nouvelle notification."
+      updated:
+        title: "%{actor} a modifié le titre de l'événement \"%{title}\" -> \"%{value}\"."
+        start_time: "%{actor} a modifié la date de l'événement \"%{title}\" -> %{value}."
+        price: "%{actor} a modifié le prix de l'événement \"%{title}\" -> %{value}."
+        number_of_participants: "%{actor} a modifié le nombre de participants de l'événement \"%{title}\" -> %{value}."
+        default: "%{actor} a modifié %{field} sur l'événement \"%{title}\" -> %{value}."

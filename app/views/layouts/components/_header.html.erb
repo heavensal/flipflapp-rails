@@ -63,13 +63,14 @@
         <ul class="flex flex-col py-4 space-y-2" id="menu">
 
           <li>
+            <% unread_notifications_count = current_user.notifications.unread.count %>
             <%= link_to notifications_list_path,
                         data: { action: "click->navbar#closeMenu" },
                         class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
               Notifications
-              <% if current_user.notifications.unread.count > 0 %>
+              <% if unread_notifications_count > 0 %>
                 <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  <%= current_user.notifications.unread.count %>
+                  <%= unread_notifications_count %>
                 </span>
               <% end %>
             <% end %>

@@ -1,36 +1,28 @@
 module NotificationsHelper
   def notification_message(notification)
     case notification.kind
-    # when "created"
-    #   "L'événement '#{notification.notifiable.title}' a été créé."
     when "joined"
-      "#{notification.payload['player']} a rejoint ton événement \"#{notification.payload['title']}\"."
+      t("notifications.messages.joined", player: notification.payload["player"], title: notification.payload["title"])
     when "left"
-      "#{notification.payload['player']} a quitté ton événement \"#{notification.payload['title']}\"."
+      t("notifications.messages.left", player: notification.payload["player"], title: notification.payload["title"])
     when "updated"
-      changes = notification.payload["changes"] || {}
-      details = changes.map do |field, (old_val, new_val)|
-        case field
-        when "start_time"
-          "⏰ Date : #{human_future_date(old_val)} → #{human_future_date(new_val)}"
-        when "price"
-          "💰 Prix : #{old_val}€ → #{new_val}€"
-        when "number_of_participants"
-          "👥 Places : #{old_val} → #{new_val}"
-        when "title"
-          "🏷️ Titre : « #{old_val} » → « #{new_val} »"
-        when "location"
-          "📍 Lieu : « #{old_val} » → « #{new_val} »"
-        else
-          "#{field.humanize} : #{old_val} → #{new_val}"
-        end
-      end.join(", ")
+      notification_update_message(notification)
     when "invited"
-      "#{notification.payload['sender']} t'a invité à l'événement \"#{notification.payload['title']}\" prévu #{human_future_date(notification.payload['start_time'])}."
+      t(
+        "notifications.messages.invited",
+        sender: notification.payload["sender"],
+        title: notification.payload["title"],
+        start_time: human_future_date(notification.payload["start_time"])
+      )
     when "canceled"
-      "L'événement \"#{notification.payload['title']}\" prévu #{human_future_date(notification.payload['start_time'])} et organisé par #{notification.payload['author']} a été annulé."
+      t(
+        "notifications.messages.canceled",
+        title: notification.payload["title"],
+        start_time: human_future_date(notification.payload["start_time"]),
+        author: notification.payload["author"]
+      )
     else
-      "Vous avez une nouvelle notification."
+      t("notifications.messages.default")
     end
   end
 
@@ -44,6 +36,31 @@ module NotificationsHelper
     when "invited" then "📨"
     when "reminder" then "⏰"
     else "🔔"
+    end
+  end
+
+  def notification_update_message(notification)
+    field = notification.payload["field"]
+    translation_key = "notifications.messages.updated.#{field}"
+    translation_key = "notifications.messages.updated.default" unless I18n.exists?(translation_key)
+
+    t(
+      translation_key,
+      actor: notification.payload["actor"],
+      title: notification.payload["title"],
+      field: field.to_s.humanize,
+      value: notification_updated_value(field, notification.payload["new_value"])
+    )
+  end
+
+  def notification_updated_value(field, value)
+    case field
+    when "start_time"
+      human_future_date(value)
+    when "price"
+      "#{format('%.2f', value.to_f)} €"
+    else
+      value
     end
   end
 end

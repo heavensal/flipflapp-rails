@@ -12,6 +12,19 @@ FlipFlapp uses strict TDD with RSpec and Factory Bot.
 - Do not use YAML fixtures.
 - Do not leave pending examples.
 
+## Database
+
+RSpec uses **`TEST_NEON_DB`** from `.env` only (not `DEVELOPMENT_NEON_DB` or `PRODUCTION_NEON_DB`).
+
+```bash
+# .env must include:
+# TEST_NEON_DB=postgresql://...
+bin/rails db:test:prepare
+bundle exec rspec
+```
+
+If you see `socket "/tmp/.s.PGSQL.5432" failed`, add `TEST_NEON_DB` to `.env`.
+
 ## Commands
 
 Do not run commands unless explicitly requested.

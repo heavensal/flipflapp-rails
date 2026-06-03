@@ -1,18 +1,21 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!
+  before_action :set_event, only: [ :show, :edit, :update, :destroy ]
+  before_action :authorize_event_view!, only: [ :show ]
+  before_action :authorize_event_owner!, only: [ :edit, :update, :destroy ]
+
   # GET /events
   #
   # GET /events/home
   def home
   end
   def index
-    @events = Event.upcoming
+    @events = Event.visible_to(current_user).upcoming
   end
 
 
   # GET /events/:id
   def show
-    @event = Event.find(params[:id])
     @team_1 = @event.event_teams.first
     @team_2 = @event.event_teams.second
     @bench = @event.event_teams.third
@@ -38,12 +41,10 @@ class EventsController < ApplicationController
 
   # GET /events/:id/edit
   def edit
-    @event = Event.find(params[:id])
   end
 
   # PATCH/PUT /events/:id
   def update
-    @event = Event.find(params[:id])
     if @event.update(event_params)
       redirect_to @event, notice: "Événement modifié avec succès."
     else
@@ -54,7 +55,6 @@ class EventsController < ApplicationController
 
   # DELETE /events/:id
   def destroy
-    @event = Event.find(params[:id])
     if @event.destroy
       redirect_to authenticated_root_path, alert: "L'événement a bien été supprimé."
     else
@@ -63,6 +63,22 @@ class EventsController < ApplicationController
   end
 
   private
+
+  def set_event
+    @event = Event.find(params[:id])
+  end
+
+  def authorize_event_view!
+    return if @event.viewable_by?(current_user)
+
+    redirect_to authenticated_root_path, alert: t("events.authorization.inaccessible")
+  end
+
+  def authorize_event_owner!
+    return if @event.am_i_the_author?(current_user)
+
+    redirect_to @event, alert: t("events.authorization.owner_required")
+  end
 
   def event_params
     params.require(:event).permit(:title, :description, :location, :start_time, :number_of_participants, :price, :is_private)
