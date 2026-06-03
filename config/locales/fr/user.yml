@@ -8,6 +8,18 @@ fr:
               blank: "Le prénom est obligatoire."
             last_name:
               blank: "Le nom est obligatoire."
+            email:
+              blank: "L'adresse email est obligatoire."
+              taken: "Cette adresse email est déjà utilisée."
+              invalid: "L'adresse email n'est pas valide."
+              not_found: "Aucun compte ne correspond à cette adresse email."
+            password:
+              blank: "Le mot de passe est obligatoire."
+              too_short: "Le mot de passe est trop court (minimum %{count} caractères)."
+            password_confirmation:
+              confirmation: "La confirmation du mot de passe ne correspond pas."
+            avatar:
+              extension_allowlist_error: "Le format du fichier n'est pas autorisé. Formats acceptés : jpg, jpeg, png, gif."
             username:
               blank: "Le nom d'utilisateur est obligatoire."
               taken: "Ce nom d'utilisateur est déjà utilisé."

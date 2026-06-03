@@ -8,6 +8,8 @@ Read [AGENTS.md](../AGENTS.md) first. Same rules apply to Copilot, Cursor Agent,
 - Strict TDD: model specs in `spec/models/` for business behavior.
 - No migrations unless explicitly requested.
 - Rails-native ERB and Tailwind CSS 4; Hotwire/Stimulus only when needed.
+- **Do NOT create Stimulus controllers without explicit user permission.** Ask first.
+- Stimulus folder structure: `app/javascript/controllers/<feature>/<specificity>_controller.js`.
 - No commit, push, branches, or PRs unless explicitly requested.
 
 ## Reference docs

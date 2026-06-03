@@ -62,6 +62,24 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe ".find_for_confirmation_email" do
+    it "finds a user by email without case or surrounding whitespace sensitivity" do
+      user = create(:user, email: "player@example.com")
+
+      expect(described_class.find_for_confirmation_email(" Player@Example.com ")).to eq(user)
+    end
+
+    it "finds a user by pending reconfirmation email" do
+      user = create(:user, unconfirmed_email: "next@example.com")
+
+      expect(described_class.find_for_confirmation_email("next@example.com")).to eq(user)
+    end
+
+    it "returns nil when no confirmation email matches" do
+      expect(described_class.find_for_confirmation_email("missing@example.com")).to be_nil
+    end
+  end
+
   describe ".users_without_friendship" do
     it "excludes users who already have any friendship with the current user" do
       current_user = create(:user)

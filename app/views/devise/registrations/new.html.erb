@@ -5,27 +5,49 @@
 
 <main class="p-4 min-h-dvh">
 
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4", data: { controller: "form--registration", form__registration_min_password_value: @minimum_password_length || 6, form__registration_password_too_short_value: t("activerecord.errors.models.user.attributes.password.too_short", count: @minimum_password_length || 6), form__registration_password_confirmation_mismatch_value: t("activerecord.errors.models.user.attributes.password_confirmation.confirmation") } }) do |f| %>
 
     <div>
       <%= f.label :first_name, "Prénom", class: "block text-secondary-text mb-2" %>
-      <%= f.text_field :first_name, autocomplete: "first-name", placeholder: "Cristiano", class: "form-text-input" %>
+      <%= f.text_field :first_name, autocomplete: "first-name", placeholder: "Cristiano", class: "form-text-input", data: { form__registration_target: "firstName", action: "input->form--registration#validate" } %>
+      <% if resource.errors[:first_name].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:first_name].first %></p>
+      <% end %>
     </div>
 
     <div>
       <%= f.label :last_name, "Nom", class: "block text-secondary-text mb-2" %>
-      <%= f.text_field :last_name, autocomplete: "last-name", placeholder: "Ronaldo", class: "form-text-input" %>
+      <%= f.text_field :last_name, autocomplete: "last-name", placeholder: "Ronaldo", class: "form-text-input", data: { form__registration_target: "lastName", action: "input->form--registration#validate" } %>
+      <% if resource.errors[:last_name].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:last_name].first %></p>
+      <% end %>
     </div>
 
-    <div>
+    <div data-controller="form--image-preview">
       <%= f.label :avatar, "Photo de profil", class: "block text-secondary-text mb-2" %>
-      <%= f.file_field :avatar %>
+      <label class="block w-full px-4 py-2 bg-black/25 border border-form-green text-indigo-200/80 cursor-pointer transition hover:border-primary-yellow">
+        <span class="flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span data-form--image-preview-target="filename">Choisir une image...</span>
+        </span>
+        <%= f.file_field :avatar, accept: "image/jpeg,image/png,image/gif", class: "hidden", data: { form__image_preview_target: "input", action: "change->form--image-preview#show" } %>
+      </label>
+      <div class="flex justify-center mt-3">
+        <img data-form--image-preview-target="preview" class="hidden w-20 h-20 rounded-full object-cover border-2 border-primary-yellow" alt="Aperçu">
+      </div>
+      <% if resource.errors[:avatar].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:avatar].first %></p>
+      <% end %>
     </div>
 
     <div>
       <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
-      <%= f.email_field :email, autocomplete: "email", placeholder: "ton@email.fr", class: "form-text-input" %>
+      <%= f.email_field :email, autocomplete: "email", placeholder: "ton@email.fr", class: "form-text-input", data: { form__registration_target: "email", action: "input->form--registration#validate" } %>
+      <% if resource.errors[:email].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:email].first %></p>
+      <% end %>
     </div>
 
     <div>
@@ -37,16 +59,24 @@
           </span>
         <% end %>
       </div>
-      <%= f.password_field :password, autocomplete: "new-password", class: "form-text-input" %>
+      <%= f.password_field :password, autocomplete: "new-password", class: "form-text-input", data: { form__registration_target: "password", action: "input->form--registration#validate" } %>
+      <p data-form--registration-target="passwordHint" class="hidden text-red-400 text-sm mt-1"></p>
+      <% if resource.errors[:password].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:password].first %></p>
+      <% end %>
     </div>
 
     <div>
       <%= f.label :password_confirmation, "Confirmer le mot de passe", class: "block text-secondary-text mb-2" %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input", data: { form__registration_target: "passwordConfirmation", action: "input->form--registration#validate" } %>
+      <p data-form--registration-target="passwordConfirmationHint" class="hidden text-red-400 text-sm mt-1"></p>
+      <% if resource.errors[:password_confirmation].any? %>
+        <p class="text-red-400 text-sm mt-1"><%= resource.errors[:password_confirmation].first %></p>
+      <% end %>
     </div>
 
     <div class="mt-6">
-      <%= f.submit "S'inscrire", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+      <%= f.submit "S'inscrire", disabled: true, class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-not-allowed", data: { form__registration_target: "submit" } %>
     </div>
   <% end %>
 

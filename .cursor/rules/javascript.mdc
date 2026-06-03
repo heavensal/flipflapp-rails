@@ -9,7 +9,9 @@ alwaysApply: false
 Read [app/javascript/AGENTS.md](../../app/javascript/AGENTS.md) and [docs/FRONTEND.md](../../docs/FRONTEND.md).
 
 - Default: server-rendered HTML; add JS only when needed.
-- Stimulus in `app/javascript/controllers/`; register in `index.js`.
+- **Do NOT create Stimulus controllers without explicit user permission.** Ask first.
+- Stimulus in `app/javascript/controllers/<feature>/`; register in `index.js`.
+- Folder structure: `<feature>/<specificity>_controller.js` (e.g. `form/image_preview_controller.js`).
 - Prefer `data-*` attributes over fragile selectors.
 - No new npm deps unless explicitly requested.
 - Do not run build commands unless explicitly requested.

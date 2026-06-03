@@ -35,6 +35,13 @@ class User < ApplicationRecord
   end
   ############################################################################
 
+  def self.find_for_confirmation_email(email)
+    normalized_email = email.to_s.strip.downcase
+    return if normalized_email.blank?
+
+    where("LOWER(email) = :email OR LOWER(unconfirmed_email) = :email", email: normalized_email).first
+  end
+
   has_many :sent_friendships,
           class_name: "Friendship",
           foreign_key: "sender_id",

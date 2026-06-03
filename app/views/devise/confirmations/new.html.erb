@@ -1,16 +1,62 @@
-<h2>Resend confirmation instructions</h2>
+<% confirmation_email = resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email %>
+<% confirmation_email_valid = confirmation_email.present? && confirmation_email.match?(Devise.email_regexp) %>
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<h1 class="text-3xl font-bold text-white text-center my-8"><%= t("devise.confirmations.resend_title") %></h1>
+<p class="text-secondary-text text-center">
+  <%= t("devise.confirmations.resend_description") %>
+</p>
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+<main class="p-4 min-h-dvh">
+  <%= form_for(
+        resource,
+        as: resource_name,
+        url: confirmation_path(resource_name),
+        html: {
+          method: :post,
+          class: "max-w-md mx-auto mt-8 space-y-4",
+          data: { controller: "email-validation" }
+        }
+      ) do |f| %>
+    <div>
+      <%= f.label :email, t("devise.confirmations.email_label"), class: "block text-secondary-text mb-2" %>
+      <%= f.email_field :email,
+            autofocus: true,
+            autocomplete: "email",
+            value: confirmation_email,
+            placeholder: t("devise.confirmations.email_placeholder"),
+            class: "form-text-input",
+            data: {
+              email_validation_target: "input",
+              action: "input->email-validation#validate blur->email-validation#validate"
+            },
+            aria: {
+              describedby: "user_email_format_error user_email_server_error",
+              invalid: resource.errors[:email].any?
+            } %>
+
+      <p id="user_email_format_error" class="hidden text-red-400 text-sm mt-1" data-email-validation-target="message">
+        <%= t("activerecord.errors.models.user.attributes.email.invalid") %>
+      </p>
+      <% if resource.errors[:email].any? %>
+        <p id="user_email_server_error" class="text-red-400 text-sm mt-1" data-email-validation-target="serverMessage">
+          <%= resource.errors[:email].first %>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="mt-6">
+      <%= f.submit t("devise.confirmations.resend_submit"),
+            class: [
+              "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2",
+              "font-semibold transition active:scale-95 active:bg-yellow-500",
+              "disabled:opacity-50 disabled:cursor-not-allowed"
+            ].join(" "),
+            disabled: !confirmation_email_valid,
+            data: { email_validation_target: "submit" } %>
+    </div>
+  <% end %>
+
+  <div class="text-center mt-4">
+    <%= render "devise/shared/links" %>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</main>
