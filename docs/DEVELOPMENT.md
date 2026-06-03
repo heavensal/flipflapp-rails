@@ -2,10 +2,18 @@
 
 This document gives agents and contributors a compact map of the local project workflow.
 
+## Database URLs (Neon)
+
+Set in `.env` (see `.env.example`):
+
+- `DEVELOPMENT_NEON_DB` — `bin/rails db:prepare`, `bin/dev`
+- `TEST_NEON_DB` — `bundle exec rspec`
+- `PRODUCTION_NEON_DB` — not used locally unless `RAILS_ENV=production`; required in `.kamal/secrets` for deploy
+
 ## Local Stack
 
 - Rails 8
-- PostgreSQL
+- PostgreSQL (Neon)
 - Devise with confirmable
 - Tailwind CSS 4
 - esbuild

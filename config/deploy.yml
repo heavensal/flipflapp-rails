@@ -34,7 +34,7 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
-    - NEON_DB
+    - PRODUCTION_NEON_DB
     - CLOUDINARY_CLOUD_NAME
     - CLOUDINARY_API_KEY
     - CLOUDINARY_API_SECRET

@@ -1,0 +1,14 @@
+en:
+  notifications:
+    messages:
+      joined: "%{player} joined your event \"%{title}\"."
+      left: "%{player} left your event \"%{title}\"."
+      invited: "%{sender} invited you to the event \"%{title}\" scheduled for %{start_time}."
+      canceled: "The event \"%{title}\" scheduled for %{start_time} and organized by %{author} was canceled."
+      default: "You have a new notification."
+      updated:
+        title: "%{actor} changed the title of \"%{title}\" -> \"%{value}\"."
+        start_time: "%{actor} changed the date of \"%{title}\" -> %{value}."
+        price: "%{actor} changed the price of \"%{title}\" -> %{value}."
+        number_of_participants: "%{actor} changed the participant count of \"%{title}\" -> %{value}."
+        default: "%{actor} changed %{field} on \"%{title}\" -> %{value}."

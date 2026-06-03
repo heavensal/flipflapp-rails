@@ -2,9 +2,6 @@
   <section class="grid grid-cols-1 space-y-2">
     <% if @notifications.empty? %>
       <p class="text-secondary-text text-center">Aucune notification</p>
-      <% 20.times do %>
-        <%= render "notifications/components/one_notification_skeleton" %>
-      <% end %>
     <% end %>
     <% @notifications.each do |notification| %>
       <%= render "notifications/components/one_notification", notification: notification %>
