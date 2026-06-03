@@ -2,7 +2,7 @@
 
 
 <% if notification.clickable? %>
-  <%= link_to notification.target_url, class: "", data: { turbo_frame: "_top" } do %>
+  <%= link_to read_notification_path(notification), class: "", data: { turbo_method: :patch, turbo_frame: "_top" } do %>
 
     <div class="grid grid-cols-12 gap-3 items-center p-2 mb-2 rounded-lg
      <% case notification.kind %>

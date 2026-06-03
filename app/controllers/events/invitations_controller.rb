@@ -3,7 +3,11 @@ class Events::InvitationsController < ApplicationController
   before_action :set_event
 
   def create
-    invited_friends = User.where(id: params[:user_ids] || [])
+    unless @event.can_invite?(current_user)
+      redirect_to authenticated_root_path, alert: t("events.authorization.invitation_required") and return
+    end
+
+    invited_friends = current_user.get_my_friends_but_not_participants(@event).where(id: params[:user_ids] || [])
 
     Notification.transaction do
       invited_friends.find_each do |friend|

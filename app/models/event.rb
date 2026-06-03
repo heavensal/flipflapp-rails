@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+  TRACKED_NOTIFICATION_FIELDS = %w[title start_time price number_of_participants].freeze
+
   belongs_to :user
   has_many :event_teams, dependent: :destroy
   has_many :event_participants, dependent: :destroy
@@ -18,7 +20,21 @@ class Event < ApplicationRecord
 
   after_create_commit :set_teams_and_author
   after_update_commit :notify_update
+  before_destroy :prepare_cancellation_notifications, prepend: true
   after_destroy_commit :notify_cancellation
+
+  def self.visible_to(user)
+    return none if user.blank?
+
+    participant_event_ids = EventParticipant.where(user: user).select(:event_id)
+    invited_event_ids = Notification.invited.where(user: user, notifiable_type: name).select(:notifiable_id)
+
+    where(is_private: false)
+      .or(where(user_id: user.id))
+      .or(where(id: participant_event_ids))
+      .or(where(id: invited_event_ids))
+      .distinct
+  end
 
   def set_teams_and_author
     self.event_teams.create(name: "Equipe 1")
@@ -46,49 +62,82 @@ class Event < ApplicationRecord
     event_participants.exists?(user: user)
   end
 
+  def can_invite?(user)
+    in_this_event?(user)
+  end
+
+  def viewable_by?(user)
+    return false if user.blank?
+
+    !is_private || am_i_the_author?(user) || in_this_event?(user) || invited?(user)
+  end
+
+  def joinable_by?(user)
+    viewable_by?(user)
+  end
+
+  def invited?(user)
+    notifications.invited.exists?(user: user)
+  end
+
   ######################################## NOTIFICATIONS ##########################
+  def prepare_cancellation_notifications
+    @cancellation_notification_user_ids = event_participants.where.not(user_id: user_id).distinct.pluck(:user_id)
+    @cancellation_notification_payload = {
+      title: title,
+      start_time: start_time,
+      author: user.first_name
+    }
+  end
+
   def notify_cancellation
-    # Notifier tous les joueurs que l'événement a été annulé
-    self.players.where.not(id: self.user.id).each do |player|
+    Notification.where(notifiable_type: self.class.name, notifiable_id: id).delete_all
+
+    Array(@cancellation_notification_user_ids).each do |player_id|
       Notification.create!(
-        user: player,
+        user_id: player_id,
         notifiable: nil,
         kind: :canceled,
-        payload: {
-          title: self.title,
-          start_time: self.start_time,
-          author: self.user.first_name
-        }
+        payload: @cancellation_notification_payload
       )
     end
-
-    # Supprimer les notifications autres que "canceled" liées à cet événement
-    self.notifications.where.not(kind: :canceled).delete_all
   end
 
   def notify_update
-    # on cible ces colonnes qui changent
-    changes_to_track = %w[title location start_time price number_of_participants]
-    return if (self.saved_changes.keys & changes_to_track).empty?
+    tracked_changes = saved_changes.slice(*TRACKED_NOTIFICATION_FIELDS)
+    return if tracked_changes.empty?
 
-    # il y a eu des changements sur les colonnes trackées ?
-    if (self.saved_changes.keys & changes_to_track).any?
-      # Notifier tous les joueurs que l'événement a été mis à jour
-      self.players.where.not(id: self.user.id).each do |player|
+    players.where.not(id: user_id).distinct.find_each do |player|
+      tracked_changes.each do |field, (old_value, new_value)|
         Notification.create!(
           user: player,
           notifiable: self,
           kind: :updated,
           payload: {
-            title: self.title,
-            start_time: self.start_time,
-            location: self.location,
-            price: self.price,
-            number_of_participants: self.number_of_participants,
-            changes: self.saved_changes.slice(*changes_to_track)
+            actor: user.first_name,
+            field: field,
+            title: notification_event_title(field, old_value),
+            start_time: start_time,
+            old_value: notification_payload_value(field, old_value),
+            new_value: notification_payload_value(field, new_value)
           }
         )
       end
     end
+  end
+
+  def notification_payload_value(field, value)
+    case field
+    when "price"
+      format("%.2f", value.to_f)
+    when "start_time"
+      value&.iso8601
+    else
+      value
+    end
+  end
+
+  def notification_event_title(field, old_value)
+    field == "title" ? old_value : title
   end
 end
