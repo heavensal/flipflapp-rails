@@ -14,7 +14,7 @@
         html: {
           method: :post,
           class: "max-w-md mx-auto mt-8 space-y-4",
-          data: { controller: "email-validation" }
+          data: { controller: "form--email-validation" }
         }
       ) do |f| %>
     <div>
@@ -26,19 +26,19 @@
             placeholder: t("devise.confirmations.email_placeholder"),
             class: "form-text-input",
             data: {
-              email_validation_target: "input",
-              action: "input->email-validation#validate blur->email-validation#validate"
+              form__email_validation_target: "input",
+              action: "input->form--email-validation#validate blur->form--email-validation#validate"
             },
             aria: {
               describedby: "user_email_format_error user_email_server_error",
               invalid: resource.errors[:email].any?
             } %>
 
-      <p id="user_email_format_error" class="hidden text-red-400 text-sm mt-1" data-email-validation-target="message">
+      <p id="user_email_format_error" class="hidden text-red-400 text-sm mt-1" data-form--email-validation-target="message">
         <%= t("activerecord.errors.models.user.attributes.email.invalid") %>
       </p>
       <% if resource.errors[:email].any? %>
-        <p id="user_email_server_error" class="text-red-400 text-sm mt-1" data-email-validation-target="serverMessage">
+        <p id="user_email_server_error" class="text-red-400 text-sm mt-1" data-form--email-validation-target="serverMessage">
           <%= resource.errors[:email].first %>
         </p>
       <% end %>
@@ -52,7 +52,7 @@
               "disabled:opacity-50 disabled:cursor-not-allowed"
             ].join(" "),
             disabled: !confirmation_email_valid,
-            data: { email_validation_target: "submit" } %>
+            data: { form__email_validation_target: "submit" } %>
     </div>
   <% end %>
 
