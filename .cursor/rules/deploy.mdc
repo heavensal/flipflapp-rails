@@ -1,18 +1,13 @@
 ---
-description: Kamal deploy and GitHub Actions CI/CD
-globs: "{config/deploy.yml,.github/workflows/**,.kamal/**,Dockerfile}"
+description: Kamal and deploy config
+globs: config/deploy.yml,.kamal/**/*
 alwaysApply: false
 ---
 
 # Deploy
 
-Read [AGENTS.md](../../AGENTS.md) and [docs/DEPLOYMENT.md](../../docs/DEPLOYMENT.md).
+Read [docs/DEPLOYMENT.md](../../docs/DEPLOYMENT.md), [AGENTS.md](../../AGENTS.md).
 
 - Production branch: `master`.
-- User manages branches, pushes, and PRs manually.
-- Push to `master` runs CI (Brakeman, RuboCop, model RSpec) then Kamal deploy when green.
-- Secrets: GitHub environment `production`; local `.kamal/secrets` (gitignored).
-- Do not edit deploy config or run Kamal/CI commands unless explicitly requested.
-- Never commit `.env`, `config/master.key`, `.kamal/secrets`, or credentials.
-
-PR reviews: [.cursor/BUGBOT.md](../BUGBOT.md) (deploy section).
+- Do not edit deploy config or run Kamal unless explicitly requested.
+- Never commit `.kamal/secrets`, `.env`, or `config/master.key`.

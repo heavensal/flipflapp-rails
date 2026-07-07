@@ -1,41 +1,44 @@
 # FlipFlapp Rails — GitHub Copilot
 
-Read [AGENTS.md](../AGENTS.md) first. Same rules apply to Copilot, Cursor Agent, and Codex.
+Read [AGENTS.md](../AGENTS.md) first. Same docs and workflow as Cursor Agent and Codex.
 
-## Core rules
+## Workflow
 
-- Technical text, comments, commits, and branch names in **English**.
-- Strict TDD: model specs in `spec/models/` for business behavior.
-- No migrations unless explicitly requested.
-- Rails-native ERB and Tailwind CSS 4; Hotwire/Stimulus only when needed.
-- **Do NOT create Stimulus controllers without explicit user permission.** Ask first.
-- Stimulus folder structure: `app/javascript/controllers/<feature>/<specificity>_controller.js`.
-- No commit, push, branches, or PRs unless explicitly requested.
+1. [docs/PROJECT.md](../docs/PROJECT.md) — scope
+2. [docs/DOMAIN.md](../docs/DOMAIN.md) — business rules
+3. [docs/TESTING.md](../docs/TESTING.md) — clarify → migrations (if approved) → specs → code
+4. [docs/RAILS_STYLEGUIDE.md](../docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, &lt;150 lines
+5. [docs/FRONTEND.md](../docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
 
-## Reference docs
+## Hard limits
+
+- TDD: `spec/models/` for behavior changes
+- No migrations, commands, commit, or push unless explicitly requested
+- No service objects unless explicitly requested
+- **Ask before creating a new Stimulus controller**
+- Stimulus: `app/javascript/controllers/<feature>/` — register in `index.js`
+
+## Docs
 
 | Topic | File |
 |-------|------|
-| Agent guide | [AGENTS.md](../AGENTS.md) |
-| Architecture | [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) |
-| Testing | [docs/TESTING.md](../docs/TESTING.md) |
+| Agent hub | [AGENTS.md](../AGENTS.md) |
+| Domain | [docs/DOMAIN.md](../docs/DOMAIN.md) |
+| TDD | [docs/TESTING.md](../docs/TESTING.md) |
+| Style | [docs/RAILS_STYLEGUIDE.md](../docs/RAILS_STYLEGUIDE.md) |
+| Commands | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) |
+| MVC | [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md) |
 | I18n | [docs/I18N.md](../docs/I18N.md) |
 | Frontend | [docs/FRONTEND.md](../docs/FRONTEND.md) |
-| Development | [docs/DEVELOPMENT.md](../docs/DEVELOPMENT.md) |
-| Codex playbook | [docs/CODEX_PLAYBOOK.md](../docs/CODEX_PLAYBOOK.md) |
-| Deployment | [docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) |
 
 ## Layer context
 
-- Models: [app/models/AGENTS.md](../app/models/AGENTS.md)
-- Views: [app/views/AGENTS.md](../app/views/AGENTS.md)
-- JavaScript: [app/javascript/AGENTS.md](../app/javascript/AGENTS.md)
-- Specs: [spec/AGENTS.md](../spec/AGENTS.md)
+- [app/models/AGENTS.md](../app/models/AGENTS.md)
+- [app/controllers/AGENTS.md](../app/controllers/AGENTS.md)
+- [app/views/AGENTS.md](../app/views/AGENTS.md)
+- [app/javascript/AGENTS.md](../app/javascript/AGENTS.md)
+- [spec/AGENTS.md](../spec/AGENTS.md)
 
-## Pull requests
+## PR reviews
 
-Human and Bugbot reviews follow [.cursor/BUGBOT.md](../.cursor/BUGBOT.md). Model changes require `spec/models/` updates. Do not add request/view specs by default.
-
-## I18n
-
-Create new translation files as `config/locales/<locale>/<feature>.yml`, for example `config/locales/fr/user.yml`. Do not create new `feature.fr.yml` or `feature.en.yml` files.
+[.cursor/BUGBOT.md](../.cursor/BUGBOT.md) — model changes require `spec/models/` updates.

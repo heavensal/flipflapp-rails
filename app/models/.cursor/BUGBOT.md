@@ -1,6 +1,8 @@
 # Bugbot — model layer
 
-Also read: [app/models/AGENTS.md](../AGENTS.md), [docs/TESTING.md](../../../docs/TESTING.md), [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md).
+Also read: [docs/DOMAIN.md](../../../docs/DOMAIN.md), [docs/TESTING.md](../../../docs/TESTING.md), [app/models/AGENTS.md](../AGENTS.md).
+
+Fix policy: [.cursor/BUGBOT.md](../../../.cursor/BUGBOT.md) — missing model spec = trivial if rule is clear; domain ambiguity = ❌ + options.
 
 ## Blocking checks
 

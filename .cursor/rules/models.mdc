@@ -1,17 +1,15 @@
 ---
-description: Active Record models — domain rules and TDD
+description: Active Record models
 globs: app/models/**/*
 alwaysApply: false
 ---
 
 # Models
 
-Read [app/models/AGENTS.md](../../app/models/AGENTS.md), [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md), and [docs/TESTING.md](../../docs/TESTING.md).
+Read [docs/DOMAIN.md](../../docs/DOMAIN.md), [docs/TESTING.md](../../docs/TESTING.md), [docs/RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md).
 
-- Strict TDD: update `spec/models/` before or with behavior changes.
-- Validations, callbacks, and notification side effects stay in models.
-- No service objects unless explicitly requested.
-- No migrations unless explicitly requested.
+- Domain behavior stays in models; match existing patterns in the same model.
+- TDD: `spec/models/` before behavior changes.
+- Files under 150 lines; split if larger.
+- No service objects or migrations unless explicitly requested.
 - Do not run commands unless explicitly requested.
-
-PR reviews: [.cursor/BUGBOT.md](../BUGBOT.md) and [app/models/.cursor/BUGBOT.md](../../app/models/.cursor/BUGBOT.md).

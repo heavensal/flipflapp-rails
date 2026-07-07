@@ -1,51 +1,53 @@
 # FlipFlapp Architecture
 
-FlipFlapp is a Rails 8 application for organizing sports games with friends.
+How the Rails app is organized. Business rules: [DOMAIN.md](DOMAIN.md). How to build features: [TESTING.md](TESTING.md).
 
-## Product Domain
+## Stack
 
-The core domain includes:
+Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwire/Stimulus · RSpec · Kamal → `flipflapp.fr`
 
-- users and authentication
-- events or games
-- teams
-- participants
-- friendships
-- notifications
-- user profile data
+## Delivery phases
 
-When implementing a feature, identify which domain rule is changing before editing code. If the rule is not explicit, ask for examples and edge cases first.
+1. **Web UI** — primary surface to implement and verify MVP behavior
+2. **JSON API** — same domain rules, after web flows are reliable (separate iOS/Android repos)
 
-## Architecture Principles
+## MVC layers
 
-- Rails MVC is the default architecture.
-- Models own domain behavior, validations, callbacks, and data side effects.
-- Controllers coordinate requests with strong parameters and explicit authorization.
-- Views render Rails-native ERB and Tailwind CSS.
-- Hotwire and Stimulus are optional enhancement tools, not the default starting point.
-- Avoid introducing service objects, form objects, presenters, decorators, or other layers unless explicitly requested.
+| Layer | Path | Responsibility |
+|-------|------|----------------|
+| Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects |
+| Controllers | `app/controllers/` | Auth, strong params, HTTP — thin; call model domain methods |
+| Views | `app/views/` | ERB + Tailwind; components under `<feature>/components/` |
+| JavaScript | `app/javascript/` | Stimulus when needed; ask before new controllers |
+| Specs | `spec/models/` | Behavior tests (strict TDD) |
 
-## Domain Questions To Ask
+## MVP models
 
-Use these questions before implementing ambiguous features:
+`User` · `Event` · `EventTeam` · `EventParticipant` · `Friendship` · `Notification`
 
-- Who is allowed to perform the action?
-- Which records should be created, updated, or destroyed?
-- Which validations must prevent invalid state?
-- Should the behavior trigger notifications?
-- Should friendships affect visibility or permissions?
-- What happens when an event is full, cancelled, deleted, or edited?
-- What happens when a user is unconfirmed, removed, or no longer friends with another user?
-- Does the feature require a database change, or can it use the existing schema?
+Details: [DOMAIN.md](DOMAIN.md). Schema: `db/schema.rb`.
 
-## Sensitive Areas
+## HTTP surface
 
-Treat these areas carefully and use tests to lock behavior:
+`config/routes.rb` — RESTful resources, Devise, nested `Events::InvitationsController`, notifications.
 
-- Devise authentication and confirmation
-- friendship rules
-- event participation rules
-- team composition rules
-- notification creation and cleanup
-- file uploads and Cloudinary integration
-- production deployment configuration
+## Principles
+
+- Rails MVC; boring code; match existing files in the same layer
+- No service objects unless explicitly requested
+- Files under 150 lines ([RAILS_STYLEGUIDE.md](RAILS_STYLEGUIDE.md))
+- RuboCop Rails Omakase
+
+## Sensitive areas
+
+Devise · `Friendship` / `Event` visibility · participations · `Notification` · CarrierWave/Cloudinary · admin `role` · deploy config
+
+Lock behavior with model specs before changing logic.
+
+## Read next
+
+| Need | Doc |
+|------|-----|
+| Rules | [DOMAIN.md](DOMAIN.md) |
+| Style | [RAILS_STYLEGUIDE.md](RAILS_STYLEGUIDE.md) |
+| Commands | [DEVELOPMENT.md](DEVELOPMENT.md) |

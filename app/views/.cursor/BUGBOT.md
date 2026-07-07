@@ -1,6 +1,8 @@
 # Bugbot — views
 
-Also read: [app/views/AGENTS.md](../AGENTS.md), [docs/FRONTEND.md](../../../docs/FRONTEND.md).
+Also read: [docs/FRONTEND.md](../../../docs/FRONTEND.md), [app/views/AGENTS.md](../AGENTS.md).
+
+Fix policy: [.cursor/BUGBOT.md](../../../.cursor/BUGBOT.md) — trivial snippet only; component extraction debates → ❌ + options.
 
 ## Review focus
 

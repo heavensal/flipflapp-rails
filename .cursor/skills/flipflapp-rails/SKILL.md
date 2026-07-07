@@ -1,48 +1,41 @@
 ---
 name: flipflapp-rails
 description: >-
-  FlipFlapp Rails: strict model TDD, Rails-native frontend, Kamal deploy.
-  Use for models, controllers, views, Stimulus, specs, CI, or agent docs.
+  FlipFlapp feature workflow: DOMAIN → TESTING → RAILS_STYLEGUIDE.
+  Use for models, controllers, views, specs, or migrations.
 ---
 
 # FlipFlapp Rails skill
 
-## Source of truth
+## Before a feature
 
-1. [AGENTS.md](../../AGENTS.md) — shared with Codex and Copilot
-2. [docs/](../../docs/) — architecture, testing, frontend, development, deploy
-3. Layer [AGENTS.md](../../app/models/AGENTS.md) files under `app/models/`, `app/views/`, `app/javascript/`, `spec/`
-4. Cursor rules: [.cursor/rules/](../rules/)
-5. PR reviews (Bugbot): [.cursor/BUGBOT.md](../BUGBOT.md) — **not** `.cursor/rules/`
+1. [docs/PROJECT.md](../../docs/PROJECT.md) — in scope?
+2. [docs/DOMAIN.md](../../docs/DOMAIN.md) — business rules
+3. [config/routes.rb](../../config/routes.rb) — HTTP surface
+4. Nearby code in the same layer — copy conventions
 
-## Before coding
+## Feature workflow
 
-- Read the layer `AGENTS.md` for touched directories.
-- Check [config/routes.rb](../../config/routes.rb) for HTTP surface.
-- Behavior change → failing **model** spec first in `spec/models/`.
+Follow [docs/TESTING.md](../../docs/TESTING.md):
 
-## TDD (CI gate)
+1. User describes behavior
+2. Agent flags ambiguities — user answers
+3. Update DOMAIN if needed
+4. Propose migrations — user validates before any `db/migrate/` file
+5. Failing `spec/models/` specs
+6. Implement (model first, then controllers / views)
 
-```bash
-bundle exec rspec spec/models/
-```
+## Style
 
-- Factory Bot: `create(:user)`, `create(:event, user: user)`.
-- No request/view/helper/system specs unless user changes policy.
-- No migrations unless explicitly requested.
+- [docs/RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, &lt;150 lines
+- [docs/FRONTEND.md](../../docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
 
-## Frontend
+## Commands (only when user asks)
 
-- ERB + Tailwind 4; Stimulus only when needed; register in `index.js`.
-- See [docs/FRONTEND.md](../../docs/FRONTEND.md).
-
-## Deploy
-
-- `master` → [.github/workflows/ci.yml](../../.github/workflows/ci.yml) → Kamal
-- [docs/DEPLOYMENT.md](../../docs/DEPLOYMENT.md)
+See [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md): `bin/dev`, `rspec`, `bin/rubocop`.
 
 ## Do not
 
-- Commit secrets; run git push/commit unless asked.
-- Add service objects or pending specs without approval.
-- Duplicate Bugbot rules into `.mdc` files — link to `BUGBOT.md` instead.
+- Migrations, `rspec`, commit, or push unless explicitly requested
+- Service objects unless explicitly requested
+- New Stimulus controller without asking

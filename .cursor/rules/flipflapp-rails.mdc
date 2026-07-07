@@ -1,44 +1,43 @@
 ---
-description: FlipFlapp Rails project context and agent rules
+description: FlipFlapp Rails — project hub
 alwaysApply: true
 ---
 
 # FlipFlapp Rails
 
-Read [AGENTS.md](../../AGENTS.md) first — source of truth shared with Codex and Copilot.
+Football `Event` organizer MVP. Read [docs/PROJECT.md](../../docs/PROJECT.md) for scope.
 
-## Defaults
+## Workflow
 
-- Keep config boring: explicit `ENV["NAME"]` in `database.yml`, no ERB helpers unless asked.
-- Do not abstract a handful of lines; only extract large repeated blocks.
-- Technical documentation and code comments in **English**.
-- Rails MVC, ERB, Rails helpers, Tailwind CSS 4 first.
-- Strict TDD: model specs in `spec/models/` for business behavior.
-- No migrations, generators, commands, commit, or push unless explicitly requested.
+1. [docs/DOMAIN.md](../../docs/DOMAIN.md) — business rules
+2. [docs/TESTING.md](../../docs/TESTING.md) — clarify → migrations (if approved) → specs → code
+3. [docs/RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, file size
+4. [docs/FRONTEND.md](../../docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
+
+## Hard limits
+
+- TDD: `spec/models/` first for behavior changes
+- No migrations, commands, commit, or push unless explicitly requested
+- No service objects unless explicitly requested
+- Technical text in English; UI copy via I18n keys
 
 ## Doc map
 
 | Topic | Doc |
 |-------|-----|
-| Architecture | [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md) |
-| Testing | [docs/TESTING.md](../../docs/TESTING.md) |
-| I18n | [docs/I18N.md](../../docs/I18N.md) |
-| Frontend | [docs/FRONTEND.md](../../docs/FRONTEND.md) |
-| Development | [docs/DEVELOPMENT.md](../../docs/DEVELOPMENT.md) |
-| Codex prompts | [docs/CODEX_PLAYBOOK.md](../../docs/CODEX_PLAYBOOK.md) |
-| Deploy | [docs/DEPLOYMENT.md](../../docs/DEPLOYMENT.md) |
-
-## Layer guides (Codex AGENTS.md)
-
-- Models: [app/models/AGENTS.md](../../app/models/AGENTS.md)
-- Views: [app/views/AGENTS.md](../../app/views/AGENTS.md)
-- JavaScript: [app/javascript/AGENTS.md](../../app/javascript/AGENTS.md)
-- Specs: [spec/AGENTS.md](../../spec/AGENTS.md)
-
-## PR reviews (Bugbot)
-
-Bugbot uses [.cursor/BUGBOT.md](../BUGBOT.md) only — not these `.mdc` rules. Nested: `app/**/.cursor/BUGBOT.md`, `spec/.cursor/BUGBOT.md`.
+| Product | [PROJECT.md](../../docs/PROJECT.md) |
+| Domain | [DOMAIN.md](../../docs/DOMAIN.md) |
+| TDD / features | [TESTING.md](../../docs/TESTING.md) |
+| Style | [RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md) |
+| Commands | [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) |
+| MVC | [ARCHITECTURE.md](../../docs/ARCHITECTURE.md) |
+| Agent hub | [AGENTS.md](../../AGENTS.md) |
+| I18n | [I18N.md](../../docs/I18N.md) |
+| Frontend | [FRONTEND.md](../../docs/FRONTEND.md) |
+| Deploy | [DEPLOYMENT.md](../../docs/DEPLOYMENT.md) |
 
 ## Skill
 
-Project skill: [.cursor/skills/flipflapp-rails/SKILL.md](../skills/flipflapp-rails/SKILL.md)
+Feature workflow: [.cursor/skills/flipflapp-rails/SKILL.md](../skills/flipflapp-rails/SKILL.md)
+
+PR reviews only: [.cursor/BUGBOT.md](../BUGBOT.md) — not these rules.

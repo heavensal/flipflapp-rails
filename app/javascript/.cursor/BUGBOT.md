@@ -1,6 +1,8 @@
 # Bugbot — JavaScript / Stimulus
 
-Also read: [app/javascript/AGENTS.md](../AGENTS.md), [docs/FRONTEND.md](../../../docs/FRONTEND.md).
+Also read: [docs/FRONTEND.md](../../../docs/FRONTEND.md), [app/javascript/AGENTS.md](../AGENTS.md).
+
+Fix policy: [.cursor/BUGBOT.md](../../../.cursor/BUGBOT.md) — e.g. missing `index.js` registration = trivial; new controller without approval = ❌ + options.
 
 ## Review focus
 

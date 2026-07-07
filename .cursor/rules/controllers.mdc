@@ -1,16 +1,14 @@
 ---
-description: Rails controllers — params and authorization
+description: Controllers
 globs: app/controllers/**/*
 alwaysApply: false
 ---
 
 # Controllers
 
-Read [AGENTS.md](../../AGENTS.md) and [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+Read [docs/RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md), [docs/DOMAIN.md](../../docs/DOMAIN.md).
 
-- Thin controllers: coordinate request/response; domain logic in models.
-- Strong parameters on all writes.
-- Explicit auth for events, friendships, participants, profile data.
+- Thin controllers: `authenticate_user!`, strong params, call model domain methods for rules.
+- Match `EventsController`, `FriendshipsController` patterns.
+- Files under 150 lines.
 - Do not run commands unless explicitly requested.
-
-PR reviews: [app/controllers/.cursor/BUGBOT.md](../../app/controllers/.cursor/BUGBOT.md).
