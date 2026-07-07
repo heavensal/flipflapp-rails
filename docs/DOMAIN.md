@@ -137,7 +137,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 
 ### Official headcount (`Event#participants_count`)
 
-- Counts `EventParticipant` records on `EventTeam` where `slot` is `team_one` or `team_two`.
+- Counts `EventParticipant` records on **countable** `EventTeam` records (`slot` `team_one` or `team_two`).
 - Does **not** count `EventParticipant` records on `slot: bench`.
 - Compared to `number_of_participants` in the UI (`participants_count / number_of_participants`).
 - Bench `User` records follow `Event` updates via `Notification` but are not official players until they move to `team_one` or `team_two`.
@@ -149,7 +149,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 
 ### `after_create`
 
-1. Create exactly three `EventTeam` records (see EventTeam): `slot` `team_one`, `team_two`, `bench` with default labels `Equipe 1`, `Equipe 2`, `Sur le Banc`.
+1. Create exactly three `EventTeam` records: `slot` `team_one`, `team_two`, `bench` with `label` from `I18n.t("event_team.slots.<slot>.default_label")` (see `config/locales/<locale>/event_team.yml`).
 2. Create an `EventParticipant` for `event.user` on the `team_one` `EventTeam`.
 3. Do **not** emit a `joined` `Notification` for `event.user`'s auto-registration.
 
@@ -184,17 +184,27 @@ Every `Event` has **exactly three** `EventTeam` records at creation. Identity is
 | Column | Purpose |
 |--------|---------|
 | `slot` | **Immutable** squad identity: `team_one`, `team_two`, or `bench` |
-| `label` | **Display name** shown in the UI (renameable for official squads) |
+| `label` | **Display name** shown in the UI (renameable on countable teams). Max **24** characters; letters, digits, and spaces only. |
 
 One row per `slot` per `Event` (unique `event_id` + `slot`). `label` must be unique within the `Event`.
 
 ### Default labels at `Event` creation
 
-| `slot` | Default `label` | Official headcount |
-|--------|-----------------|-------------------|
+Default `label` strings are set from **I18n** when the `Event` is created — not hardcoded in the model:
+
+```text
+config/locales/<locale>/event_team.yml  →  event_team.slots.<slot>.default_label
+```
+
+French ships first (`fr`); adding English is a new locale file with the same keys. **`slot` is locale-independent**; only `label` varies by locale or custom rename.
+
+| `slot` | FR default `label` (example) | Countable toward `participants_count` |
+|--------|-------------------------------|--------------------------------------|
 | `team_one` | `Equipe 1` | Yes |
 | `team_two` | `Equipe 2` | Yes |
 | `bench` | `Sur le Banc` | No |
+
+**Countable teams** — `EventTeam` records with `slot` `team_one` or `team_two`. Players on these teams count toward `Event#participants_count` and `number_of_participants`. The **bench** team is not countable.
 
 Example: `slot: team_one`, `label: Real Madrid` — still **team one** for headcount, `Notification` rules, and domain logic.
 
@@ -204,7 +214,8 @@ Example: `slot: team_one`, `label: Real Madrid` — still **team one** for headc
 - Each `EventParticipant` belongs to one `EventTeam`.
 - A `User` on `slot: bench` is an `EventParticipant` but **not** an official player: availability is uncertain; they follow `Event` activity (`Notification.updated`, etc.) to decide whether to commit to playing.
 - Moving between `EventTeam` records is an update to `EventParticipant` (not a separate domain object).
-- Domain logic (`participants_count`, `joined` / `left` `Notification`, capacity) keys off **`slot`**, never off `label`.
+- Domain logic (`participants_count`, `joined` / `left` `Notification`, capacity) keys off **`slot`** (countable teams = `team_one` and `team_two`), never off `label`.
+- `EventTeam.countable_teams` scope / `#countable?` — `team_one` and `team_two` only; bench is excluded.
 
 ### Rename (`EventTeamsController#edit` / `#update`)
 
@@ -407,7 +418,7 @@ Normal `User` (`role: player`) rules:
 | View `Event` | Per visibility rules above |
 | Create `Notification` (invite) | Any `User` with `EventParticipant` on the `Event` |
 | Create / destroy `EventParticipant` | Per join rules above |
-| Update `EventTeam` `label` (official squads) | Any `User` with `EventParticipant` on the `Event` |
+| Update `EventTeam` `label` (countable teams) | Any `User` with `EventParticipant` on the `Event` |
 
 **Admin override:** a `User` with `role: admin` may CRUD any MVP record via admin tools, regardless of the rules above. See Admin.
 
@@ -445,9 +456,9 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
 | Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
 | `number_of_participants` enforced on join (`team_one` + `team_two`) | **Not implemented** — display only |
-| `EventTeamsController#edit` / `#update` (rename official `EventTeam`) | **Not implemented** — routes exist |
-| `EventTeam` `slot` + `label` columns | **Not implemented** — only `name` today; migrate so logic uses `slot` |
-| `EventParticipant` `joined` / `left` keyed on team `name` strings | **Breaks after rename** — switch to `EventTeam#slot` |
+| `EventTeamsController#edit` / `#update` (rename countable `EventTeam` `label`) | **Implemented** — participants only; bench blocked |
+| `EventTeam` `slot` + `label` columns | **Implemented** |
+| `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |
 | `Event` validation messages | Hardcoded French in model — not I18n |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Not implemented** — `kind` not in enum yet |
 | Push delivery (APNs / FCM) | **Not implemented** — web inbox + JSON API first |

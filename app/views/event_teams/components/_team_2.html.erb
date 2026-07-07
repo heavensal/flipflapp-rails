@@ -1,8 +1,6 @@
   <!-- Team B -->
   <div class="rounded-2xl bg-team-b/90 backdrop-blur-md shadow-md p-3 flex flex-col gap-2">
-    <h2 class="text-center font-bold text-white">
-      <%= team_2.name %>
-    </h2>
+    <%= render "event_teams/components/countable_team_heading", event: event, team: team_2 %>
 
     <div class="flex flex-col gap-1">
       <% if team_2.event_participants.empty? %>
@@ -19,5 +17,3 @@
       </div>
     <% end %>
   </div>
-
-<%# render 'event_teams/components/team_2', event: @event, team_2: @team_2 %>

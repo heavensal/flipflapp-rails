@@ -16,9 +16,9 @@ class EventsController < ApplicationController
 
   # GET /events/:id
   def show
-    @team_1 = @event.event_teams.first
-    @team_2 = @event.event_teams.second
-    @bench = @event.event_teams.third
+    @team_1 = @event.event_teams.find_by!(slot: :team_one)
+    @team_2 = @event.event_teams.find_by!(slot: :team_two)
+    @bench = @event.event_teams.find_by!(slot: :bench)
     @event_participant = @event.event_participants.find_by(user: current_user)
   end
 

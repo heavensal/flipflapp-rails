@@ -22,5 +22,8 @@ application.register("form--registration", FormRegistrationController)
 import FormEmailValidationController from "./form/email_validation_controller"
 application.register("form--email-validation", FormEmailValidationController)
 
+import EventTeamNameController from "./event_team/name_controller"
+application.register("event-team--name", EventTeamNameController)
+
 import Dialog from '@stimulus-components/dialog'
 application.register('dialog', Dialog)

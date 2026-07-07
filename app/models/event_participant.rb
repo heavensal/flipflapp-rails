@@ -1,6 +1,4 @@
 class EventParticipant < ApplicationRecord
-  TEAM_NOTIFICATION_NAMES = [ "Equipe 1", "Equipe 2" ].freeze
-
   belongs_to :user
   belongs_to :event
   belongs_to :event_team
@@ -46,14 +44,14 @@ class EventParticipant < ApplicationRecord
   end
 
   def team_notification_event?
-    TEAM_NOTIFICATION_NAMES.include?(event_team.name)
+    event_team.countable?
   end
 
   def team_notification_recipients
     User.where(
       id: event.event_participants
         .joins(:event_team)
-        .where(event_teams: { name: TEAM_NOTIFICATION_NAMES })
+        .merge(EventTeam.countable_teams)
         .where.not(user_id: user_id)
         .select(:user_id)
     )

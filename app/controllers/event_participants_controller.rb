@@ -15,7 +15,7 @@ class EventParticipantsController < ApplicationController
 
     event_participant.assign_attributes(event_team: event_team)
     if event_participant.save
-      redirect_to @event, notice: "Vous avez rejoint l'équipe \"#{event_participant.event_team.name}\"."
+      redirect_to @event, notice: t("event_participants.create.success", label: event_participant.event_team.label)
     else
       flash.now[:alert] = "Une erreur est survenue lors de votre inscription."
       render @event, status: :unprocessable_entity

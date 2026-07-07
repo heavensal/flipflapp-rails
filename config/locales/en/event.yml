@@ -6,3 +6,6 @@ en:
       invitation_required: "You are not authorized to invite people to this event."
     teams:
       not_found: "Team not found."
+  event_participants:
+    create:
+      success: "You joined \"%{label}\"."

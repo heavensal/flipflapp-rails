@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Event, type: :model do
+  def team_slot(event, slot)
+    event.event_teams.find_by!(slot: slot)
+  end
+
   describe "validations" do
     it "requires title, location, and start_time" do
       event = build(:event, title: nil, location: nil, start_time: nil)
@@ -24,11 +28,53 @@ RSpec.describe Event, type: :model do
   end
 
   describe "after_create" do
-    it "creates default teams and registers the author as a participant" do
+    it "creates three teams with fixed slots and localized default labels" do
       event = create(:event)
 
-      expect(event.event_teams.pluck(:name)).to contain_exactly("Equipe 1", "Equipe 2", "Sur le Banc")
-      expect(event.event_participants.map(&:user_id)).to include(event.user_id)
+      expect(event.event_teams.pluck(:slot)).to contain_exactly("team_one", "team_two", "bench")
+      expect(team_slot(event, "team_one").label).to eq(I18n.t("event_team.slots.team_one.default_label"))
+      expect(team_slot(event, "team_two").label).to eq(I18n.t("event_team.slots.team_two.default_label"))
+      expect(team_slot(event, "bench").label).to eq(I18n.t("event_team.slots.bench.default_label"))
+    end
+
+    it "uses the active locale for default labels" do
+      I18n.with_locale(:en) do
+        event = create(:event)
+
+        expect(team_slot(event, "team_one").label).to eq("Team 1")
+        expect(team_slot(event, "team_two").label).to eq("Team 2")
+        expect(team_slot(event, "bench").label).to eq("On the bench")
+      end
+    end
+
+    it "registers the author on team_one" do
+      event = create(:event)
+      author_participant = event.event_participants.find_by!(user: event.user)
+
+      expect(author_participant.event_team).to eq(team_slot(event, "team_one"))
+    end
+  end
+
+  describe "#participants_count" do
+    it "counts players on countable teams (team_one and team_two) only" do
+      event = create(:event)
+      player = create(:user)
+      bench_player = create(:user)
+
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
+
+      expect(event.participants_count).to eq(2)
+    end
+
+    it "still excludes bench when the bench label looks like a countable team" do
+      event = create(:event)
+      bench_player = create(:user)
+      team_slot(event, "bench").update_column(:label, "Equipe 1 bis")
+
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
+
+      expect(event.participants_count).to eq(1)
     end
   end
 

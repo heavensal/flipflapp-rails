@@ -1,0 +1,32 @@
+en:
+  event_team:
+    slots:
+      team_one:
+        default_label: "Team 1"
+      team_two:
+        default_label: "Team 2"
+      bench:
+        default_label: "On the bench"
+    edit_label:
+      open: "Rename team"
+      title: "Team name"
+      field: "Team name"
+      save: "Save"
+      cancel: "Cancel"
+      counter_suffix: "characters remaining"
+      empty: "The name cannot be empty."
+      invalid_characters: "Only letters, digits, and spaces are allowed."
+    update:
+      success: "Team name updated."
+    authorization:
+      participant_required: "Only participants can rename a team."
+      bench_not_renamable: "The bench cannot be renamed."
+  activerecord:
+    errors:
+      models:
+        event_team:
+          attributes:
+            slot:
+              immutable: "cannot be changed"
+            label:
+              immutable: "cannot be changed on the bench"
