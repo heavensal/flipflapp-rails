@@ -1,80 +1,52 @@
 # Codex Playbook
 
-Use this file for high-signal prompts and workflows. It is intentionally not loaded automatically by Codex; reference it when needed.
+Copy-paste prompts for Codex CLI / Cloud. **Policies and workflow:** [AGENTS.md](../AGENTS.md) and [TESTING.md](TESTING.md).
 
-## Best Prompt Pattern
-
-Ask for the outcome, the allowed scope, and the validation method.
-
-Example:
+## Feature (default)
 
 ```text
-Implement the event cancellation rule with strict TDD.
-Only edit models and model specs.
-Do not create migrations.
-Ask me for missing business rules before coding.
-Do not run commands unless I ask.
+Build [feature] using the workflow in docs/TESTING.md.
+Read docs/DOMAIN.md first. Flag ambiguities before coding.
+Propose migrations for my approval before creating db/migrate/ files.
+Write failing spec/models/ specs, then implement.
+Match docs/RAILS_STYLEGUIDE.md. Do not run commands unless I ask.
 ```
 
-## Feature Prompt
+## Model-only change
 
 ```text
-Build [feature] using strict TDD.
-Start by proposing the model specs that should define the behavior.
-Do not create migrations unless I explicitly approve them.
-Prefer Rails-native ERB and Tailwind if views are needed.
+Implement [rule] with strict TDD.
+Only edit app/models/ and spec/models/.
+Do not create migrations unless I approve.
 Do not run commands.
 ```
 
-## Review Prompt
+## View change
 
 ```text
-Review this change as a Rails code reviewer.
-Focus on bugs, broken business rules, missing model specs, unsafe migrations, security issues, and deploy risk.
-List findings first with file and line references.
-Do not rewrite code unless I ask.
+Update the view using docs/FRONTEND.md (ERB, Tailwind, components).
+Copy an existing component in app/views/<feature>/components/.
+I18n keys for user-facing copy. Ask before new Stimulus controller.
 ```
 
-## Frontend Prompt
+## Migration (after approval)
 
 ```text
-Update this view using Rails-native ERB and Tailwind CSS 4.
-Avoid Stimulus and Hotwire unless the interaction requires them.
-Keep copy translation-ready.
-Do not add display tests.
+Create the migration for [change].
+Include model validations, indexes, and spec/models/ coverage.
+Do not run db:migrate unless I ask.
 ```
 
-## I18n Prompt
+## Review
 
 ```text
-Add or update translations for [feature].
-Use docs/I18N.md.
-Create files as config/locales/<locale>/<feature>.yml.
-Do not create feature.fr.yml or feature.en.yml files.
-Keep technical documentation in English.
+Review as a Rails reviewer. Check DOMAIN.md and spec/models/ coverage.
+List findings with file references. Do not rewrite unless I ask.
 ```
 
-## Migration Prompt
+## CI fix
 
 ```text
-Create the migration/model for [domain concept].
-Use strict TDD with model specs.
-Include model validations and database indexes where appropriate.
-Do not run the migration unless I ask.
-```
-
-## CI Prompt
-
-```text
-Inspect the failing CI context and propose the smallest fix.
-Do not push or modify deployment configuration unless the failure requires it.
-Ask before running any command locally.
-```
-
-## Documentation Prompt
-
-```text
-Update the project documentation in English.
-Keep AGENTS.md short and move detailed guidance into docs files.
-Optimize for fewer tokens loaded by default.
+Propose the smallest fix for the failing CI check.
+Do not push or change deploy config unless required. Ask before running commands.
 ```

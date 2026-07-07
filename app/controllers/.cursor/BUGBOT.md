@@ -1,6 +1,8 @@
 # Bugbot — controllers
 
-Also read: [AGENTS.md](../../../AGENTS.md), [docs/ARCHITECTURE.md](../../../docs/ARCHITECTURE.md).
+Also read: [AGENTS.md](../../../AGENTS.md), [docs/DOMAIN.md](../../../docs/DOMAIN.md).
+
+Fix policy: [.cursor/BUGBOT.md](../../../.cursor/BUGBOT.md) — missing strong params = trivial; auth design = ❌ + options.
 
 ## Blocking checks
 

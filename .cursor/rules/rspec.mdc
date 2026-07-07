@@ -1,17 +1,14 @@
 ---
-description: RSpec TDD — model and data integrity only
+description: Model specs and TDD
 globs: spec/**/*
 alwaysApply: false
 ---
 
-# RSpec / TDD
+# Specs
 
-Read [spec/AGENTS.md](../../spec/AGENTS.md) and [docs/TESTING.md](../../docs/TESTING.md).
+Read [docs/TESTING.md](../../docs/TESTING.md), [docs/DOMAIN.md](../../docs/DOMAIN.md).
 
-- Strict TDD for business behavior; specs in `spec/models/` only unless policy changes.
-- Factory Bot only; no YAML fixtures; no `pending` examples.
-- Cover validations, uniqueness, callbacks, and data side effects (notifications, etc.).
-- No request, view, helper, or system specs.
-- Do not run test commands unless explicitly requested.
-
-PR reviews: [spec/.cursor/BUGBOT.md](../../spec/.cursor/BUGBOT.md).
+- Model specs only in `spec/models/` unless policy changes.
+- Factory Bot; no fixtures; no `pending` examples.
+- Files under 150 lines.
+- Do not run `rspec` unless explicitly requested.

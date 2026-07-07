@@ -1,100 +1,67 @@
 # FlipFlapp Rails Agent Guide
 
-FlipFlapp is a Rails app for organizing sports games with friends: events, teams, participants, friendships, notifications, and user profiles.
+FlipFlapp: football `Event` organizer MVP. Shared by **Cursor**, **Codex**, and **GitHub Copilot**.
 
-All new project documentation, code comments, branch names, commit messages, and technical text must be written in English. User-facing app content will be translated later through locale files.
+Technical text in **English**. User-facing copy via I18n keys (`docs/I18N.md`).
 
-## Core Rules
+## Workflow
 
-- Optimize for precise, small changes that match the existing Rails codebase.
-- Prefer obvious, boring code over clever abstractions. Do not refactor config files (e.g. `config/database.yml`) with ERB helpers, shared methods, or `abort` blocks unless the user asks — use plain Rails YAML and explicit `ENV["VARIABLE_NAME"]` keys that match `.env.example`.
-- Extract duplication only when it removes a **large** repeated block; a few similar lines are fine to leave explicit.
-- Use Rails-native MVC, RESTful controllers, strong parameters, ERB, and Tailwind CSS 4 first.
-- Keep business logic in models unless the existing code clearly uses another pattern.
-- Do not introduce service objects, interactors, presenters, decorators, or new architectural layers unless explicitly requested.
-- Do not run shell commands, tests, servers, generators, migrations, formatters, linters, or security scanners unless the user explicitly asks.
-- Do not commit, push, create branches, open pull requests, or inspect remote pull requests unless the user explicitly asks.
+1. [docs/PROJECT.md](docs/PROJECT.md) — scope
+2. [docs/DOMAIN.md](docs/DOMAIN.md) — business rules
+3. [docs/TESTING.md](docs/TESTING.md) — feature workflow (clarify → migrations if approved → specs → code)
+4. [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, &lt;150 lines
+5. [docs/FRONTEND.md](docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
 
-## Stack
+## Hard limits
 
-- Rails 8, PostgreSQL, Devise with confirmable
-- Hotwire, Turbo, Stimulus, Tailwind CSS 4, esbuild, Propshaft
-- CarrierWave, Cloudinary, Ransack
-- RSpec, Factory Bot, RuboCop Rails Omakase, Brakeman
-- Docker and Kamal deployment to `flipflapp.fr`
+- TDD: `spec/models/` for behavior changes
+- No migrations, generators, commands, commit, or push unless explicitly requested
+- No service objects unless explicitly requested
+- Schema: `db/schema.rb` — migration policy below
+- Config: plain `ENV["NAME"]` in `database.yml`; no ERB helpers unless asked
 
-## TDD Policy
+## Database and migrations
 
-This app is strict TDD.
+- Do not create migrations unless the user explicitly asks for a schema change.
+- Propose migrations first; user validates before any `db/migrate/` file.
+- When approved: migration + model validations + indexes + model specs.
+- Do not run `db:migrate`, `db:prepare`, or generators unless explicitly asked.
 
-- Start behavior changes by defining or updating model specs in `spec/models/`.
-- Specs must describe the business rule, validation, database effect, callback, or data side effect being changed.
-- Do not add request specs, view specs, helper specs, system specs, or display-only tests unless the user explicitly changes this policy.
-- Use Factory Bot only. Do not add YAML fixtures.
-- Do not leave pending examples without a linked issue or explicit user approval.
-- If the expected behavior is ambiguous, ask for the test cases before implementing.
+## Security
 
-## Database And Migrations
+- Never commit `.env`, `config/master.key`, `.kamal/secrets`, or credentials.
+- Strong parameters on all controller writes; explicit auth in controllers.
 
-- Do not create migrations unless the user explicitly asks for a migration, model, table, column, index, or schema change.
-- A feature request does not imply permission to generate a model or migration.
-- If a change seems to need a migration but the user did not ask for one, explain the need and ask first.
-- When migrations are explicitly requested, also consider model validations, database indexes, uniqueness constraints, and model specs.
-- Do not run `db:migrate`, `db:prepare`, `db:setup`, or generators unless explicitly asked.
+## Git and deploy
 
-## Frontend Policy
+- Production branch: `master`. User manages branches and PRs.
+- Deploy: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
-- Prefer Rails-native `html.erb` and Rails 8 view helpers/tags.
-- Use Tailwind CSS 4 utilities first.
-- Keep HTML simple and semantic.
-- Use Hotwire, Turbo, or Stimulus only when the user asks for richer frontend behavior or when static ERB cannot reasonably handle the requested interaction.
-- Do not add inline JavaScript to ERB when a Stimulus controller is appropriate.
-- New Stimulus controllers belong in `app/javascript/controllers/` and must be registered in `app/javascript/controllers/index.js`.
+## Reference docs
 
-## I18n Policy
+| Topic | Doc |
+|-------|-----|
+| Product | [docs/PROJECT.md](docs/PROJECT.md) |
+| Domain | [docs/DOMAIN.md](docs/DOMAIN.md) |
+| TDD / features | [docs/TESTING.md](docs/TESTING.md) |
+| Style | [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) |
+| Commands | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
+| MVC layout | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| I18n | [docs/I18N.md](docs/I18N.md) |
+| Frontend | [docs/FRONTEND.md](docs/FRONTEND.md) |
+| Deploy | [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) |
+| Routes | `config/routes.rb` |
+| CI | `.github/workflows/ci.yml` |
 
-- New user-facing app copy should be designed for translation.
-- New translation files must be organized as `config/locales/<locale>/<feature>.yml`, for example `config/locales/fr/user.yml`.
-- Do not create new locale files named `feature.fr.yml` or `feature.en.yml`.
-- Prefer feature-scoped translation files and keys when adding app content.
-- Keep technical docs and developer-facing text in English.
-- If translation scope is unclear, ask before adding broad locale structures.
+## Tool entry points
 
-## Security And Secrets
+| Tool | Config |
+|------|--------|
+| Cursor Agent | `.cursor/rules/flipflapp-rails.mdc` + [skill](.cursor/skills/flipflapp-rails/SKILL.md) |
+| Cursor Bugbot (PR only) | `.cursor/BUGBOT.md` — commands: [docs/BUGBOT.md](docs/BUGBOT.md#commands) |
+| GitHub Copilot | [.github/copilot-instructions.md](.github/copilot-instructions.md) |
+| Codex prompts | [docs/CODEX_PLAYBOOK.md](docs/CODEX_PLAYBOOK.md) |
 
-- Never commit or expose `.env`, `config/master.key`, `.kamal/secrets`, production credentials, API keys, or tokens.
-- Treat Devise, authentication, file uploads, Cloudinary, and user data as sensitive.
-- Keep authorization checks explicit in controllers.
-- Use strong parameters for all controller writes.
+Layer context when editing: `app/models/AGENTS.md`, `app/controllers/AGENTS.md`, `app/views/AGENTS.md`, `app/javascript/AGENTS.md`, `spec/AGENTS.md`.
 
-## Git And Deployment
-
-- The production branch is `master`.
-- The user manages branches, pushes, pull requests, and PR checks manually.
-- Pushes to `master` trigger CI and Kamal deployment when green.
-- Do not suggest that a change is deploy-ready unless the user asked you to run the relevant checks and they passed.
-
-## Reference Docs
-
-- Development setup: `docs/DEVELOPMENT.md`
-- Architecture and domain: `docs/ARCHITECTURE.md`
-- Testing policy: `docs/TESTING.md`
-- I18n policy: `docs/I18N.md`
-- Frontend policy: `docs/FRONTEND.md`
-- Codex workflow prompts: `docs/CODEX_PLAYBOOK.md`
-- Deployment: `docs/DEPLOYMENT.md`
-- Routes: `config/routes.rb`
-- CI/CD: `.github/workflows/ci.yml`
-- Kamal: `config/deploy.yml`
-
-## Tool-specific guides
-
-| Tool | Config | Purpose |
-|------|--------|---------|
-| Cursor Agent | `.cursor/rules/*.mdc` | IDE coding context |
-| Cursor Bugbot | `.cursor/BUGBOT.md` + nested `**/.cursor/BUGBOT.md` | PR review only |
-| GitHub Copilot | `.github/copilot-instructions.md` | Copilot chat/completions |
-| Codex | This file + `docs/CODEX_PLAYBOOK.md` | CLI / Cloud agents |
-| Bugbot (docs index) | `docs/BUGBOT.md` | Human setup guide for PR reviews |
-
-Keep shared policies in `docs/` and `AGENTS.md`. Link from tool configs; do not duplicate long rule blocks.
+Do not duplicate long rule blocks outside `docs/` — link instead.

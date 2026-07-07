@@ -2,6 +2,8 @@
 
 Also read: [spec/AGENTS.md](../AGENTS.md), [docs/TESTING.md](../../docs/TESTING.md).
 
+Fix policy: [.cursor/BUGBOT.md](../../.cursor/BUGBOT.md) — delete stray request spec = trivial; testing policy debate = ❌ + options.
+
 ## Blocking checks
 
 - New `spec/requests/**`, `spec/views/**`, `spec/helpers/**`, `spec/system/**` files.

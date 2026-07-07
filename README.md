@@ -1,39 +1,41 @@
 # FlipFlapp Rails
 
-FlipFlapp is a Rails app for organizing sports games with friends.
+Football `Event` organizer — Rails 8, PostgreSQL (Neon), Kamal → [flipflapp.fr](https://flipflapp.fr).
 
-## Stack
+## Documentation
 
-- Rails 8
-- PostgreSQL
-- Devise with confirmable
-- Hotwire, Turbo, Stimulus
-- Tailwind CSS 4
-- esbuild and Propshaft
-- CarrierWave and Cloudinary
-- RSpec and Factory Bot
-- Docker and Kamal
+| Doc | Purpose |
+|-----|---------|
+| [AGENTS.md](AGENTS.md) | Agent hub (Cursor, Codex, Copilot) |
+| [docs/PROJECT.md](docs/PROJECT.md) | Product scope |
+| [docs/DOMAIN.md](docs/DOMAIN.md) | Business rules |
+| [docs/TESTING.md](docs/TESTING.md) | TDD / feature workflow |
+| [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) | Code style |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Local setup and commands |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Environments, Neon, CI/CD, Kamal |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | MVC layout |
+| [docs/BUGBOT.md](docs/BUGBOT.md) | PR review (Bugbot) — **commands** |
 
-## Agent And Contributor Docs
+## Bugbot (PR review)
 
-- Agent guide: `AGENTS.md`
-- Development: `docs/DEVELOPMENT.md`
-- Architecture: `docs/ARCHITECTURE.md`
-- Testing: `docs/TESTING.md`
-- Frontend: `docs/FRONTEND.md`
-- Codex playbook: `docs/CODEX_PLAYBOOK.md`
-- Deployment: `docs/DEPLOYMENT.md`
+Comment on a PR:
 
-## Local Commands
+```text
+cursor review          # run review
+bugbot run             # same
+cursor review verbose=true   # debug logs
+```
 
-Do not run these commands unless you intend to change or verify the local environment.
+Pre-push in Cursor: `/review-bugbot`. Full list: [docs/BUGBOT.md](docs/BUGBOT.md#commands).
+
+## Quick start
+
+See [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md):
 
 ```bash
 bundle install
 npm install
+cp .env.example .env
 bin/rails db:prepare
 bin/dev
-bundle exec rspec
-bin/rubocop
-bin/brakeman --no-pager
 ```

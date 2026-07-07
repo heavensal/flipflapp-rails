@@ -1,44 +1,50 @@
-# Frontend Policy
+# Frontend
 
-FlipFlapp uses a Rails-first frontend approach.
+Rails-first UI: ERB, Tailwind CSS 4, semantic HTML. Copy: [I18N.md](I18N.md). Cross-layer style: [RAILS_STYLEGUIDE.md](RAILS_STYLEGUIDE.md).
 
-## Default Stack
+## Stack
 
-- ERB templates
-- Rails 8 view helpers and tags
-- Tailwind CSS 4 utilities
-- semantic HTML
+- **ERB** + Rails 8 view helpers — default for all UI
+- **Tailwind CSS 4** — utilities from existing components; no new visual language
+- **Hotwire / Stimulus** — only when static ERB is not enough
+- **npm** only (`package-lock.json`) — see [DEVELOPMENT.md](DEVELOPMENT.md)
 
-Use this default unless the user asks for richer frontend behavior or the existing local pattern already uses Hotwire or Stimulus.
-
-## Tailwind First
-
-- Prefer utility classes over custom CSS.
-- Keep layout simple and responsive.
-- Avoid broad redesigns unless requested.
-- Reuse nearby UI patterns before inventing new ones.
-- Keep forms, buttons, links, and navigation consistent with the existing app.
-
-## Rails-Native Views
-
-- Prefer Rails form helpers and URL helpers.
-- Keep business logic out of views.
-- Use partials when reuse is real, not for every small fragment.
-- Shared components belong under `app/views/**/components/`.
-
-## Hotwire And Stimulus
+## When to use JavaScript
 
 Use Hotwire, Turbo, or Stimulus when:
 
 - the user asks for interaction;
-- the feature needs progressive enhancement;
-- the current page already has the relevant pattern;
-- static ERB would create awkward duplication or poor UX.
+- static ERB would be awkward or duplicated;
+- the page already uses the same pattern nearby.
 
-Do not add JavaScript dependencies unless explicitly requested.
+**Ask before creating a new Stimulus controller.** Folder structure and registration: [app/javascript/AGENTS.md](../app/javascript/AGENTS.md).
 
-## Copy And Translation
+Do not add npm dependencies unless explicitly requested.
 
-- Technical docs are written in English.
-- User-facing app copy should be prepared for model-scoped translations.
-- If translation scope is unclear, ask before adding broad locale files.
+## Views
+
+- No business logic in templates (no authorization decisions, no domain calculations).
+- Rails form helpers and URL helpers.
+- Files under **150 lines** — split partials when growing.
+
+## View components
+
+Path: `app/views/<feature>/components/_<name>.html.erb`
+
+- **Lists** — one partial per item (e.g. `events/components/_one_event_card.html.erb`).
+- **Extract** when the same ~**10 lines** of markup repeat (or will on the next similar screen).
+- **Do not** extract one-off fragments; copy the nearest existing component first.
+
+Examples in the repo:
+
+- `app/views/events/components/_one_event_card.html.erb`
+- `app/views/notifications/components/_one_notification.html.erb`
+- `app/views/events/components/_show_event_info_card.html.erb`
+
+## Corrections log
+
+Add a row when an agent repeats a frontend mistake.
+
+| Date | Don't | Do instead |
+|------|-------|------------|
+| | | |
