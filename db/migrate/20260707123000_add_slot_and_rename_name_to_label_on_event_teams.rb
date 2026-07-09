@@ -3,7 +3,30 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
   # `label` is display text stored in the DB — often the locale default at creation time
   # (see config/locales/<locale>/event_team.yml), but may be a custom rename (e.g. "Real Madrid").
   #
-  # Backfill: preserve historical squad identity from creation order per event.
+  # Backfill: map known default labels from shipped locales, then fall back to creation order
+  # per event. Keep DEFAULT_LABELS_BY_SLOT in sync when adding a locale's default_label strings.
+  DEFAULT_LABELS_BY_SLOT = {
+    "team_one" => [
+      "equipe 1",
+      "équipe 1",
+      "team 1"
+    ],
+    "team_two" => [
+      "equipe 2",
+      "équipe 2",
+      "team 2"
+    ],
+    "bench" => [
+      "sur le banc",
+      "on the bench",
+      "bench"
+    ]
+  }.freeze
+
+  SLOT_BY_LABEL = DEFAULT_LABELS_BY_SLOT.each_with_object({}) do |(slot, labels), map|
+    labels.each { |label| map[label] = slot }
+  end.freeze
+
   ORDERED_SLOTS = %w[team_one team_two bench].freeze
 
   class EventTeam < ApplicationRecord
@@ -31,16 +54,24 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
   private
 
   def backfill_slots
-    say_with_time "Backfilling event_team slots (creation order)" do
+    say_with_time "Backfilling event_team slots (locale defaults + creation order)" do
       EventTeam.reset_column_information
 
-      EventTeam.distinct.pluck(:event_id).each do |event_id|
-        EventTeam.where(event_id: event_id).order(:id).each_with_index do |team, index|
-          slot = ORDERED_SLOTS[index]
-          unless slot
-            raise ActiveRecord::IrreversibleMigration,
-              "No slot left for event_team #{team.id} (event #{event_id})"
-          end
+      EventTeam.find_each do |team|
+        normalized_label = normalize_label(team.label)
+        slot = SLOT_BY_LABEL[normalized_label]
+        team.update_columns(slot: slot) if slot
+      end
+
+      event_ids_with_missing_slots = EventTeam.where(slot: nil).distinct.pluck(:event_id)
+      event_ids_with_missing_slots.each do |event_id|
+        teams_without_slot = EventTeam.where(event_id: event_id, slot: nil).order(:id)
+        taken_slots = EventTeam.where(event_id: event_id).where.not(slot: nil).pluck(:slot)
+        available_slots = ORDERED_SLOTS - taken_slots
+
+        teams_without_slot.each do |team|
+          slot = available_slots.shift
+          raise ActiveRecord::IrreversibleMigration, "No slot left for event_team #{team.id} (event #{event_id})" unless slot
 
           team.update_columns(slot: slot)
         end
@@ -49,5 +80,9 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
       remaining = EventTeam.where(slot: nil).count
       raise ActiveRecord::IrreversibleMigration, "#{remaining} event_teams still missing slot" if remaining.positive?
     end
+  end
+
+  def normalize_label(label)
+    label.to_s.strip.downcase
   end
 end
