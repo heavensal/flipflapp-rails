@@ -140,6 +140,11 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 - Counts `EventParticipant` records on **countable** `EventTeam` records (`slot` `team_one` or `team_two`).
 - Does **not** count `EventParticipant` records on `slot: bench`.
 - Compared to `number_of_participants` in the UI (`participants_count / number_of_participants`).
+
+### Registrations (`Event#registrations_count`)
+
+- Counts **every** `EventParticipant` on the `Event`, including bench.
+- Not displayed in the slots UI; use for total attendance on the event.
 - Bench `User` records follow `Event` updates via `Notification` but are not official players until they move to `team_one` or `team_two`.
 
 ### `event.user` (organizer)
@@ -177,7 +182,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 
 ## EventTeam
 
-Every `Event` has **exactly three** `EventTeam` records at creation. Identity is fixed; display names can change.
+- Each `Event` has **exactly three** `EventTeam` records at creation (`Event::TEAM_SLOTS`). No fourth team per event.
 
 ### Schema (target)
 
@@ -213,18 +218,18 @@ Example: `slot: team_one`, `label: Real Madrid` — still **team one** for headc
 - `slot` never changes after create.
 - Each `EventParticipant` belongs to one `EventTeam`.
 - A `User` on `slot: bench` is an `EventParticipant` but **not** an official player: availability is uncertain; they follow `Event` activity (`Notification.updated`, etc.) to decide whether to commit to playing.
-- Moving between `EventTeam` records is an update to `EventParticipant` (not a separate domain object).
+- Moving between `EventTeam` records is an update to `EventParticipant` (not a separate domain object). Switching to a countable team emits `joined`; leaving a countable team emits `left`.
+- `Event#participants_count` — players on **countable** teams only (displayed as available slots vs `number_of_participants`).
+- `Event#registrations_count` — every `EventParticipant`, including bench (not shown in the slots UI).
 - Domain logic (`participants_count`, `joined` / `left` `Notification`, capacity) keys off **`slot`** (countable teams = `team_one` and `team_two`), never off `label`.
 - `EventTeam.countable_teams` scope / `#countable?` — `team_one` and `team_two` only; bench is excluded.
 
 ### Rename (`EventTeamsController#edit` / `#update`)
 
 - Any `User` with an `EventParticipant` on the `Event` may update **`label`** on `team_one` or `team_two` only.
-- Custom labels allowed (e.g. `Barcelone`, `Équipe des nuls`, `Real Madrid`).
+- Custom labels allowed (e.g. `Barcelone`, `Équipe des nuls`, `Real Madrid`). Labels are trimmed; repeated spaces collapse to one; no leading or trailing spaces.
 - `bench` — `label` stays `Sur le Banc`; not renameable.
-- Renaming does **not** change `slot`, headcount, or emit `Notification` records.
-
-> **Gap (schema):** Today only a `name` column exists. Migrate to `slot` + `label` (or equivalent) so renames do not break squad identity.
+- Renaming does **not** change `slot`, headcount, or emit `Notification` records (rename is cosmetic only).
 
 ---
 
@@ -269,8 +274,22 @@ Same rules as private access above; for public `Event` records, any authenticate
 - `User` must pass `event.joinable_by?(user)`.
 - One `EventParticipant` per `User` per `Event`.
 - `User` selects an `EventTeam` (`event_team_id`) by `slot`: `team_one`, `team_two`, or `bench`.
-- Joining `team_one` or `team_two` emits `joined` `Notification` records for other official-squad `User` records. Joining `bench` does not.
-- **Capacity:** `number_of_participants` is the target for `team_one` + `team_two` count; enforce at join time in a future TDD pass (not enforced in model today).
+- Joining `team_one` or `team_two` emits `joined` `Notification` records for other countable-squad `User` records. Joining `bench` does not.
+- **Capacity:** `number_of_participants` caps the total on **countable** teams (`participants_count`). When full, new joins to countable teams are rejected; **bench** remains available.
+- **Per-team cap:** each countable team accepts at most `Event#countable_slots_per_team` (= `number_of_participants / 2`). `EventTeam#full?` when at cap; join button hidden when `!joinable?` (`bench` is always joinable).
+
+### Participation notifications (Z1)
+
+Emit `joined` / `left` only for these transitions:
+
+| Transition | Notification |
+|------------|--------------|
+| Join event on `team_one` or `team_two` | `joined` |
+| Leave event from `team_one` or `team_two` | `left` |
+| `bench` → countable team | `joined` |
+| countable team → `bench` | `left` |
+| countable ↔ countable (switch teams) | **none** |
+| Rename `label` | **none** |
 
 ### Leave
 
@@ -455,7 +474,7 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 |------|--------|
 | Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
 | Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
-| `number_of_participants` enforced on join (`team_one` + `team_two`) | **Not implemented** — display only |
+| `number_of_participants` enforced on join (`countable_teams` only; bench when full) | **Implemented** |
 | `EventTeamsController#edit` / `#update` (rename countable `EventTeam` `label`) | **Implemented** — participants only; bench blocked |
 | `EventTeam` `slot` + `label` columns | **Implemented** |
 | `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |

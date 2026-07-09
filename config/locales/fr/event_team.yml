@@ -30,3 +30,9 @@ fr:
               immutable: "ne peut pas être modifié"
             label:
               immutable: "ne peut pas être modifié sur le banc"
+          too_many_teams: "ne peut pas dépasser trois équipes par événement"
+        event_participant:
+          attributes:
+            event_team:
+              countable_full: "les équipes sont complètes — rejoignez le banc"
+              team_full: "cette équipe est complète"

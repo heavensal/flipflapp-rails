@@ -54,6 +54,18 @@ class Event < ApplicationRecord
     event_participants.joins(:event_team).merge(EventTeam.countable_teams).count
   end
 
+  def registrations_count
+    event_participants.count
+  end
+
+  def countable_slots_full?
+    participants_count >= number_of_participants
+  end
+
+  def countable_slots_per_team
+    number_of_participants / 2
+  end
+
   def am_i_the_author?(user)
     self.user == user
   end

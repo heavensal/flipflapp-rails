@@ -18,6 +18,8 @@ export default class extends Controller {
     let sanitized = original.replace(/[^\p{L}\p{N} ]/gu, "")
     const strippedInvalid = sanitized !== original
 
+    sanitized = sanitized.trim().replace(/\s+/g, " ")
+
     if (sanitized.length > this.maxLengthValue) {
       sanitized = sanitized.slice(0, this.maxLengthValue)
     }
@@ -26,8 +28,7 @@ export default class extends Controller {
       this.inputTarget.value = sanitized
     }
 
-    const trimmed = sanitized.trim()
-    const isEmpty = trimmed.length === 0
+    const isEmpty = sanitized.length === 0
     const remaining = this.maxLengthValue - sanitized.length
 
     this.updateCounter(remaining)

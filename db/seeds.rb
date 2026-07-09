@@ -1,185 +1,344 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
+# frozen_string_literal: true
+
+# Development-only demo dataset for manual UI testing.
+# Run: bin/rails db:seed
 #
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Demo login: demo@flipflapp.seed / password123
+# Other users: user01@flipflapp.seed … user29@flipflapp.seed (same password)
 
-# Créer 20 utilisateurs avec des noms de personnages de manga
+unless Rails.env.development?
+  puts "⏭️  Seeds skipped outside development."
+  return
+end
 
-# User.where.not(id: [31, 38, 40, 41, 42]).destroy_all
+SEED_DOMAIN = "flipflapp.seed"
+SEED_PASSWORD = "password123"
+DEMO_EMAIL = "demo@#{SEED_DOMAIN}"
 
-# manga_characters = [
-#   { first: "Monkey", last: "Luffy", manga: "One Piece" },
-#   { first: "Roronoa", last: "Zoro", manga: "One Piece" },
-#   { first: "Nami", last: "Navigator", manga: "One Piece" },
-#   { first: "Usopp", last: "Sniper", manga: "One Piece" },
-#   { first: "Vinsmoke", last: "Sanji", manga: "One Piece" },
-#   { first: "Tony Tony", last: "Chopper", manga: "One Piece" },
-#   { first: "Nico", last: "Robin", manga: "One Piece" },
-#   { first: "Uzumaki", last: "Naruto", manga: "Naruto" },
-#   { first: "Uchiha", last: "Sasuke", manga: "Naruto" },
-#   { first: "Haruno", last: "Sakura", manga: "Naruto" },
-#   { first: "Hatake", last: "Kakashi", manga: "Naruto" },
-#   { first: "Hyuga", last: "Hinata", manga: "Naruto" },
-#   { first: "Kurosaki", last: "Ichigo", manga: "Bleach" },
-#   { first: "Kuchiki", last: "Rukia", manga: "Bleach" },
-#   { first: "Dragneel", last: "Natsu", manga: "Fairy Tail" },
-#   { first: "Heartfilia", last: "Lucy", manga: "Fairy Tail" },
-#   { first: "Kamado", last: "Tanjiro", manga: "Demon Slayer" },
-#   { first: "Kamado", last: "Nezuko", manga: "Demon Slayer" },
-#   { first: "Son", last: "Goku", manga: "Dragon Ball" },
-#   { first: "Vegeta", last: "Prince", manga: "Dragon Ball" },
-#   { first: "Midoriya", last: "Izuku", manga: "My Hero Academia" },
-#   { first: "Bakugo", last: "Katsuki", manga: "My Hero Academia" },
-#   { first: "Todoroki", last: "Shoto", manga: "My Hero Academia" },
-#   { first: "Edward", last: "Elric", manga: "Fullmetal Alchemist" },
-#   { first: "Alphonse", last: "Elric", manga: "Fullmetal Alchemist" }
-# ]
+module SeedHelpers
+  module_function
 
-# manga_characters.each do |character|
-#   begin
-#     seed_user = User.new(
-#       password: '123456',
-#       password_confirmation: '123456',
-#       first_name: character[:first],
-#       last_name: character[:last],
-#       email: "#{character[:first].downcase}#{character[:last].downcase}@#{character[:manga].downcase.gsub(' ', '')}.com",
-#       uid: "#{character[:first].downcase}#{character[:last].downcase}@#{character[:manga].downcase.gsub(' ', '')}.com",
-#       provider: "email",
-#       username: "#{character[:first].downcase}#{character[:last].downcase.first}#{rand(1000..9999)}"
-#     )
-#     seed_user.confirmed_at = Time.now
-#     seed_user.save!
-#     puts "✅ User created: #{seed_user.first_name} #{seed_user.last_name} - (#{seed_user.email})"
-#   rescue ActiveRecord::RecordInvalid => e
-#     puts "❌ Impossible de créer #{character[:first]} #{character[:last]} (#{character[:manga]})"
-#     puts "   → Erreurs: #{e.record.errors.full_messages.join(", ")}"
-#   end
-# end
-# puts "Total users: #{User.count}"
+  def team(event, slot)
+    event.event_teams.find_by!(slot: slot)
+  end
 
+  def create_user!(email:, first_name:, last_name:)
+    User.create!(
+      email: email,
+      password: SEED_PASSWORD,
+      password_confirmation: SEED_PASSWORD,
+      first_name: first_name,
+      last_name: last_name,
+      confirmed_at: Time.current
+    )
+  end
 
+  def create_friendship!(sender, receiver, status: "accepted")
+    Friendship.create!(sender: sender, receiver: receiver, status: status)
+  rescue ActiveRecord::RecordInvalid => e
+    puts "   ⚠️  Friendship skipped (#{sender.email} → #{receiver.email}): #{e.record.errors.full_messages.join(', ')}"
+  end
 
-# Créer 20 events
-#   create_table "events", force: :cascade do |t|
-#   t.string "title", null: false
-#   t.text "description"
-#   t.string "location", null: false
-#   t.datetime "start_time", null: false
-#   t.integer "number_of_participants", default: 10, null: false
-#   t.decimal "price", precision: 10, scale: 2, default: "10.0", null: false
-#   t.boolean "is_private", default: true, null: false
-#   t.bigint "user_id", null: false
-#   t.datetime "created_at", null: false
-#   t.datetime "updated_at", null: false
-#   t.index ["user_id"], name: "index_events_on_user_id"
-# end
-# 20.times do |i|
-#   seed_event = Event.create!(
-#     # Titres d'événements sportifs plus réalistes
-#     title: [
-#       "#{Faker::Team.sport} - Match #{Faker::Team.name} vs #{Faker::Team.name}",
-#       "Tournoi de #{Faker::Team.sport} - #{Faker::Address.city}",
-#       "#{Faker::Team.sport} Amateur - Saison #{Date.current.year}",
-#       "Match Amical #{Faker::Team.sport}",
-#       "Championnat Local de #{Faker::Team.sport}"
-#     ].sample,
+  def create_event!(author:, title:, **attrs)
+    defaults = {
+      description: Faker::Lorem.paragraph(sentence_count: 2),
+      location: "Complexe sportif #{Faker::Address.city}",
+      start_time: Faker::Time.between(from: 2.days.from_now, to: 2.months.from_now),
+      number_of_participants: 10,
+      price: [ 0, 5, 10, 15 ].sample,
+      is_private: false,
+      latitude: Faker::Address.latitude,
+      longitude: Faker::Address.longitude
+    }
+    Event.create!(defaults.merge(attrs).merge(user: author, title: title))
+  end
 
-#     # Descriptions plus variées
-#     description: [
-#       Faker::JapaneseMedia::OnePiece.quote,
-#       "Venez participer à cet événement sportif ! #{Faker::Lorem.sentence}",
-#       "#{Faker::Movies::StarWars.quote} - Un événement à ne pas manquer !",
-#       "#{Faker::TvShows::Friends.quote}",
-#       Faker::Lorem.paragraph(sentence_count: 3)
-#     ].sample,
+  def available_users(event, users)
+    users.reject { |user| event.in_this_event?(user) }
+  end
 
-#     # Lieux plus variés (gymnases, stades, etc.)
-#     location: [
-#       "Gymnase #{Faker::Address.city}",
-#       "Stade #{Faker::Name.last_name}",
-#       "Centre Sportif #{Faker::Address.street_name}",
-#       "Complexe Sportif de #{Faker::Address.city}",
-#       "#{Faker::Address.street_address}, #{Faker::Address.city}"
-#     ].sample,
+  def join_team!(event, user, slot)
+    return if event.in_this_event?(user)
 
-#     latitude: Faker::Address.latitude,
-#     longitude: Faker::Address.longitude,
+    event_team = team(event, slot)
+    return if event_team.countable? && event_team.full?
+    return if event_team.countable? && event.countable_slots_full?
 
-#     # Horaires plus variés
-#     start_time: Faker::Time.between(
-#       from: 1.week.from_now,
-#       to: 2.months.from_now,
-#     ),
+    event.event_participants.create!(user: user, event_team: event_team)
+  end
 
-#     # Nombre de participants varié
-#     number_of_participants: [8, 10, 12, 16, 20, 24].sample,
+  def fill_countable_team!(event, slot, users, target_count: nil)
+    event_team = team(event, slot)
+    target = target_count || event.countable_slots_per_team
+    needed = target - event_team.event_participants.count
+    return if needed <= 0
 
-#     # Prix variés et réalistes
-#     price: [0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0].sample,
+    available_users(event, users).shuffle.first(needed).each do |user|
+      break if event_team.reload.full?
 
-#     is_private: [true, false, false].sample, # Plus d'événements publics
-#     user: User.all.sample # ✅ Utilise un utilisateur aléatoire parmi tous les utilisateurs existants
-#   )
-#   puts "Event created: #{seed_event.title} - (#{seed_event.id}) - by #{seed_event.user.first_name}"
+      event.event_participants.create!(user: user, event_team: event_team)
+    end
+  end
 
-#   # Pour chaque event, créer entre 1 et 10 participants
-#   available_users = User.all.to_a
-#   participants_count = rand(1..10)
+  def fill_bench!(event, users, count:)
+    available_users(event, users).shuffle.first(count).each do |user|
+      join_team!(event, user, :bench)
+    end
+  end
 
-#   participants_count.times do
-#     # Éviter les doublons d'utilisateurs dans le même événement
-#     available_user = available_users.sample
-#     next if seed_event.event_participants.exists?(user: available_user)
+  def move_participant!(participant, slot)
+    participant.update!(event_team: team(participant.event, slot))
+  end
 
-#     seed_event.event_participants.create!(
-#       user: available_user,
-#       event_team: seed_event.event_teams.sample
-#     )
-#     puts "Participant added: #{available_user.first_name} - participant_id: #{available_user.id} to event #{seed_event.title} - event_id: #{seed_event.id}"
-#   end
+  def notification_payload_for(event, **extra)
+    {
+      title: event.title,
+      start_time: event.start_time.iso8601
+    }.merge(extra)
+  end
+end
 
-# end
+include SeedHelpers
 
+puts "🌱 Seeding FlipFlapp development data…"
 
-# ##########FRIENDSHIPS SEED##############
+User.where("email LIKE ?", "%@#{SEED_DOMAIN}").destroy_all
+puts "   Cleared previous @#{SEED_DOMAIN} users."
 
-# récupérer tous les id des users
-# user_ids = User.pluck(:id)
+users = []
+users << create_user!(email: DEMO_EMAIL, first_name: "Demo", last_name: "FlipFlapp")
 
-# # s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
-# # il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
+29.times do |index|
+  number = index + 1
+  users << create_user!(
+    email: format("user%02d@#{SEED_DOMAIN}", number),
+    first_name: Faker::Name.first_name,
+    last_name: Faker::Name.last_name
+  )
+end
 
-# # créer des amitiés aléatoires
-# user_ids.combination(2).to_a.sample(10).each do |pair|
-#   # il faut aléatoirement définir le statut de l'amitié entre "pending" et "accepted"
-#   status = ["pending", "accepted"].sample
-#   Friendship.create!(sender_id: pair.first, receiver_id: pair.last, status: status)
-#   puts "Friendship created between User #{User.find(pair.first).first_name} and User #{User.find(pair.last).first_name} with status #{status}"
-# end
+demo = users.first
+others = users.drop(1)
 
-# # il faut des amitiés aléatoire avec le user 31 (moi)
-# # je dois aléatoirement être le sender ou le receiver
-# # cela doit générer 15 friendships, peu importe le statut
-# # s'il y a une erreur d'unicité, il faut le dire mais ne pas arrêter le processus
-# # il faut vérifier que si le friendship existe dans un sens, il n'est pas recréé dans l'autre sens (je peux pas etre sender avec un user et receiver avec le meme user). Si c'est le cas, on parle de l'erreur et on continue (normalement une erreur devrait être dite par le model)
+puts "   #{users.size} users — login: #{DEMO_EMAIL} / #{SEED_PASSWORD}"
 
-# user_31_id = 31
-# (user_ids - [user_31_id]).sample(15).each do |other_user_id|
-#   status = ["pending", "accepted"].sample
-#   if [true, false].sample
-#     Friendship.create!(sender_id: user_31_id, receiver_id: other_user_id, status: status)
-#     puts "Friendship created: User #{User.find(user_31_id).first_name} sent a friend request to User #{User.find(other_user_id).first_name} with status #{status}"
-#   else
-#     Friendship.create!(sender_id: other_user_id, receiver_id: user_31_id, status: status)
-#     puts "Friendship created: User #{User.find(other_user_id).first_name} is now friends with User #{User.find(user_31_id).first_name} with status #{status}"
-#   end
-# rescue ActiveRecord::RecordNotUnique
-#   puts "Friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name} already exists."
-# rescue ActiveRecord::RecordInvalid => e
-#   puts "Failed to create friendship between User #{User.find(user_31_id).first_name} and User #{User.find(other_user_id).first_name}: #{e.message}"
-# end
+# --- Friendships (demo account covers all UI states) ---
+others.sample(10).each { |user| create_friendship!(demo, user, status: "accepted") }
+
+others.reject { |user| demo.friendship_with(user).present? }.sample(3).each do |user|
+  create_friendship!(user, demo, status: "pending")
+end
+
+others.reject { |user| demo.friendship_with(user).present? }.sample(2).each do |user|
+  create_friendship!(demo, user, status: "pending")
+end
+
+others.combination(2).to_a.sample(12).each do |sender, receiver|
+  next if Friendship.exists?(sender: sender, receiver: receiver)
+  next if Friendship.exists?(sender: receiver, receiver: sender)
+
+  create_friendship!(sender, receiver, status: %w[pending accepted].sample)
+end
+
+puts "   #{Friendship.count} friendships"
+
+# --- Events (named scenarios for quick visual QA) ---
+seed_events = []
+
+# Team 1 full (5/5), team 2 partial (3/5), bench — demo on team 2
+event_team1_full = create_event!(
+  author: demo,
+  title: "[Seed] Équipe 1 pleine (5/5)",
+  description: "Team 1 complète : pas de bouton rejoindre. Team 2 et banc encore ouverts.",
+  start_time: 3.days.from_now,
+  price: 10,
+  is_private: false
+)
+move_participant!(event_team1_full.event_participants.find_by!(user: demo), :team_two)
+fill_countable_team!(event_team1_full, :team_one, others, target_count: 5)
+fill_countable_team!(event_team1_full, :team_two, others, target_count: 3)
+fill_bench!(event_team1_full, others, count: 2)
+team(event_team1_full, :team_one).update!(label: "Real Madrid")
+seed_events << event_team1_full
+
+# Globally full countable teams — bench only for new joins
+event_globally_full = create_event!(
+  author: others[0],
+  title: "[Seed] Complet — banc seulement",
+  description: "10/10 sur les équipes. Rejoindre une équipe impossible ; banc ouvert.",
+  start_time: 5.days.from_now,
+  price: 0,
+  is_private: false
+)
+fill_countable_team!(event_globally_full, :team_one, others, target_count: 5)
+fill_countable_team!(event_globally_full, :team_two, others, target_count: 5)
+fill_bench!(event_globally_full, [ demo ] + others, count: 3)
+seed_events << event_globally_full
+
+# Sparse public event — demo author, room everywhere
+event_sparse = create_event!(
+  author: demo,
+  title: "[Seed] Places libres",
+  description: "Peu de joueurs : tous les boutons rejoindre visibles.",
+  start_time: 1.week.from_now,
+  is_private: false
+)
+fill_countable_team!(event_sparse, :team_two, others, target_count: 2)
+seed_events << event_sparse
+
+# Private event — demo invited but not registered
+event_private_invited = create_event!(
+  author: others[1],
+  title: "[Seed] Privé — tu es invité",
+  description: "Événement privé visible via invitation.",
+  start_time: 10.days.from_now,
+  is_private: true
+)
+Notification.create!(
+  user: demo,
+  notifiable: event_private_invited,
+  kind: :invited,
+  read: false,
+  payload: notification_payload_for(event_private_invited, sender: others[1].first_name)
+)
+seed_events << event_private_invited
+
+# Private event — demo participates
+event_private_joined = create_event!(
+  author: others[2],
+  title: "[Seed] Privé — tu participes",
+  start_time: 12.days.from_now,
+  is_private: true
+)
+join_team!(event_private_joined, demo, :team_two)
+fill_countable_team!(event_private_joined, :team_one, others, target_count: 3)
+seed_events << event_private_joined
+
+# Custom team labels + balanced squads
+event_derby = create_event!(
+  author: others[3],
+  title: "[Seed] Derby Bleus vs Rouges",
+  start_time: 2.weeks.from_now,
+  is_private: false
+)
+team(event_derby, :team_one).update!(label: "Les Bleus")
+team(event_derby, :team_two).update!(label: "Les Rouges")
+fill_countable_team!(event_derby, :team_one, others, target_count: 4)
+fill_countable_team!(event_derby, :team_two, others, target_count: 4)
+join_team!(event_derby, demo, :bench)
+seed_events << event_derby
+
+# Demo on bench, countable teams have room — test bench → team switch
+event_bench_demo = create_event!(
+  author: others[4],
+  title: "[Seed] Demo sur le banc",
+  start_time: 4.days.from_now,
+  is_private: false
+)
+fill_countable_team!(event_bench_demo, :team_one, others, target_count: 4)
+fill_countable_team!(event_bench_demo, :team_two, others, target_count: 4)
+join_team!(event_bench_demo, demo, :bench)
+seed_events << event_bench_demo
+
+# Filler events for the home / index lists
+8.times do |index|
+  author = others.sample
+  seed_events << create_event!(
+    author: author,
+    title: "[Seed] #{Faker::Sport.sport} — #{Faker::Address.city} ##{index + 1}",
+    is_private: index.even?,
+    number_of_participants: [ 8, 10, 12 ].sample,
+    start_time: Faker::Time.between(from: 3.days.from_now, to: 6.weeks.from_now)
+  ).tap do |event|
+    next if index.even? && !event.is_private?
+
+    fill_countable_team!(event, :team_one, others, target_count: rand(2..4))
+    fill_countable_team!(event, :team_two, others, target_count: rand(1..3))
+    fill_bench!(event, others, count: rand(0..2))
+  end
+end
+
+puts "   #{Event.count} events (#{seed_events.size} curated scenarios)"
+
+# --- Notifications for demo inbox (all kinds) ---
+Notification.create!(
+  user: demo,
+  notifiable: event_sparse,
+  kind: :joined,
+  read: false,
+  payload: notification_payload_for(event_sparse, player: others[5].first_name)
+)
+
+Notification.create!(
+  user: demo,
+  notifiable: event_team1_full,
+  kind: :left,
+  read: true,
+  payload: notification_payload_for(event_team1_full, player: others[6].first_name)
+)
+
+Notification.create!(
+  user: demo,
+  notifiable: event_derby,
+  kind: :updated,
+  read: false,
+  payload: notification_payload_for(
+    event_derby,
+    actor: others[3].first_name,
+    field: "price",
+    old_value: "10.00",
+    new_value: "15.00"
+  )
+)
+
+Notification.create!(
+  user: demo,
+  notifiable: event_derby,
+  kind: :updated,
+  read: false,
+  payload: notification_payload_for(
+    event_derby,
+    actor: others[3].first_name,
+    field: "start_time",
+    old_value: 2.weeks.from_now.iso8601,
+    new_value: event_derby.start_time.iso8601
+  )
+)
+
+Notification.create!(
+  user: demo,
+  notifiable: nil,
+  kind: :canceled,
+  read: true,
+  payload: {
+    title: "Ancien match annulé",
+    start_time: 1.week.ago.iso8601,
+    author: others[7].first_name
+  }
+)
+
+Notification.create!(
+  user: demo,
+  notifiable: event_private_joined,
+  kind: :reminder,
+  read: false,
+  payload: notification_payload_for(event_private_joined)
+)
+
+puts "   #{Notification.count} notifications"
+
+puts <<~SUMMARY
+
+  ✅ Seed complete.
+
+  Login (demo):  #{DEMO_EMAIL} / #{SEED_PASSWORD}
+  Other users:   user01@#{SEED_DOMAIN} … user29@#{SEED_DOMAIN} / #{SEED_PASSWORD}
+
+  Key events to open:
+    • #{event_team1_full.id} — #{event_team1_full.title}
+    • #{event_globally_full.id} — #{event_globally_full.title}
+    • #{event_sparse.id} — #{event_sparse.title}
+    • #{event_private_invited.id} — #{event_private_invited.title} (invited, not joined)
+    • #{event_bench_demo.id} — #{event_bench_demo.title} (demo on bench)
+
+SUMMARY

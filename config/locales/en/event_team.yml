@@ -30,3 +30,9 @@ en:
               immutable: "cannot be changed"
             label:
               immutable: "cannot be changed on the bench"
+          too_many_teams: "cannot exceed three teams per event"
+        event_participant:
+          attributes:
+            event_team:
+              countable_full: "teams are full — join the bench"
+              team_full: "this team is full"

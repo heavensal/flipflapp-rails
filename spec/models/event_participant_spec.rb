@@ -17,6 +17,95 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
+  describe "countable capacity" do
+    it "rejects joining a countable team when all countable slots are taken" do
+      event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+
+      late_player = build(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_one"))
+
+      expect(late_player).not_to be_valid
+      expect(late_player.errors[:event_team]).to be_present
+    end
+
+    it "rejects joining a full countable team when the other team still has room" do
+      event = create(:event, number_of_participants: 10)
+      team_one = team_slot(event, "team_one")
+      team_two = team_slot(event, "team_two")
+
+      4.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_one)
+      end
+      3.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_two)
+      end
+
+      expect(event.participants_count).to eq(8)
+      expect(team_one.full?).to be(true)
+      expect(team_two.joinable?).to be(true)
+
+      blocked = build(:event_participant, user: create(:user), event: event, event_team: team_one)
+      allowed = build(:event_participant, user: create(:user), event: event, event_team: team_two)
+
+      expect(blocked).not_to be_valid
+      expect(blocked.errors[:event_team]).to be_present
+      expect(allowed).to be_valid
+    end
+
+    it "rejects moving from one countable team to another when the target team is full" do
+      event = create(:event, number_of_participants: 10)
+      team_one = team_slot(event, "team_one")
+      team_two = team_slot(event, "team_two")
+      switching_player = create(:event_participant, user: create(:user), event: event, event_team: team_two)
+
+      4.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_one)
+      end
+      2.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_two)
+      end
+
+      expect(switching_player.update(event_team: team_one)).to be(false)
+      expect(switching_player.errors[:event_team]).to be_present
+    end
+
+    it "allows joining the bench when countable slots are full" do
+      event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+
+      bench_player = build(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))
+
+      expect(bench_player).to be_valid
+    end
+
+    it "rejects moving from bench to a countable team when slots are full" do
+      event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+      participant = create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))
+
+      expect(participant.update(event_team: team_slot(event, "team_one"))).to be(false)
+      expect(participant.errors[:event_team]).to be_present
+    end
+
+    it "allows moving between countable teams when the target team has room" do
+      event = create(:event, number_of_participants: 4)
+      team_two_player = create(:user)
+      create(:event_participant, user: team_two_player, event: event, event_team: team_slot(event, "team_two"))
+      participant = event.event_participants.find_by!(user: event.user)
+
+      expect(participant.update(event_team: team_slot(event, "team_two"))).to be(true)
+    end
+
+    it "rejects moving between countable teams when the target team is full" do
+      event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+      participant = event.event_participants.find_by!(user: event.user)
+
+      expect(participant.update(event_team: team_slot(event, "team_two"))).to be(false)
+      expect(participant.errors[:event_team]).to be_present
+    end
+  end
+
   describe "data side effects" do
     it "does not notify anyone when the event author is automatically registered" do
       expect {
@@ -113,6 +202,61 @@ RSpec.describe EventParticipant, type: :model do
       expect {
         participant.destroy!
       }.not_to change { Notification.where(kind: :left).count }
+    end
+  end
+
+  describe "switching EventTeam (update)" do
+    it "notifies countable players when a bench player moves to a countable team" do
+      event = create(:event)
+      team_player = create(:user)
+      bench_player = create(:user)
+      participant = create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
+
+      create(:event_participant, user: team_player, event: event, event_team: team_slot(event, "team_two"))
+
+      expect {
+        participant.update!(event_team: team_slot(event, "team_one"))
+      }.to change { event.user.notifications.where(kind: :joined).count }.by(1)
+        .and change { team_player.notifications.where(kind: :joined).count }.by(1)
+        .and change { Notification.where(kind: :left).count }.by(0)
+    end
+
+    it "notifies countable players when a player moves from a countable team to the bench" do
+      event = create(:event)
+      team_player = create(:user)
+      bench_player = create(:user)
+      participant = create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "team_one"))
+
+      create(:event_participant, user: team_player, event: event, event_team: team_slot(event, "team_two"))
+
+      expect {
+        participant.update!(event_team: team_slot(event, "bench"))
+      }.to change { event.user.notifications.where(kind: :left).count }.by(1)
+        .and change { team_player.notifications.where(kind: :left).count }.by(1)
+        .and change { Notification.where(kind: :joined).count }.by(0)
+    end
+
+    it "does not notify when a player moves between countable teams" do
+      event = create(:event)
+      team_player = create(:user)
+      switching_player = create(:user)
+      participant = create(:event_participant, user: switching_player, event: event, event_team: team_slot(event, "team_one"))
+
+      create(:event_participant, user: team_player, event: event, event_team: team_slot(event, "team_two"))
+
+      expect {
+        participant.update!(event_team: team_slot(event, "team_two"))
+      }.not_to change { Notification.count }
+    end
+
+    it "does not notify when a bench player switches to the bench again" do
+      event = create(:event)
+      player = create(:user)
+      participant = create(:event_participant, user: player, event: event, event_team: team_slot(event, "bench"))
+
+      expect {
+        participant.update!(event_team: team_slot(event, "bench"))
+      }.not_to change { Notification.count }
     end
   end
 end

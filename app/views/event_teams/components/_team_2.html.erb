@@ -12,8 +12,10 @@
     </div>
 
     <% unless team_2.in_this_team?(current_user) %>
-      <div class="mt-auto">
-        <%= render 'event_participants/form_btn', event: event, team: team_2 %>
-      </div>
+      <% if team_2.joinable? %>
+        <div class="mt-auto">
+          <%= render 'event_participants/form_btn', event: event, team: team_2 %>
+        </div>
+      <% end %>
     <% end %>
   </div>

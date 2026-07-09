@@ -78,14 +78,60 @@ RSpec.describe Event, type: :model do
     end
   end
 
+  describe "#registrations_count" do
+    it "counts every EventParticipant including bench players" do
+      event = create(:event)
+      player = create(:user)
+      bench_player = create(:user)
+
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
+
+      expect(event.registrations_count).to eq(3)
+      expect(event.participants_count).to eq(2)
+    end
+
+    it "keeps registrations_count unchanged when a player moves to the bench" do
+      event = create(:event)
+      player = create(:user)
+      participant = create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
+
+      expect { participant.update!(event_team: team_slot(event, "bench")) }
+        .to change { event.reload.participants_count }.from(2).to(1)
+
+      expect(event.registrations_count).to eq(2)
+    end
+
+    it "updates participants_count but not registrations_count when a bench player joins a countable team" do
+      event = create(:event)
+      player = create(:user)
+      participant = create(:event_participant, user: player, event: event, event_team: team_slot(event, "bench"))
+
+      expect { participant.update!(event_team: team_slot(event, "team_two")) }
+        .to change { event.reload.participants_count }.from(1).to(2)
+
+      expect(event.registrations_count).to eq(2)
+    end
+  end
+
+  describe "#countable_slots" do
+    it "reports when countable slots are full" do
+      event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+
+      expect(event.countable_slots_full?).to be(true)
+      expect(event.countable_slots_per_team).to eq(1)
+    end
+  end
+
   describe "notifications" do
     it "creates one update notification per tracked field for every participant except the author" do
       event = create(:event)
       player = create(:user)
       bench_player = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
-      create(:event_participant, user: bench_player, event: event, event_team: event.event_teams.third)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
 
       expect {
         event.update!(title: "Match retour", price: 14.0)
@@ -98,7 +144,7 @@ RSpec.describe Event, type: :model do
       event = create(:event)
       player = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
       event.update!(price: 14.0)
 
       notification = player.notifications.updated.order(:created_at).last
@@ -115,7 +161,7 @@ RSpec.describe Event, type: :model do
       event = create(:event)
       player = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
 
       expect {
         event.update!(description: "Nouvelle description", location: "Lyon", is_private: false)
@@ -127,8 +173,8 @@ RSpec.describe Event, type: :model do
       player = create(:user)
       bench_player = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
-      create(:event_participant, user: bench_player, event: event, event_team: event.event_teams.third)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
 
       expect {
         event.destroy!
@@ -141,7 +187,7 @@ RSpec.describe Event, type: :model do
       event = create(:event)
       player = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
       create(:notification, user: player, notifiable: event, kind: :joined)
       create(:notification, user: player, notifiable: event, kind: :updated)
 
@@ -158,7 +204,7 @@ RSpec.describe Event, type: :model do
       player = create(:user)
       stranger = create(:user)
 
-      create(:event_participant, user: player, event: event, event_team: event.event_teams.first)
+      create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_one"))
 
       expect(event.can_invite?(event.user)).to be(true)
       expect(event.can_invite?(player)).to be(true)
