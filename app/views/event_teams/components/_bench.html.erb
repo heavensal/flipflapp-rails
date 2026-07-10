@@ -5,10 +5,11 @@
   </h2>
 
   <div class="grid grid-cols-2 gap-1">
-    <% if bench.event_participants.empty? %>
+    <% participants = bench.event_participants %>
+    <% if participants.empty? %>
       <p class="text-center text-gray-400 col-span-2">Aucun joueur sur le banc</p>
     <% end %>
-    <% bench.event_participants.each do |event_participant| %>
+    <% participants.each do |event_participant| %>
 
       <%= render 'event_participants/one_player_bench_card', event_participant: event_participant %>
 
@@ -17,7 +18,7 @@
 
   <% unless bench.in_this_team?(current_user) %>
     <div class="mt-4">
-      <%= render 'event_participants/form_btn', event: event, team: bench %>
+      <%= render 'event_participants/form_btn', event: event, team: bench, switching: event.in_this_event?(current_user) %>
     </div>
   <% end %>
 

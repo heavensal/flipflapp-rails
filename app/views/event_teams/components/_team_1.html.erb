@@ -2,11 +2,16 @@
   <div class="rounded-2xl bg-team-a/90 backdrop-blur-md shadow-md p-3 flex flex-col gap-2">
     <%= render "event_teams/components/countable_team_heading", event: event, team: team_1 %>
 
+    <% participants = team_1.event_participants %>
+    <p class="text-center text-xs text-white/70">
+      <%= participants.size %>/<%= event.countable_slots_per_team %>
+    </p>
+
     <div class="flex flex-col gap-1">
-      <% if team_1.event_participants.empty? %>
+      <% if participants.empty? %>
         <p class="text-center text-gray-400">Aucun joueur dans cette équipe</p>
       <% end %>
-      <% team_1.event_participants.each do |event_participant| %>
+      <% participants.each do |event_participant| %>
         <%= render 'event_participants/one_player_team_1_card', event_participant: event_participant %>
       <% end %>
     </div>
@@ -14,7 +19,7 @@
     <% unless team_1.in_this_team?(current_user) %>
       <% if team_1.joinable? %>
         <div class="mt-auto">
-          <%= render 'event_participants/form_btn', event: event, team: team_1 %>
+          <%= render 'event_participants/form_btn', event: event, team: team_1, switching: event.in_this_event?(current_user) %>
         </div>
       <% end %>
     <% end %>

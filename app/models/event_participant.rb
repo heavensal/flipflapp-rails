@@ -59,18 +59,27 @@ class EventParticipant < ApplicationRecord
   end
 
   def deliver_notifications(kind)
-    team_notification_recipients.find_each do |recipient|
-      Notification.create!(
-        user: recipient,
-        notifiable: event,
-        kind: kind,
-        payload: {
-          title: event.title,
-          start_time: event.start_time,
-          player: user.first_name
+    recipient_ids = team_notification_recipients.pluck(:id)
+    return if recipient_ids.empty?
+
+    Notification.insert_all(
+      recipient_ids.map do |recipient_id|
+        {
+          user_id: recipient_id,
+          notifiable_type: "Event",
+          notifiable_id: event.id,
+          kind: Notification.kinds.fetch(kind),
+          payload: {
+            title: event.title,
+            start_time: event.start_time,
+            player: user.first_name
+          },
+          read: false,
+          created_at: Time.current,
+          updated_at: Time.current
         }
-      )
-    end
+      end
+    )
   end
 
   def team_notification_recipients

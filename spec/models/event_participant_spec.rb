@@ -6,7 +6,7 @@ RSpec.describe EventParticipant, type: :model do
   end
 
   describe "validations" do
-    it "rejects duplicate registration for the same event" do
+    it "rejects a duplicate registration on the same Event" do
       event = create(:event)
       player = create(:user)
       create(:event_participant, user: player, event: event)
@@ -52,7 +52,7 @@ RSpec.describe EventParticipant, type: :model do
       expect(allowed).to be_valid
     end
 
-    it "rejects moving from one countable team to another when the target team is full" do
+    it "rejects switching from one countable team to another when the target team is full" do
       event = create(:event, number_of_participants: 10)
       team_one = team_slot(event, "team_one")
       team_two = team_slot(event, "team_two")
@@ -78,7 +78,7 @@ RSpec.describe EventParticipant, type: :model do
       expect(bench_player).to be_valid
     end
 
-    it "rejects moving from bench to a countable team when slots are full" do
+    it "rejects switching from the bench to a countable team when slots are full" do
       event = create(:event, number_of_participants: 2)
       create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
       participant = create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))
@@ -87,7 +87,7 @@ RSpec.describe EventParticipant, type: :model do
       expect(participant.errors[:event_team]).to be_present
     end
 
-    it "allows moving between countable teams when the target team has room" do
+    it "allows switching between countable teams when the target team has room" do
       event = create(:event, number_of_participants: 4)
       team_two_player = create(:user)
       create(:event_participant, user: team_two_player, event: event, event_team: team_slot(event, "team_two"))
@@ -96,7 +96,7 @@ RSpec.describe EventParticipant, type: :model do
       expect(participant.update(event_team: team_slot(event, "team_two"))).to be(true)
     end
 
-    it "rejects moving between countable teams when the target team is full" do
+    it "rejects switching between countable teams when the target team is full" do
       event = create(:event, number_of_participants: 2)
       create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
       participant = event.event_participants.find_by!(user: event.user)
@@ -107,7 +107,7 @@ RSpec.describe EventParticipant, type: :model do
   end
 
   describe "data side effects" do
-    it "does not notify anyone when the event author is automatically registered" do
+    it "does not notify anyone when the Event author self-registers" do
       expect {
         create(:event)
       }.not_to change { Notification.where(kind: :joined).count }
@@ -135,7 +135,7 @@ RSpec.describe EventParticipant, type: :model do
       expect(new_player.notifications.where(kind: :joined).count).to eq(new_player_count)
     end
 
-    it "still notifies when team_one has a custom label" do
+    it "always notifies when team_one has a custom label" do
       event = create(:event)
       team_slot(event, "team_one").update!(label: "Real Madrid")
       team_player = create(:user)
@@ -180,9 +180,9 @@ RSpec.describe EventParticipant, type: :model do
       expect(player.notifications.where(kind: :left).count).to eq(leaving_player_count)
     end
 
-    it "still notifies when leaving team_two with a custom label" do
+    it "always notifies when leaving team_two with a custom label" do
       event = create(:event)
-      team_slot(event, "team_two").update!(label: "Barcelone")
+      team_slot(event, "team_two").update!(label: "Barcelona")
       player = create(:user)
       team_player = create(:user)
       participant = create(:event_participant, user: player, event: event, event_team: team_slot(event, "team_two"))
@@ -205,8 +205,8 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
-  describe "switching EventTeam (update)" do
-    it "notifies countable players when a bench player moves to a countable team" do
+  describe "EventTeam change (update)" do
+    it "notifies countable players when a bench player joins a countable team" do
       event = create(:event)
       team_player = create(:user)
       bench_player = create(:user)
@@ -236,7 +236,7 @@ RSpec.describe EventParticipant, type: :model do
         .and change { Notification.where(kind: :joined).count }.by(0)
     end
 
-    it "does not notify when a player moves between countable teams" do
+    it "does not notify when a player moves from one countable team to another" do
       event = create(:event)
       team_player = create(:user)
       switching_player = create(:user)
@@ -249,7 +249,7 @@ RSpec.describe EventParticipant, type: :model do
       }.not_to change { Notification.count }
     end
 
-    it "does not notify when a bench player switches to the bench again" do
+    it "does not notify when a bench player stays on the bench" do
       event = create(:event)
       player = create(:user)
       participant = create(:event_participant, user: player, event: event, event_team: team_slot(event, "bench"))
@@ -257,6 +257,35 @@ RSpec.describe EventParticipant, type: :model do
       expect {
         participant.update!(event_team: team_slot(event, "bench"))
       }.not_to change { Notification.count }
+    end
+  end
+
+  describe "batched notification delivery (insert_all)" do
+    it "inserts all joined notifications in a single Notification.insert_all call" do
+      event = create(:event)
+      team_player_one = create(:user)
+      team_player_two = create(:user)
+      create(:event_participant, user: team_player_one, event: event, event_team: team_slot(event, "team_one"))
+      create(:event_participant, user: team_player_two, event: event, event_team: team_slot(event, "team_two"))
+      joining_user = create(:user)
+
+      expect(Notification).to receive(:insert_all).once.and_call_original
+
+      create(:event_participant, user: joining_user, event: event, event_team: team_slot(event, "team_two"))
+
+      notifs = Notification.where(kind: :joined).order(:id).last(2)
+      expect(notifs.map(&:user_id)).to contain_exactly(team_player_one.id, team_player_two.id)
+      expect(notifs.first.notifiable).to eq(event)
+      expect(notifs.first.payload["player"]).to eq(joining_user.first_name)
+    end
+
+    it "does not call insert_all when there are no countable recipients" do
+      event = create(:event)
+      joining_user = create(:user)
+
+      expect(Notification).not_to receive(:insert_all)
+
+      create(:event_participant, user: joining_user, event: event, event_team: team_slot(event, "bench"))
     end
   end
 end

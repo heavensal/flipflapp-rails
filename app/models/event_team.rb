@@ -36,7 +36,7 @@ class EventTeam < ApplicationRecord
   def full?
     return false unless countable?
 
-    event_participants.count >= event.countable_slots_per_team
+    event_participants.size >= event.countable_slots_per_team
   end
 
   def joinable?

@@ -9,3 +9,9 @@ fr:
   event_participants:
     create:
       success: "Vous avez rejoint l'équipe \"%{label}\"."
+    destroy:
+      success: "Vous ne participez plus à cet événement."
+      not_found: "Participant introuvable ou accès non autorisé."
+      failure: "Une erreur est survenue lors de votre désinscription."
+    join:
+      switch: "Passer ici"
