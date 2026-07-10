@@ -82,6 +82,66 @@ RSpec.describe "Messages flash d'EventParticipantsController", type: :request do
       end
     end
 
+    context "quand toutes les places officielles sont prises" do
+      it "refuse un POST vers une équipe pleine avec l'erreur team_full" do
+        event = create(:event, number_of_participants: 2, is_private: false)
+        create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+        user = create(:user)
+        sign_in user
+
+        post event_event_participants_path(event), params: { event_participant: { event_team_id: team_slot(event, "team_one").id } }
+
+        expect(response).to redirect_to(event_path(event))
+        expected = I18n.t("activerecord.errors.models.event_participant.attributes.event_team.team_full")
+        expect(flash[:alert]).to include(expected)
+      end
+    end
+
+    context "quand team_two a une place de plus sur un effectif impair (11 = 5 vs 6)" do
+      it "accepte le 6e joueur sur team_two via POST" do
+        event = create(:event, number_of_participants: 11, is_private: false)
+        team_one = team_slot(event, "team_one")
+        team_two = team_slot(event, "team_two")
+
+        4.times do
+          create(:event_participant, user: create(:user), event: event, event_team: team_one)
+        end
+        5.times do
+          create(:event_participant, user: create(:user), event: event, event_team: team_two)
+        end
+
+        user = create(:user)
+        sign_in user
+
+        post event_event_participants_path(event), params: { event_participant: { event_team_id: team_two.id } }
+
+        expect(response).to redirect_to(event_path(event))
+        expect(flash[:notice]).to eq(I18n.t("event_participants.create.success", label: team_two.label))
+        expect(team_two.reload.event_participants.count).to eq(6)
+      end
+
+      it "refuse le 7e joueur sur team_two même via POST direct" do
+        event = create(:event, number_of_participants: 11, is_private: false)
+        team_two = team_slot(event, "team_two")
+
+        4.times do
+          create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_one"))
+        end
+        6.times do
+          create(:event_participant, user: create(:user), event: event, event_team: team_two)
+        end
+
+        user = create(:user)
+        sign_in user
+
+        post event_event_participants_path(event), params: { event_participant: { event_team_id: team_two.id } }
+
+        expect(response).to redirect_to(event_path(event))
+        expected = I18n.t("activerecord.errors.models.event_participant.attributes.event_team.team_full")
+        expect(flash[:alert]).to include(expected)
+      end
+    end
+
     context "quand l'event_team_id fourni n'existe pas sur l'événement" do
       it "affiche un flash alert avec la clé events.teams.not_found" do
         event = create(:event, is_private: false)

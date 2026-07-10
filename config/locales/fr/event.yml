@@ -15,3 +15,9 @@ fr:
       failure: "Une erreur est survenue lors de votre désinscription."
     join:
       switch: "Passer ici"
+    teams:
+      empty: "Aucun joueur dans cette équipe"
+    bench:
+      empty: "Aucun joueur sur le banc"
+    leave:
+      confirm: "Êtes-vous sûr de vouloir quitter cet événement ?"

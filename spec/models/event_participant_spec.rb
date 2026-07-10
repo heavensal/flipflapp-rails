@@ -13,7 +13,7 @@ RSpec.describe EventParticipant, type: :model do
 
       duplicate = build(:event_participant, user: player, event: event, event_team: team_slot(event, "team_two"))
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors[:user_id]).to be_present
+      expect(duplicate.errors[:user_id]).to include(I18n.t("activerecord.errors.models.event_participant.attributes.user_id.taken"))
     end
   end
 
@@ -76,6 +76,26 @@ RSpec.describe EventParticipant, type: :model do
       bench_player = build(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))
 
       expect(bench_player).to be_valid
+    end
+
+    it "allows the extra slot on team_two when number_of_participants is odd" do
+      event = create(:event, number_of_participants: 11)
+      team_one = team_slot(event, "team_one")
+      team_two = team_slot(event, "team_two")
+
+      4.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_one)
+      end
+      5.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_two)
+      end
+
+      expect(event.participants_count).to eq(10)
+      expect(team_one.full?).to be(true)
+      expect(team_two.full?).to be(false)
+
+      extra_player = build(:event_participant, user: create(:user), event: event, event_team: team_two)
+      expect(extra_player).to be_valid
     end
 
     it "rejects switching from the bench to a countable team when slots are full" do

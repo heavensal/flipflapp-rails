@@ -33,6 +33,8 @@ fr:
           too_many_teams: "ne peut pas dépasser trois équipes par événement"
         event_participant:
           attributes:
+            user_id:
+              taken: "est déjà inscrit à cet événement"
             event_team:
               countable_full: "les équipes sont complètes — rejoignez le banc"
               team_full: "cette équipe est complète"

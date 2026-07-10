@@ -33,10 +33,16 @@ class EventTeam < ApplicationRecord
     event_participants.exists?(user: user)
   end
 
+  def capacity
+    return 0 unless countable?
+
+    event.countable_slots_for(self)
+  end
+
   def full?
     return false unless countable?
 
-    event_participants.size >= event.countable_slots_per_team
+    event_participants.size >= capacity
   end
 
   def joinable?

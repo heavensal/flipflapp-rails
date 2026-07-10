@@ -66,6 +66,16 @@ class Event < ApplicationRecord
     number_of_participants / 2
   end
 
+  def countable_slots_for(team)
+    return 0 unless team.countable?
+
+    if team.team_one?
+      number_of_participants / 2
+    else
+      (number_of_participants + 1) / 2
+    end
+  end
+
   def am_i_the_author?(user)
     self.user == user
   end

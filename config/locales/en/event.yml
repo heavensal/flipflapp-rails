@@ -15,3 +15,9 @@ en:
       failure: "An error occurred while leaving the event."
     join:
       switch: "Switch here"
+    teams:
+      empty: "No players on this team"
+    bench:
+      empty: "No players on the bench"
+    leave:
+      confirm: "Are you sure you want to leave this event?"
