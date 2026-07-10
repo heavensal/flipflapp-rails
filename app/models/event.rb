@@ -1,5 +1,6 @@
 class Event < ApplicationRecord
   TRACKED_NOTIFICATION_FIELDS = %w[title start_time price number_of_participants].freeze
+  TEAM_SLOTS = %w[team_one team_two bench].freeze
 
   belongs_to :user
   has_many :event_teams, dependent: :destroy
@@ -15,7 +16,6 @@ class Event < ApplicationRecord
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validates :is_private, inclusion: { in: [ true, false ] }
 
-  # trier auto par date les plus proches
   scope :upcoming, -> { where("start_time > ?", Time.current).order(:start_time) }
 
   after_create_commit :set_teams_and_author
@@ -37,10 +37,10 @@ class Event < ApplicationRecord
   end
 
   def set_teams_and_author
-    self.event_teams.create(name: "Equipe 1")
-    self.event_teams.create(name: "Equipe 2")
-    self.event_teams.create(name: "Sur le Banc")
-    self.event_participants.create(user: self.user, event_team: self.event_teams.first)
+    TEAM_SLOTS.each do |slot|
+      event_teams.create!(slot: slot, label: I18n.t("event_team.slots.#{slot}.default_label"))
+    end
+    event_participants.create!(user: user, event_team: event_teams.find_by!(slot: :team_one))
   end
 
   def start_time_must_be_in_the_future
@@ -51,7 +51,19 @@ class Event < ApplicationRecord
   end
 
   def participants_count
-    event_participants.joins(:event_team).where.not(event_teams: { name: "Sur le Banc" }).count
+    event_participants.joins(:event_team).merge(EventTeam.countable_teams).count
+  end
+
+  def registrations_count
+    event_participants.count
+  end
+
+  def countable_slots_full?
+    participants_count >= number_of_participants
+  end
+
+  def countable_slots_per_team
+    number_of_participants / 2
   end
 
   def am_i_the_author?(user)

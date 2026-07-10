@@ -60,6 +60,7 @@ Policy: [docs/TESTING.md](../docs/TESTING.md)
 ## Migrations and schema (blocking when applicable)
 
 - **Block** new files under `db/migrate/` unless the PR title or description clearly requests a schema change.
+- **Never autofix** `db/migrate/**` — migrations are prepared and reviewed by humans before push; flag issues only (❌ + explanation).
 - When migrations are present, check for: matching model validations, indexes for uniqueness, and model specs for the new constraints.
 
 ## Security (always check)

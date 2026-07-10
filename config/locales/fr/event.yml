@@ -6,3 +6,12 @@ fr:
       invitation_required: "Vous n'êtes pas autorisé à inviter sur cet événement."
     teams:
       not_found: "Équipe introuvable."
+  event_participants:
+    create:
+      success: "Vous avez rejoint l'équipe \"%{label}\"."
+    destroy:
+      success: "Vous ne participez plus à cet événement."
+      not_found: "Participant introuvable ou accès non autorisé."
+      failure: "Une erreur est survenue lors de votre désinscription."
+    join:
+      switch: "Passer ici"

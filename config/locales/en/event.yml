@@ -6,3 +6,12 @@ en:
       invitation_required: "You are not authorized to invite people to this event."
     teams:
       not_found: "Team not found."
+  event_participants:
+    create:
+      success: "You joined \"%{label}\"."
+    destroy:
+      success: "You are no longer participating in this event."
+      not_found: "Participant not found or access unauthorized."
+      failure: "An error occurred while leaving the event."
+    join:
+      switch: "Switch here"

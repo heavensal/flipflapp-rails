@@ -3,6 +3,6 @@ FactoryBot.define do
     association :user
     association :event
 
-    event_team { event.event_teams.first }
+    event_team { event.event_teams.find_by!(slot: :team_one) }
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_26_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_07_123000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,10 +26,13 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_26_120000) do
   end
 
   create_table "event_teams", force: :cascade do |t|
-    t.string "name", null: false
+    t.string "label", null: false
     t.bigint "event_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slot", null: false
+    t.index ["event_id", "label"], name: "index_event_teams_on_event_id_and_label", unique: true
+    t.index ["event_id", "slot"], name: "index_event_teams_on_event_id_and_slot", unique: true
     t.index ["event_id"], name: "index_event_teams_on_event_id"
   end
 
