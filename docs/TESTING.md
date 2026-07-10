@@ -15,7 +15,7 @@ Use this sequence for every behavior change:
 2. Agent reads DOMAIN.md, flags ambiguities and edge cases — you answer
 3. DOMAIN.md updated if the rule is new or changed
 4. Migrations proposed if needed — you validate before any migration file is created
-5. Failing model specs written in spec/models/
+5. Failing specs written in spec/models/ (and spec/requests/ when HTTP wiring matters)
 6. Implementation until specs pass (model first, then controllers / views / API as needed)
 ```
 
@@ -51,9 +51,10 @@ A feature request does **not** imply permission to migrate.
 
 Current schema: `db/schema.rb`.
 
-### Step 5 — Red: model specs
+### Step 5 — Red: specs
 
-- Write or update specs in **`spec/models/`** only.
+- Write or update specs in **`spec/models/`** first for domain rules.
+- Add **`spec/requests/`** when the HTTP contract must be locked (status, auth, side effects exposed via endpoints).
 - Specs describe **behavior** from [DOMAIN.md](DOMAIN.md), not implementation details.
 - Use **Factory Bot** (`spec/factories/`). No YAML fixtures.
 - No `pending` examples.
@@ -63,6 +64,7 @@ Run (when you ask):
 
 ```bash
 rspec spec/models/
+rspec spec/requests/
 rspec spec/models/event_spec.rb
 ```
 
@@ -81,7 +83,7 @@ Refactor only when it makes the tested behavior clearer. No service objects unle
 ## Non-negotiable rules
 
 - Model specs **before** (or with) behavior changes — never specs after the fact.
-- **`spec/models/`** only — no request, view, helper, or system specs unless you change this policy.
+- **`spec/models/`** and **`spec/requests/`** only — no view, helper, system, or feature specs.
 - Factory Bot only; no YAML fixtures; no `pending` examples.
 - Agents do **not** run `rspec`, `db:migrate`, or other commands unless you explicitly ask.
 
@@ -89,7 +91,9 @@ Refactor only when it makes the tested behavior clearer. No service objects unle
 
 ## What to test
 
-Model specs should lock [DOMAIN.md](DOMAIN.md) behavior:
+Specs lock **backend behavior** from [DOMAIN.md](DOMAIN.md). They are the source of truth for the future iOS and Android JSON API — same rules, same side effects.
+
+**`spec/models/`** — domain rules and data side effects:
 
 - validations and uniqueness
 - associations that enforce rules
@@ -99,13 +103,23 @@ Model specs should lock [DOMAIN.md](DOMAIN.md) behavior:
 - `EventParticipant` and `EventTeam` (`slot`, `label`) rules
 - data integrity after create, update, and destroy
 
-## What not to test by default
+**`spec/requests/`** — HTTP contract when it matters:
 
-- HTML layout, CSS, view rendering
-- request routing, controller status codes
-- helper formatting, JavaScript display behavior
+- authentication and authorization (who can call an endpoint)
+- successful and rejected writes (e.g. join rejected when full)
+- backend side effects visible through the API (records created or destroyed)
 
-Add these only if you explicitly change the policy for a task.
+Example: accepting a `Friendship` request **creates a `Notification`** → test in model or request spec.  
+Example: a **flash message** after the action → do **not** test; verify visually in the browser.
+
+## What not to test
+
+- **Views and front-end** — HTML layout, ERB structure, CSS, Tailwind classes, Stimulus display behavior
+- **Visually verifiable UI** — flash messages, button labels, page copy, redirect targets you can see in the browser
+- **Helpers** — formatting helpers, presentation-only code
+- **System / feature specs** — no Capybara or browser-driven tests
+
+When in doubt: if the behavior is **data the mobile apps will need** (records, fields, kinds, access rules), test it. If it is **only how the web page looks or reads**, do not test it.
 
 ---
 

@@ -1,76 +1,59 @@
 require "rails_helper"
 
-# Spécifications des messages flash (notice / alert) émis par
-# EventTeamsController lors du renommage d'une équipe (update).
-#
-# On vérifie que chaque flash provient d'une clé I18n : succès, autorisations
-# (participant_required, bench_not_renamable) et erreurs de validation du
-# modèle EventTeam (label invalide).
-RSpec.describe "Messages flash de renommage d'EventTeamsController", type: :request do
+RSpec.describe "EventTeams", type: :request do
   def team_slot(event, slot)
     event.event_teams.find_by!(slot: slot)
   end
 
-  describe "PATCH /events/:event_id/event_teams/:id (renommer le label)" do
-    context "quand un participant renomme une équipe countable avec un label valide" do
-      it "affiche un flash notice avec la clé event_team.update.success" do
-        event = create(:event, is_private: false)
-        participant = create(:user)
-        create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_two"))
-        sign_in participant
-        team = team_slot(event, "team_one")
+  describe "PATCH /events/:event_id/event_teams/:id" do
+    it "updates the label when a participant renames a countable team" do
+      event = create(:event, is_private: false)
+      participant = create(:user)
+      create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_two"))
+      team = team_slot(event, "team_one")
+      sign_in participant
 
-        patch event_event_team_path(event, team), params: { event_team: { label: "Barcelone" } }
+      patch event_event_team_path(event, team), params: { event_team: { label: "Barcelona" } }
 
-        expect(response).to redirect_to(event_path(event))
-        expect(flash[:notice]).to eq(I18n.t("event_team.update.success"))
-      end
+      expect(team.reload.label).to eq("Barcelona")
     end
 
-    context "quand un utilisateur non participant tente de renommer une équipe" do
-      it "affiche un flash alert avec la clé event_team.authorization.participant_required" do
-        event = create(:event, is_private: false)
-        outsider = create(:user)
-        sign_in outsider
-        team = team_slot(event, "team_one")
+    it "does not update the label when the user is not a participant" do
+      event = create(:event, is_private: false)
+      outsider = create(:user)
+      team = team_slot(event, "team_one")
+      original_label = team.label
+      sign_in outsider
 
-        patch event_event_team_path(event, team), params: { event_team: { label: "Barcelone" } }
+      patch event_event_team_path(event, team), params: { event_team: { label: "Barcelona" } }
 
-        expect(response).to redirect_to(event_path(event))
-        expect(flash[:alert]).to eq(I18n.t("event_team.authorization.participant_required"))
-      end
+      expect(team.reload.label).to eq(original_label)
     end
 
-    context "quand on tente de renommer le banc" do
-      it "affiche un flash alert avec la clé event_team.authorization.bench_not_renamable" do
-        event = create(:event, is_private: false)
-        participant = create(:user)
-        create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_one"))
-        sign_in participant
-        bench = team_slot(event, "bench")
+    it "does not update the bench label" do
+      event = create(:event, is_private: false)
+      participant = create(:user)
+      create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_one"))
+      bench = team_slot(event, "bench")
+      original_label = bench.label
+      sign_in participant
 
-        patch event_event_team_path(event, bench), params: { event_team: { label: "Remplaçants" } }
+      patch event_event_team_path(event, bench), params: { event_team: { label: "Substitutes" } }
 
-        expect(response).to redirect_to(event_path(event))
-        expect(flash[:alert]).to eq(I18n.t("event_team.authorization.bench_not_renamable"))
-      end
+      expect(bench.reload.label).to eq(original_label)
     end
 
-    context "quand le label proposé contient des caractères interdits" do
-      it "affiche un flash alert avec les erreurs du modèle EventTeam et ne modifie pas le label" do
-        event = create(:event, is_private: false)
-        participant = create(:user)
-        create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_two"))
-        sign_in participant
-        team = team_slot(event, "team_one")
+    it "does not update the label when validation fails" do
+      event = create(:event, is_private: false)
+      participant = create(:user)
+      create(:event_participant, user: participant, event: event, event_team: team_slot(event, "team_two"))
+      team = team_slot(event, "team_one")
+      original_label = team.label
+      sign_in participant
 
-        patch event_event_team_path(event, team), params: { event_team: { label: "Real-Madrid!" } }
+      patch event_event_team_path(event, team), params: { event_team: { label: "Real-Madrid!" } }
 
-        expect(response).to redirect_to(event_path(event))
-        expect(flash[:alert]).to be_present
-        expect(flash[:alert]).to include(EventTeam.human_attribute_name(:label))
-        expect(team.reload.label).not_to eq("Real-Madrid!")
-      end
+      expect(team.reload.label).to eq(original_label)
     end
   end
 end
