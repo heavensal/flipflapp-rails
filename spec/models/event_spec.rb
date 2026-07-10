@@ -122,6 +122,13 @@ RSpec.describe Event, type: :model do
       expect(event.countable_slots_full?).to be(true)
       expect(event.countable_slots_per_team).to eq(1)
     end
+
+    it "gives team_one floor(n/2) and team_two ceil(n/2) when n is odd" do
+      event = create(:event, number_of_participants: 11)
+
+      expect(event.countable_slots_for(team_slot(event, "team_one"))).to eq(5)
+      expect(event.countable_slots_for(team_slot(event, "team_two"))).to eq(6)
+    end
   end
 
   describe "notifications" do

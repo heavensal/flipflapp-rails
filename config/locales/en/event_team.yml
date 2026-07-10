@@ -33,6 +33,8 @@ en:
           too_many_teams: "cannot exceed three teams per event"
         event_participant:
           attributes:
+            user_id:
+              taken: "is already registered for this event"
             event_team:
               countable_full: "teams are full — join the bench"
               team_full: "this team is full"

@@ -3,7 +3,7 @@ class EventParticipant < ApplicationRecord
   belongs_to :event
   belongs_to :event_team
 
-  validates :user_id, uniqueness: { scope: [ :event_id ], message: "est déjà inscrit à cet événement" }
+  validates :user_id, uniqueness: { scope: :event_id }
   validate :countable_team_has_capacity, if: :targeting_countable_team?
 
   after_create :notify_joining

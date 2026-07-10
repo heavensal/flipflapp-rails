@@ -4,12 +4,12 @@
 
     <% participants = team_2.event_participants %>
     <p class="text-center text-xs text-white/70">
-      <%= participants.size %>/<%= event.countable_slots_per_team %>
+      <%= participants.size %>/<%= team_2.capacity %>
     </p>
 
     <div class="flex flex-col gap-1">
       <% if participants.empty? %>
-        <p class="text-center text-gray-400">Aucun joueur dans cette équipe</p>
+        <p class="text-center text-gray-400"><%= t("event_participants.teams.empty") %></p>
       <% end %>
       <% participants.each do |event_participant| %>
         <%= render 'event_participants/one_player_team_2_card', event_participant: event_participant %>

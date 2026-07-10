@@ -7,7 +7,7 @@
   <div class="grid grid-cols-2 gap-1">
     <% participants = bench.event_participants %>
     <% if participants.empty? %>
-      <p class="text-center text-gray-400 col-span-2">Aucun joueur sur le banc</p>
+      <p class="text-center text-gray-400 col-span-2"><%= t("event_participants.bench.empty") %></p>
     <% end %>
     <% participants.each do |event_participant| %>
 

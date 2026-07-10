@@ -174,6 +174,21 @@ RSpec.describe EventTeam, type: :model do
       expect(bench.full?).to be(false)
       expect(bench.joinable?).to be(true)
     end
+
+    it "uses a higher cap for team_two when number_of_participants is odd" do
+      event = create(:event, number_of_participants: 11)
+      team_one = team_slot(event, "team_one")
+      team_two = team_slot(event, "team_two")
+
+      expect(team_one.capacity).to eq(5)
+      expect(team_two.capacity).to eq(6)
+
+      4.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_one)
+      end
+      expect(team_one.full?).to be(true)
+      expect(team_two.full?).to be(false)
+    end
   end
 
   describe "participation notifications when switching teams" do

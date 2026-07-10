@@ -13,7 +13,7 @@ RSpec.describe EventParticipant, type: :model do
 
       duplicate = build(:event_participant, user: player, event: event, event_team: team_slot(event, "team_two"))
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors[:user_id]).to be_present
+      expect(duplicate.errors[:user_id]).to include(I18n.t("activerecord.errors.models.event_participant.attributes.user_id.taken"))
     end
   end
 
@@ -76,6 +76,26 @@ RSpec.describe EventParticipant, type: :model do
       bench_player = build(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))
 
       expect(bench_player).to be_valid
+    end
+
+    it "allows the extra slot on team_two when number_of_participants is odd" do
+      event = create(:event, number_of_participants: 11)
+      team_one = team_slot(event, "team_one")
+      team_two = team_slot(event, "team_two")
+
+      4.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_one)
+      end
+      5.times do
+        create(:event_participant, user: create(:user), event: event, event_team: team_two)
+      end
+
+      expect(event.participants_count).to eq(10)
+      expect(team_one.full?).to be(true)
+      expect(team_two.full?).to be(false)
+
+      extra_player = build(:event_participant, user: create(:user), event: event, event_team: team_two)
+      expect(extra_player).to be_valid
     end
 
     it "rejects switching from the bench to a countable team when slots are full" do
@@ -268,15 +288,22 @@ RSpec.describe EventParticipant, type: :model do
       create(:event_participant, user: team_player_one, event: event, event_team: team_slot(event, "team_one"))
       create(:event_participant, user: team_player_two, event: event, event_team: team_slot(event, "team_two"))
       joining_user = create(:user)
+      inserted_rows = nil
 
-      expect(Notification).to receive(:insert_all).once.and_call_original
+      expect(Notification).to receive(:insert_all).once.and_wrap_original do |original, rows|
+        inserted_rows = rows
+        original.call(rows)
+      end
 
-      create(:event_participant, user: joining_user, event: event, event_team: team_slot(event, "team_two"))
+      expect {
+        create(:event_participant, user: joining_user, event: event, event_team: team_slot(event, "team_two"))
+      }.to change { Notification.where(kind: :joined).count }.by(3)
 
-      notifs = Notification.where(kind: :joined).order(:id).last(2)
-      expect(notifs.map(&:user_id)).to contain_exactly(team_player_one.id, team_player_two.id)
-      expect(notifs.first.notifiable).to eq(event)
-      expect(notifs.first.payload["player"]).to eq(joining_user.first_name)
+      expect(inserted_rows.map { |row| row[:user_id] }).to contain_exactly(
+        event.user.id, team_player_one.id, team_player_two.id
+      )
+      expect(inserted_rows.first[:notifiable_id]).to eq(event.id)
+      expect(inserted_rows.first[:payload][:player]).to eq(joining_user.first_name)
     end
 
     it "does not call insert_all when there are no countable recipients" do
