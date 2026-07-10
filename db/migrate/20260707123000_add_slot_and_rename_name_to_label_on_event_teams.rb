@@ -28,6 +28,7 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
   end.freeze
 
   ORDERED_SLOTS = %w[team_one team_two bench].freeze
+  LABEL_MAX_LENGTH = 255
 
   class EventTeam < ApplicationRecord
     self.table_name = "event_teams"
@@ -102,18 +103,46 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
       EventTeam.reset_column_information
 
       EventTeam.distinct.pluck(:event_id).each do |event_id|
-        seen_normalized_labels = {}
+        used_labels = {}
+        used_normalized_labels = {}
 
         EventTeam.where(event_id: event_id).order(:id).each do |team|
-          key = normalize_label(team.label)
+          current_label = team.label.to_s
+          key = normalize_label(current_label)
 
-          if seen_normalized_labels[key]
-            team.update_columns(label: "#{team.label} (#{team.id})")
-          else
-            seen_normalized_labels[key] = true
+          if used_normalized_labels[key]
+            deduplicated_label = next_available_label(
+              base_label: current_label,
+              team_id: team.id,
+              used_labels: used_labels,
+              used_normalized_labels: used_normalized_labels
+            )
+            team.update_columns(label: deduplicated_label)
+            current_label = deduplicated_label
+            key = normalize_label(current_label)
           end
+
+          used_labels[current_label] = true
+          used_normalized_labels[key] = true
         end
       end
+    end
+  end
+
+  def next_available_label(base_label:, team_id:, used_labels:, used_normalized_labels:)
+    attempt = 0
+
+    loop do
+      suffix = attempt.zero? ? " (#{team_id})" : " (#{team_id}-#{attempt + 1})"
+      max_base_length = LABEL_MAX_LENGTH - suffix.length
+      raise ActiveRecord::IrreversibleMigration, "Unable to deduplicate label for event_team #{team_id}" if max_base_length <= 0
+
+      candidate = "#{base_label.mb_chars.limit(max_base_length)}#{suffix}"
+      normalized_candidate = normalize_label(candidate)
+
+      return candidate unless used_labels[candidate] || used_normalized_labels[normalized_candidate]
+
+      attempt += 1
     end
   end
 
