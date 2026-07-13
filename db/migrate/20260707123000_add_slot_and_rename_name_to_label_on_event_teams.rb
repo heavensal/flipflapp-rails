@@ -39,6 +39,7 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
 
     backfill_slots
     deduplicate_labels_per_event
+    assert_labels_unique_per_event!
 
     change_column_null :event_teams, :slot, false
     add_index :event_teams, %i[event_id slot], unique: true
@@ -108,13 +109,43 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
           key = normalize_label(team.label)
 
           if seen_normalized_labels[key]
-            team.update_columns(label: "#{team.label} (#{team.id})")
-          else
-            seen_normalized_labels[key] = true
+            new_label = deduplicated_label(team.label, team.id, seen_normalized_labels)
+            team.update_columns(label: new_label)
+            key = normalize_label(new_label)
           end
+
+          seen_normalized_labels[key] = true
         end
       end
     end
+  end
+
+  def deduplicated_label(original_label, team_id, seen_normalized_labels)
+    candidate = "#{original_label} (#{team_id})"
+    return candidate unless seen_normalized_labels.key?(normalize_label(candidate))
+
+    suffix = 2
+    loop do
+      candidate = "#{original_label} (#{team_id}-#{suffix})"
+      break unless seen_normalized_labels.key?(normalize_label(candidate))
+
+      suffix += 1
+    end
+    candidate
+  end
+
+  def assert_labels_unique_per_event!
+    duplicates = connection.select_all(<<~SQL.squish)
+      SELECT event_id, LOWER(TRIM(label)) AS normalized, COUNT(*)::int AS count
+      FROM event_teams
+      GROUP BY event_id, LOWER(TRIM(label))
+      HAVING COUNT(*) > 1
+      LIMIT 5
+    SQL
+    return if duplicates.empty?
+
+    raise ActiveRecord::IrreversibleMigration,
+          "case-insensitive duplicate labels remain after deduplication: #{duplicates.rows.inspect}"
   end
 
   def normalize_label(label)
