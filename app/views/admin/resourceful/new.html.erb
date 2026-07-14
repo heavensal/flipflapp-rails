@@ -1,0 +1,7 @@
+<main class="min-h-dvh text-white px-4 py-8 max-w-3xl mx-auto">
+  <%= render "admin/shared/breadcrumbs", resource: resource, record: @record %>
+
+  <h1 class="text-3xl font-bold mb-6"><%= t("admin.actions.new") %> — <%= admin_model_name(resource) %></h1>
+
+  <%= render "admin/resourceful/form", resource: resource, record: @record %>
+</main>

@@ -18,6 +18,10 @@ class User < ApplicationRecord
   validates :role, inclusion: { in: ROLES }
   validates :status, inclusion: { in: STATUSES }
 
+  def admin?
+    role == "admin"
+  end
+
   before_validation :set_uid_and_provider
   before_validation :set_username, on: :create
 

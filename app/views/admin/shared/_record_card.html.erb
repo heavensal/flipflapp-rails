@@ -1,0 +1,10 @@
+<section class="rounded-2xl bg-white/5 border border-white/10 p-6">
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <% resource.display_columns.each do |column| %>
+      <div>
+        <dt class="text-xs uppercase tracking-wide text-white/50"><%= column %></dt>
+        <dd class="mt-1 break-all"><%= admin_format_value(record, column) %></dd>
+      </div>
+    <% end %>
+  </dl>
+</section>

@@ -1,0 +1,33 @@
+<% association_resource = records.first && Admin::Resource.for_model(records.first) %>
+<% columns = association_resource&.display_columns || %w[id] %>
+
+<div class="overflow-x-auto rounded-2xl border border-white/10">
+  <table class="min-w-full text-sm">
+    <thead class="bg-white/10 text-left">
+      <tr>
+        <% columns.each do |column| %>
+          <th class="px-4 py-3 font-semibold whitespace-nowrap"><%= column %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% records.each do |associated_record| %>
+        <% entry = Admin::Resource.for_model(associated_record) %>
+        <% row_path = entry&.admin_path(associated_record, self) %>
+        <tr class="border-t border-white/10 hover:bg-white/10">
+          <% columns.each do |column| %>
+            <td class="p-0 whitespace-nowrap">
+              <% if row_path %>
+                <%= link_to row_path, class: "block px-4 py-3 h-full #{column == columns.first ? "text-amber-400" : ""}" do %>
+                  <%= admin_format_value(associated_record, column) %>
+                <% end %>
+              <% else %>
+                <span class="block px-4 py-3"><%= admin_format_value(associated_record, column) %></span>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,6 +1,16 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  describe "roles" do
+    it "identifies admin users" do
+      admin = build(:user, role: "admin")
+      player = build(:user, role: "player")
+
+      expect(admin).to be_admin
+      expect(player).not_to be_admin
+    end
+  end
+
   describe "validations" do
     it "requires first_name and last_name" do
       user = build(:user, first_name: nil, last_name: nil)
