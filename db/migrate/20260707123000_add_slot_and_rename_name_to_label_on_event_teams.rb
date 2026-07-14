@@ -28,6 +28,7 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
   end.freeze
 
   ORDERED_SLOTS = %w[team_one team_two bench].freeze
+  LABEL_MAX_LENGTH = 24
 
   class EventTeam < ApplicationRecord
     self.table_name = "event_teams"
@@ -108,13 +109,21 @@ class AddSlotAndRenameNameToLabelOnEventTeams < ActiveRecord::Migration[8.0]
           key = normalize_label(team.label)
 
           if seen_normalized_labels[key]
-            team.update_columns(label: "#{team.label} (#{team.id})")
+            team.update_columns(label: deduplicated_label(team))
           else
             seen_normalized_labels[key] = true
           end
         end
       end
     end
+  end
+
+  def deduplicated_label(team)
+    suffix = " #{team.id}"
+    label = team.label.to_s.strip.gsub(/\s+/, " ")
+    base = label[0, LABEL_MAX_LENGTH - suffix.length].rstrip
+
+    "#{base}#{suffix}"
   end
 
   def normalize_label(label)
