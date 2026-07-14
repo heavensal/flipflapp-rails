@@ -1,4 +1,8 @@
 en:
+  users:
+    show:
+      edit_profile: "Edit profile"
+
   activerecord:
     errors:
       models:

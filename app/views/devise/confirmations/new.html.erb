@@ -1,9 +1,9 @@
 <% confirmation_email = resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email %>
 <% confirmation_email_valid = confirmation_email.present? && confirmation_email.match?(Devise.email_regexp) %>
 
-<h1 class="text-3xl font-bold text-white text-center my-8"><%= t("devise.confirmations.resend_title") %></h1>
+<h1 class="text-3xl font-bold text-white text-center my-8"><%= t(".resend_title") %></h1>
 <p class="text-secondary-text text-center">
-  <%= t("devise.confirmations.resend_description") %>
+  <%= t(".resend_description") %>
 </p>
 
 <main class="p-4 min-h-dvh">
@@ -18,12 +18,12 @@
         }
       ) do |f| %>
     <div>
-      <%= f.label :email, t("devise.confirmations.email_label"), class: "block text-secondary-text mb-2" %>
+      <%= f.label :email, t("devise.attributes.email"), class: "block text-secondary-text mb-2" %>
       <%= f.email_field :email,
             autofocus: true,
             autocomplete: "email",
             value: confirmation_email,
-            placeholder: t("devise.confirmations.email_placeholder"),
+            placeholder: t("devise.placeholders.email"),
             class: "form-text-input",
             data: {
               form__email_validation_target: "input",
@@ -45,7 +45,7 @@
     </div>
 
     <div class="mt-6">
-      <%= f.submit t("devise.confirmations.resend_submit"),
+      <%= f.submit t(".resend_submit"),
             class: [
               "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2",
               "font-semibold transition active:scale-95 active:bg-yellow-500",

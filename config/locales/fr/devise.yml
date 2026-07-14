@@ -1,14 +1,40 @@
 fr:
   devise:
+    navigation:
+      sign_in: "Connexion"
+      sign_out: "Déconnexion"
+      sign_up: "S'inscrire"
+      edit_account: "Modifier le compte"
+      my_profile: "Mon profil"
+    attributes:
+      email: "Adresse email"
+      password: "Mot de passe"
+      password_confirmation: "Confirmer le mot de passe"
+      new_password: "Nouveau mot de passe"
+      new_password_confirmation: "Confirmer le nouveau mot de passe"
+      current_password: "Mot de passe actuel"
+      first_name: "Prénom"
+      last_name: "Nom"
+      avatar: "Photo de profil"
+      remember_me: "Se souvenir de moi"
+    hints:
+      minimum_password_length: "%{count} caractères minimum"
+      password_optional: "laissez vide si vous ne voulez pas le changer"
+      current_password_required: "requis pour confirmer vos modifications"
+      pending_reconfirmation: "En attente de confirmation pour : %{email}"
+    placeholders:
+      email: "ton@email.fr"
+      first_name: "Cristiano"
+      last_name: "Ronaldo"
+      choose_avatar: "Choisir une image..."
     confirmations:
       confirmed: "Votre compte a été confirmé."
-      email_label: "Adresse email"
-      email_placeholder: "ton@email.fr"
-      resend_description: "Indiquez l'adresse email de votre compte pour recevoir un nouveau lien de confirmation."
-      resend_submit: "Renvoyer l'email de confirmation"
-      resend_title: "Renvoyer l'email de confirmation"
       send_instructions: "Vous allez recevoir un e-mail contenant des instructions pour confirmer votre compte."
       send_paranoid_instructions: "Si votre adresse e-mail existe dans notre base de données, vous recevrez un e-mail contenant des instructions pour confirmer votre compte."
+      new:
+        resend_description: "Indiquez l'adresse email de votre compte pour recevoir un nouveau lien de confirmation."
+        resend_submit: "Renvoyer l'email de confirmation"
+        resend_title: "Renvoyer l'email de confirmation"
     failure:
       already_authenticated: "Vous êtes déjà connecté."
       inactive: "Votre compte n'est pas activé."
@@ -20,21 +46,72 @@ fr:
       unauthenticated: "Vous devez vous connecter ou vous inscrire pour continuer."
       unconfirmed: "Vous devez confirmer votre compte avant de pouvoir vous connecter."
     mailer:
+      layout:
+        default_title: "Flipflapp"
+        banner_alt: "Flipflapp - Organise tes matchs de foot"
+        powered_by: "Projet propulsé par"
+        logo_alt: "Logo Flipflapp"
       confirmation_instructions:
         subject: "Instructions de confirmation"
+        title: "Confirmation d'inscription à Flipflapp"
+        greeting: "Salut %{first_name},"
+        headline: "Organise tes parties de foot dès maintenant !"
+        body: "Tu as reçu cet email car tu as créé un compte sur notre site. Pour finaliser ton inscription, confirme ton adresse e-mail en cliquant sur le bouton ci-dessous :"
+        cta: "Confirme mon compte"
+        ignore: "Si tu ne t'es pas inscrit, ignore simplement cet email."
+        after_confirm: "Une fois confirmé, cet email sera associé à ton compte."
       reset_password_instructions:
         subject: "Instructions de réinitialisation du mot de passe"
+        title: "Réinitialisation du mot de passe - Flipflapp"
+        greeting: "Salut %{first_name},"
+        headline: "Tu as demandé un nouveau mot de passe !"
+        body: "Tu as reçu cet email car tu as demandé à réinitialiser ton mot de passe sur Flipflapp."
+        instructions: "Pour créer un nouveau mot de passe, clique sur le bouton ci-dessous :"
+        cta: "Changer mon mot de passe"
+        ignore: "Si tu n'as pas demandé cette réinitialisation, ignore simplement cet email."
+        unchanged: "Ton mot de passe ne changera que si tu accèdes au lien ci-dessus et en crées un nouveau."
+      password_change:
+        subject: "Mot de passe modifié"
+        title: "Mot de passe modifié sur Flipflapp"
+        greeting: "Salut %{first_name},"
+        headline: "Ton mot de passe a été modifié !"
+        body: "Nous te contactons pour t'informer que ton mot de passe a été changé avec succès."
+        source: "Cette modification a été effectuée depuis ton compte Flipflapp."
+        cta: "Accéder à mon compte"
+        warning: "Si tu n'es pas à l'origine de ce changement, contacte-nous immédiatement."
+      email_changed:
+        subject: "Adresse email modifiée"
+        title: "Changement d'adresse email sur Flipflapp"
+        greeting: "Salut %{first_name},"
+        headline: "Ton email a été modifié !"
+        pending_body: "Nous te contactons pour t'informer que ton email est en cours de changement pour %{email}."
+        pending_note: "Ce changement sera effectif une fois que tu auras confirmé la nouvelle adresse."
+        confirmed_body: "Nous te contactons pour t'informer que ton email a été changé avec succès pour %{email}."
+        confirmed_note: "Tu peux maintenant utiliser cette nouvelle adresse pour te connecter sur Flipflapp."
+        cta: "Accéder à mon compte"
+        warning: "Si tu n'es pas à l'origine de ce changement, contacte-nous immédiatement."
       unlock_instructions:
         subject: "Instructions de déverrouillage"
-    omniauth_callbacks:
-      failure: "Impossible de se connecter via %{kind}, veuillez réessayer."
-      success: "Vous êtes maintenant connecté via %{kind}."
+        title: "Déverrouillage de compte - Flipflapp"
+        greeting: "Salut %{first_name},"
+        headline: "Ton compte a été verrouillé !"
+        body: "Ton compte a été verrouillé suite à un nombre excessif de tentatives de connexion infructueuses."
+        instructions: "Pour déverrouiller ton compte, clique sur le bouton ci-dessous :"
+        cta: "Déverrouiller mon compte"
+        after_unlock: "Une fois déverrouillé, tu pourras te reconnecter normalement sur Flipflapp."
     passwords:
       no_token: "Vous ne pouvez pas accéder à cette page sans jeton de réinitialisation du mot de passe."
       send_instructions: "Vous allez recevoir un e-mail contenant des instructions pour réinitialiser votre mot de passe."
       send_paranoid_instructions: "Si votre adresse e-mail existe dans notre base de données, vous recevrez un e-mail contenant des instructions pour réinitialiser votre mot de passe."
       updated: "Votre mot de passe a été modifié avec succès. Vous êtes maintenant connecté."
       updated_not_active: "Votre mot de passe a été modifié avec succès."
+      new:
+        title: "Mot de passe oublié ?"
+        description: "Entrez votre email et nous vous enverrons les instructions pour réinitialiser votre mot de passe."
+        submit: "Réinitialiser mon mot de passe"
+      edit:
+        title: "Changer mon mot de passe"
+        submit: "Changer mon mot de passe"
     registrations:
       destroyed: "Votre compte a été supprimé avec succès."
       signed_up: "Bienvenue ! Vous vous êtes inscrit avec succès."
@@ -45,39 +122,49 @@ fr:
       updated: "Votre compte a été mis à jour avec succès."
       user:
         signed_up: "Bienvenue ! Vous vous êtes inscrit avec succès."
+      new:
+        title: "Créer un compte"
+        subtitle: "Rejoignez la communauté FlipFlapp et commencez à organiser vos matchs !"
+        submit: "S'inscrire"
+        avatar_preview_alt: "Aperçu"
+      edit:
+        title: "Modifier mon profil"
+        subtitle: "Mettez à jour vos informations personnelles"
+        current_avatar: "Photo actuelle :"
+        submit: "Mettre à jour"
+        danger_zone_title: "Zone dangereuse"
+        danger_zone_description: "Cette action est irréversible"
+        delete_account: "Supprimer mon compte"
+        delete_confirm: "Êtes-vous sûr de vouloir supprimer votre compte ?"
+        delete_confirm_short: "Êtes-vous sûr ?"
+        back: "Retour"
     sessions:
       signed_in: "Connecté avec succès."
       signed_out: "Déconnecté avec succès."
       already_signed_out: "Déjà déconnecté."
       user:
         signed_in: "Vous êtes connecté(e)."
+      new:
+        title: "Connexion"
+        submit: "Se connecter"
+    shared:
+      links:
+        sign_in: "Connexion"
+        sign_up_prompt: "Rejoins l'aventure maintenant !"
+        sign_up: "Inscription"
+        forgot_password: "Mot de passe oublié ?"
+        resend_confirmation: "Tu n'as pas reçu d'instructions de confirmation ?"
+        resend_unlock: "Tu n'as pas reçu d'instructions de déverrouillage ?"
     unlocks:
       send_instructions: "Vous allez recevoir un e-mail contenant des instructions pour déverrouiller votre compte."
       send_paranoid_instructions: "Si votre adresse e-mail existe dans notre base de données, vous recevrez un e-mail contenant des instructions pour déverrouiller votre compte."
       unlocked: "Votre compte a été déverrouillé avec succès."
-
-  activerecord:
-    errors:
-      models:
-        user:
-          attributes:
-            first_name:
-              blank: "Le prénom ne peut pas être vide."
-            last_name:
-              blank: "Le nom ne peut pas être vide."
-          blank: "Veuillez remplir tous les champs obligatoires."
-      messages:
-        blank: "Ce champ ne peut pas être vide."
-        not_saved: "Impossible d'enregistrer %{count} %{resource} : %{errors}."
+      new:
+        title: "Renvoyer les instructions de déverrouillage"
+        submit: "Renvoyer les instructions de déverrouillage"
 
   errors:
-    attributes:
-      first_name:
-        blank: "Le prénom ne peut pas être vide."
-      last_name:
-        blank: "Le nom ne peut pas être vide."
     messages:
-      blank: "Ce champ ne peut pas être vide."
       not_saved:
         one: "Une erreur a empêché l'enregistrement de ce %{resource} :"
         other: "%{count} erreurs ont empêché l'enregistrement de ce %{resource} :"

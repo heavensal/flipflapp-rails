@@ -21,12 +21,8 @@ Rails.application.routes.draw do
     root to: "pages#home", as: :unauthenticated_root
   end
   devise_for :users, controllers: {
-    # omniauth_callbacks: "users/omniauth_callbacks",
     confirmations: "users/confirmations",
-    registrations: "users/registrations",
-    passwords: "users/passwords",
-    unlocks: "users/unlocks",
-    sessions: "users/sessions"
+    registrations: "users/registrations"
   }
   get "me", to: "users#me", as: :me
   resources :users, only: [ :show ]

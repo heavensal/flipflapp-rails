@@ -1,27 +1,27 @@
-<h1 class="text-3xl text-center text-white m-8">Connexion</h1>
+<h1 class="text-3xl text-center text-white m-8"><%= t(".title") %></h1>
 
 <main class="p-4 min-h-dvh">
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
     <div>
-      <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
+      <%= f.label :email, t("devise.attributes.email"), class: "block text-secondary-text mb-2" %>
       <%= f.email_field :email, autocomplete: "email", class: "form-text-input" %>
     </div>
 
     <div>
-      <%= f.label :password, "Mot de passe", class: "block text-secondary-text mb-2" %>
+      <%= f.label :password, t("devise.attributes.password"), class: "block text-secondary-text mb-2" %>
       <%= f.password_field :password, autocomplete: "current-password", class: "form-text-input" %>
     </div>
 
     <% if devise_mapping.rememberable? %>
       <div class="flex items-center">
         <%= f.check_box :remember_me, class: "form-checkbox-input" %>
-        <%= f.label :remember_me, "Se souvenir de moi", class: "ml-2 text-secondary-text" %>
+        <%= f.label :remember_me, t("devise.attributes.remember_me"), class: "ml-2 text-secondary-text" %>
       </div>
     <% end %>
 
     <div class="mt-6">
-      <%= f.submit "Se connecter", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+      <%= f.submit t(".submit"), class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
     </div>
   <% end %>
 

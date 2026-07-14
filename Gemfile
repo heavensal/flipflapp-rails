@@ -73,8 +73,6 @@ group :test do
 end
 
 gem "devise"
-gem "omniauth"
-gem "omniauth-google-oauth2"
 
 gem "cloudinary"
 gem "carrierwave"

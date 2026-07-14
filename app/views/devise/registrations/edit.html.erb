@@ -1,6 +1,6 @@
-<h1 class="text-3xl font-bold text-white text-center my-8">Modifier mon profil</h1>
+<h1 class="text-3xl font-bold text-white text-center my-8"><%= t(".title") %></h1>
 <p class="text-secondary-text text-center">
-  Mettez à jour vos informations personnelles
+  <%= t(".subtitle") %>
 </p>
 
 <main class="p-4 min-h-dvh">
@@ -9,45 +9,45 @@
     <%= render "devise/shared/error_messages", resource: resource %>
 
     <div>
-      <%= f.label :first_name, "Prénom", class: "block text-secondary-text mb-2" %>
-      <%= f.text_field :first_name, autocomplete: "first-name", placeholder: "Cristiano", class: "form-text-input" %>
+      <%= f.label :first_name, t("devise.attributes.first_name"), class: "block text-secondary-text mb-2" %>
+      <%= f.text_field :first_name, autocomplete: "first-name", placeholder: t("devise.placeholders.first_name"), class: "form-text-input" %>
     </div>
 
     <div>
-      <%= f.label :last_name, "Nom", class: "block text-secondary-text mb-2" %>
-      <%= f.text_field :last_name, autocomplete: "last-name", placeholder: "Ronaldo", class: "form-text-input" %>
+      <%= f.label :last_name, t("devise.attributes.last_name"), class: "block text-secondary-text mb-2" %>
+      <%= f.text_field :last_name, autocomplete: "last-name", placeholder: t("devise.placeholders.last_name"), class: "form-text-input" %>
     </div>
 
     <div>
-      <%= f.label :avatar, "Photo de profil", class: "block text-secondary-text mb-2" %>
+      <%= f.label :avatar, t("devise.attributes.avatar"), class: "block text-secondary-text mb-2" %>
       <%= f.file_field :avatar, class: "form-text-input" %>
       <% if resource.avatar? %>
         <div class="mt-3 text-center">
-          <p class="text-indigo-100/60 text-sm mb-2">Photo actuelle :</p>
+          <p class="text-indigo-100/60 text-sm mb-2"><%= t(".current_avatar") %></p>
           <%= cl_image_tag resource.avatar, class: "rounded-full size-24 mx-auto border-2 border-primary-yellow" %>
         </div>
       <% end %>
     </div>
 
     <div>
-      <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
-      <%= f.email_field :email, autocomplete: "email", placeholder: "ton@email.fr", class: "form-text-input" %>
+      <%= f.label :email, t("devise.attributes.email"), class: "block text-secondary-text mb-2" %>
+      <%= f.email_field :email, autocomplete: "email", placeholder: t("devise.placeholders.email"), class: "form-text-input" %>
       <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
         <p class="text-yellow-400 text-sm mt-1">
-          En attente de confirmation pour : <%= resource.unconfirmed_email %>
+          <%= t("devise.hints.pending_reconfirmation", email: resource.unconfirmed_email) %>
         </p>
       <% end %>
     </div>
 
     <div>
       <div class="text-secondary-text mb-2">
-        <%= f.label :password, "Nouveau mot de passe" %>
+        <%= f.label :password, t("devise.attributes.new_password") %>
         <span class="text-sm text-indigo-100/60">
-          (laissez vide si vous ne voulez pas le changer)
+          (<%= t("devise.hints.password_optional") %>)
         </span>
         <% if @minimum_password_length %>
           <span class="text-sm text-indigo-100/60">
-            - <%= @minimum_password_length %> caractères minimum
+            - <%= t("devise.hints.minimum_password_length", count: @minimum_password_length) %>
           </span>
         <% end %>
       </div>
@@ -55,36 +55,36 @@
     </div>
 
     <div>
-      <%= f.label :password_confirmation, "Confirmer le nouveau mot de passe", class: "block text-secondary-text mb-2" %>
+      <%= f.label :password_confirmation, t("devise.attributes.new_password_confirmation"), class: "block text-secondary-text mb-2" %>
       <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-text-input" %>
     </div>
 
     <div>
       <div class="text-secondary-text mb-2">
-        <%= f.label :current_password, "Mot de passe actuel" %>
+        <%= f.label :current_password, t("devise.attributes.current_password") %>
         <span class="text-sm text-indigo-100/60">
-          (requis pour confirmer vos modifications)
+          (<%= t("devise.hints.current_password_required") %>)
         </span>
       </div>
       <%= f.password_field :current_password, autocomplete: "current-password", class: "form-text-input" %>
     </div>
 
     <div class="mt-6">
-      <%= f.submit "Mettre à jour", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+      <%= f.submit t(".submit"), class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
     </div>
   <% end %>
 
   <div class="text-center mt-8 space-y-4">
-    <h3 class="text-xl font-semibold text-red-400">Zone dangereuse</h3>
-    <p class="text-indigo-100/60 text-sm">Cette action est irréversible</p>
-    <%= button_to "Supprimer mon compte", registration_path(resource_name),
-        data: { confirm: "Êtes-vous sûr de vouloir supprimer votre compte ?", turbo_confirm: "Êtes-vous sûr ?" },
+    <h3 class="text-xl font-semibold text-red-400"><%= t(".danger_zone_title") %></h3>
+    <p class="text-indigo-100/60 text-sm"><%= t(".danger_zone_description") %></p>
+    <%= button_to t(".delete_account"), registration_path(resource_name),
+        data: { confirm: t(".delete_confirm"), turbo_confirm: t(".delete_confirm_short") },
         method: :delete,
         class: "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition" %>
   </div>
 
   <div class="text-center mt-6">
-    <%= link_to "Retour", :back, class: "text-secondary-text hover:text-white transition" %>
+    <%= link_to t(".back"), :back, class: "text-secondary-text hover:text-white transition" %>
   </div>
 
 </main>

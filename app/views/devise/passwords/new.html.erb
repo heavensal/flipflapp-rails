@@ -1,19 +1,19 @@
-<h2 class="text-3xl text-center text-white mb-6">Mot de passe oublié ?</h2>
+<h2 class="text-3xl text-center text-white mb-6"><%= t(".title") %></h2>
 
 <div class="text-center mb-6">
-  <p class="text-secondary-text">Entrez votre email et nous vous enverrons les instructions pour réinitialiser votre mot de passe.</p>
+  <p class="text-secondary-text"><%= t(".description") %></p>
 </div>
 
 <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "max-w-md mx-auto mt-8 space-y-4" }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
   <div>
-    <%= f.label :email, "Adresse email", class: "block text-secondary-text mb-2" %>
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-text-input", placeholder: "votre@email.com" %>
+    <%= f.label :email, t("devise.attributes.email"), class: "block text-secondary-text mb-2" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-text-input", placeholder: t("devise.placeholders.email") %>
   </div>
 
   <div class="mt-6">
-    <%= f.submit "Réinitialiser mon mot de passe", class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+    <%= f.submit t(".submit"), class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
   </div>
 <% end %>
 
