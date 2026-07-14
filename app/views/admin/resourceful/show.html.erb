@@ -1,0 +1,58 @@
+<main class="min-h-dvh text-white px-4 py-8">
+  <%= render "admin/shared/breadcrumbs", resource: resource, record: @record %>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="text-3xl font-bold"><%= resource.record_label(@record) %></h1>
+    <div class="flex flex-wrap gap-2">
+      <% if resource.player_path(@record, self) %>
+        <%= link_to t("admin.actions.player_view"), resource.player_path(@record, self),
+                    class: "px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10",
+                    target: "_blank", rel: "noopener" %>
+      <% end %>
+      <%= link_to t("admin.actions.edit"), polymorphic_path([ :admin, @record ], action: :edit),
+                  class: "px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-400" %>
+      <%= button_to t("admin.actions.destroy"), polymorphic_path([ :admin, @record ]),
+                    method: :delete,
+                    form: { data: { turbo_confirm: t("admin.actions.destroy_confirm") } },
+                    class: "px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-semibold" %>
+    </div>
+  </div>
+
+  <%= render "admin/shared/record_card", resource: resource, record: @record %>
+
+  <% if @record.is_a?(User) %>
+    <div class="mt-6">
+      <%= button_to t("admin.users.send_password_reset"),
+                    send_password_reset_admin_user_path(@record),
+                    class: "px-4 py-2 rounded-lg border border-amber-400 text-amber-400 hover:bg-amber-400/10" %>
+    </div>
+  <% end %>
+
+  <% if @record.is_a?(Notification) && @record.notifiable.present? %>
+    <% notifiable_resource = Admin::Resource.for_model(@record.notifiable) %>
+    <% if notifiable_resource %>
+      <section class="mt-10">
+        <h2 class="text-xl font-semibold mb-4 text-amber-400"><%= t("admin.show.notifiable") %></h2>
+        <%= render "admin/shared/association_table",
+                   name: :notifiable,
+                   records: [ @record.notifiable ],
+                   parent_resource: resource %>
+      </section>
+    <% end %>
+  <% end %>
+
+  <% resource.associations.each do |association_name| %>
+    <% associated_records = resource.association_records(@record, association_name) %>
+    <% next if associated_records.empty? %>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-semibold mb-4 text-amber-400">
+        <%= t("admin.associations.#{association_name}", default: association_name.to_s.humanize) %>
+      </h2>
+      <%= render "admin/shared/association_table",
+                 name: association_name,
+                 records: associated_records,
+                 parent_resource: resource %>
+    </section>
+  <% end %>
+</main>

@@ -1,0 +1,32 @@
+<div class="overflow-x-auto rounded-2xl border border-white/10">
+  <table class="min-w-full text-sm">
+    <thead class="bg-white/10 text-left">
+      <tr>
+        <% resource.index_columns.each do |column| %>
+          <th class="px-4 py-3 font-semibold whitespace-nowrap"><%= column %></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% records.each do |record| %>
+        <% row_path = resource.admin_path(record, self) %>
+        <tr class="border-t border-white/10 hover:bg-white/10">
+          <% resource.index_columns.each do |column| %>
+            <td class="p-0 whitespace-nowrap">
+              <%= link_to row_path, class: "block px-4 py-3 h-full #{column == resource.index_columns.first ? "text-amber-400" : ""}" do %>
+                <%= admin_format_value(record, column) %>
+              <% end %>
+            </td>
+          <% end %>
+        </tr>
+      <% end %>
+      <% if records.empty? %>
+        <tr>
+          <td colspan="<%= resource.index_columns.size %>" class="px-4 py-8 text-center text-white/50">
+            <%= t("admin.index.empty") %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

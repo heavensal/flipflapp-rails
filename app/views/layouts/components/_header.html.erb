@@ -97,6 +97,14 @@
 
           </li>
 
+          <% if current_user.admin? %>
+            <li>
+              <%= link_to t("admin.navigation.link"), admin_root_path,
+                          data: { action: "click->navbar#closeMenu" },
+                          class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            </li>
+          <% end %>
+
         </ul>
 
         <hr class="my-4 border-white/20">

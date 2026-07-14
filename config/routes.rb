@@ -42,4 +42,16 @@ Rails.application.routes.draw do
     patch :read, on: :member
   end
   get "list", to: "notifications#list", as: :notifications_list
+
+  namespace :admin do
+    root to: "dashboard#index"
+    resources :users do
+      post :send_password_reset, on: :member
+    end
+    resources :events
+    resources :event_teams
+    resources :event_participants
+    resources :friendships
+    resources :notifications
+  end
 end

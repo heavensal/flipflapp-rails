@@ -1,0 +1,11 @@
+<main class="min-h-dvh text-white px-4 py-8">
+  <%= render "admin/shared/breadcrumbs", resource: resource %>
+
+  <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+    <h1 class="text-3xl font-bold"><%= admin_model_name(resource) %></h1>
+    <%= link_to t("admin.actions.new"), new_polymorphic_path([ :admin, resource.model_class ]),
+                class: "px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-400" %>
+  </div>
+
+  <%= render "admin/shared/index_table", resource: resource, records: @records %>
+</main>

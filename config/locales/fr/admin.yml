@@ -1,0 +1,55 @@
+fr:
+  admin:
+    navigation:
+      link: "Admin"
+      home: "Back office"
+    authorization:
+      forbidden: "Accès réservé aux administrateurs."
+    dashboard:
+      title: "Administration"
+      subtitle: "Consultation et intervention sur les données — outil de secours, pas un usage quotidien."
+      record_count:
+        one: "%{count} enregistrement"
+        other: "%{count} enregistrements"
+    models:
+      users: "Utilisateurs"
+      events: "Événements"
+      event_teams: "Équipes"
+      event_participants: "Participants"
+      friendships: "Amitiés"
+      notifications: "Notifications"
+    actions:
+      new: "Créer"
+      edit: "Modifier"
+      destroy: "Supprimer"
+      cancel: "Annuler"
+      player_view: "Vue joueur"
+      destroy_confirm: "Supprimer définitivement cet enregistrement ?"
+    flash:
+      created: "Enregistrement créé."
+      updated: "Enregistrement mis à jour."
+      destroyed: "Enregistrement supprimé."
+      create_failed: "Impossible de créer l'enregistrement."
+      update_failed: "Impossible de mettre à jour l'enregistrement."
+    index:
+      empty: "Aucun enregistrement."
+    show:
+      notifiable: "Objet lié (notifiable)"
+    labels:
+      yes: "Oui"
+      no: "Non"
+    users:
+      send_password_reset: "Envoyer un e-mail de réinitialisation du mot de passe"
+      password_reset_sent: "E-mail de réinitialisation envoyé."
+    associations:
+      events: "Événements"
+      event_participants: "Participations"
+      notifications: "Notifications"
+      sent_friendships: "Demandes envoyées"
+      received_friendships: "Demandes reçues"
+      event_teams: "Équipes"
+      user: "Organisateur"
+      event: "Événement"
+      event_team: "Équipe"
+      sender: "Expéditeur"
+      receiver: "Destinataire"

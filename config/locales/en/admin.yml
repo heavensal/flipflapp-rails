@@ -1,0 +1,55 @@
+en:
+  admin:
+    navigation:
+      link: "Admin"
+      home: "Back office"
+    authorization:
+      forbidden: "Admins only."
+    dashboard:
+      title: "Administration"
+      subtitle: "Inspect and fix data — emergency tool, not daily use."
+      record_count:
+        one: "%{count} record"
+        other: "%{count} records"
+    models:
+      users: "Users"
+      events: "Events"
+      event_teams: "Teams"
+      event_participants: "Participants"
+      friendships: "Friendships"
+      notifications: "Notifications"
+    actions:
+      new: "Create"
+      edit: "Edit"
+      destroy: "Delete"
+      cancel: "Cancel"
+      player_view: "Player view"
+      destroy_confirm: "Permanently delete this record?"
+    flash:
+      created: "Record created."
+      updated: "Record updated."
+      destroyed: "Record deleted."
+      create_failed: "Could not create record."
+      update_failed: "Could not update record."
+    index:
+      empty: "No records."
+    show:
+      notifiable: "Linked notifiable"
+    labels:
+      yes: "Yes"
+      no: "No"
+    users:
+      send_password_reset: "Send password reset email"
+      password_reset_sent: "Password reset email sent."
+    associations:
+      events: "Events"
+      event_participants: "Participations"
+      notifications: "Notifications"
+      sent_friendships: "Sent requests"
+      received_friendships: "Received requests"
+      event_teams: "Teams"
+      user: "Organizer"
+      event: "Event"
+      event_team: "Team"
+      sender: "Sender"
+      receiver: "Receiver"
