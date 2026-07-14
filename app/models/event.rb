@@ -1,6 +1,7 @@
 class Event < ApplicationRecord
   TRACKED_NOTIFICATION_FIELDS = %w[title start_time price number_of_participants].freeze
   TEAM_SLOTS = %w[team_one team_two bench].freeze
+  SLOT_DEFAULT_LABEL_KEYS = TEAM_SLOTS.index_with { |slot| "event_team.slots.#{slot}.default_label" }.freeze
 
   belongs_to :user
   has_many :event_teams, dependent: :destroy
@@ -23,6 +24,10 @@ class Event < ApplicationRecord
   before_destroy :prepare_cancellation_notifications, prepend: true
   after_destroy_commit :notify_cancellation
 
+  def self.default_label_for(slot)
+    I18n.t(SLOT_DEFAULT_LABEL_KEYS.fetch(slot.to_s))
+  end
+
   def self.visible_to(user)
     return none if user.blank?
 
@@ -38,7 +43,7 @@ class Event < ApplicationRecord
 
   def set_teams_and_author
     TEAM_SLOTS.each do |slot|
-      event_teams.create!(slot: slot, label: I18n.t("event_team.slots.#{slot}.default_label"))
+      event_teams.create!(slot: slot, label: self.class.default_label_for(slot))
     end
     event_participants.create!(user: user, event_team: event_teams.find_by!(slot: :team_one))
   end
