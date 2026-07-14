@@ -1,4 +1,8 @@
 fr:
+  users:
+    show:
+      edit_profile: "Modifier mon profil"
+
   activerecord:
     errors:
       models:

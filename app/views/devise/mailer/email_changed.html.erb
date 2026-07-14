@@ -1,17 +1,21 @@
 <%= content_for :title do %>
-  Changement d'adresse email sur Flipflapp
+  <%= t(".title") %>
 <% end %>
 
-<h1>Salut <%= @resource.first_name %>,<br> ton email a été modifié !</h1>
+<h1><%= t(".greeting", first_name: @resource.first_name) %><br><%= t(".headline") %></h1>
 
 <% if @resource.try(:unconfirmed_email?) %>
-  <p>Nous te contactons pour t'informer que ton email est en cours de changement pour <%= @resource.unconfirmed_email %>.</p>
+  <p><%= t(".pending_body", email: @resource.unconfirmed_email) %></p>
 
-  <p>Ce changement sera effectif une fois que tu auras confirmé la nouvelle adresse.</p>
+  <p><%= t(".pending_note") %></p>
 <% else %>
-  <p>Nous te contactons pour t'informer que ton email a été changé avec succès pour <%= @resource.email %>.</p>
+  <p><%= t(".confirmed_body", email: @resource.email) %></p>
 
-  <p>Tu peux maintenant utiliser cette nouvelle adresse pour te connecter sur Flipflapp.</p>
+  <p><%= t(".confirmed_note") %></p>
 <% end %>
 
-<p style="text-align: center;">Si tu n'es pas à l'origine de ce changement, contacte-nous immédiatement.</p>
+<p style="text-align: center;">
+  <%= link_to t(".cta"), unauthenticated_root_url, class: "btn" %>
+</p>
+
+<p style="text-align: center;"><%= t(".warning") %></p>

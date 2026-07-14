@@ -1,15 +1,14 @@
 <%= content_for :title do %>
-  Confirmation d'inscription à Flipflapp
+  <%= t(".title") %>
 <% end %>
 
-<h1>Salut <%= @resource.first_name %>,<br> organise tes parties de foot dès maintenant !</h1>
+<h1><%= t(".greeting", first_name: @resource.first_name) %><br><%= t(".headline") %></h1>
 
-<p>Tu as reçu cet email car tu as créé un compte sur notre site.
-Pour finaliser ton inscription, confirme ton adresse e-mail en cliquant sur le bouton ci-dessous :</p>
+<p><%= t(".body") %></p>
 
 <p style="text-align: center;">
-  <%= link_to 'Confirme mon compte', confirmation_url(@resource, confirmation_token: @token), class: "btn" %>
+  <%= link_to t(".cta"), confirmation_url(@resource, confirmation_token: @token), class: "btn" %>
 </p>
 
-<p style="text-align: center;">Si tu ne t'es pas inscrit, ignore simplement cet email.</p>
-<p style="text-align: center;">Une fois confirmé, cet email sera associé à ton compte.</p>
+<p style="text-align: center;"><%= t(".ignore") %></p>
+<p style="text-align: center;"><%= t(".after_confirm") %></p>

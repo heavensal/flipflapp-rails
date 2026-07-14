@@ -1,0 +1,7 @@
+fr:
+  pages:
+    home:
+      title: "Prêt à jouer ?"
+      description: "Crée un compte ou connecte-toi pour organiser tes matchs et inviter tes amis."
+      sign_up: "S'inscrire"
+      sign_in: "Se connecter"

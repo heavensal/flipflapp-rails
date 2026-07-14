@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title><%= content_for(:title) || "Flipflapp" %></title>
+    <title><%= content_for(:title) || t("devise.mailer.layout.default_title") %></title>
     <style>
       body {
         margin: 0;
@@ -66,7 +66,7 @@
   <body>
     <section class="container" role="main">
       <header>
-        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_email.jpg", alt: "Flipflapp - Organise tes matchs de foot" %>
+        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_email.jpg", alt: t("devise.mailer.layout.banner_alt") %>
       </header>
 
       <main>
@@ -74,8 +74,8 @@
       </main>
 
       <footer role="contentinfo">
-        <p>Projet propulsé par <%= link_to '#1344 Solutions', 'https://www.1344.fr', target: '_blank' %></p>
-        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_logo.png", alt: "Logo Flipflapp", width: 100, style: "margin-top:15px;" %>
+        <p><%= t("devise.mailer.layout.powered_by") %> <%= link_to '#1344 Solutions', 'https://www.1344.fr', target: '_blank' %></p>
+        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_logo.png", alt: t("devise.mailer.layout.logo_alt"), width: 100, style: "margin-top:15px;" %>
       </footer>
     </section>
   </body>

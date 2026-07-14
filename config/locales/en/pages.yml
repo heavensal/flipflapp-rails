@@ -1,0 +1,7 @@
+en:
+  pages:
+    home:
+      title: "Ready to play?"
+      description: "Create an account or sign in to organize your matches and invite your friends."
+      sign_up: "Sign up"
+      sign_in: "Sign in"

@@ -1,15 +1,15 @@
 <%= content_for :title do %>
-  Déverrouillage de compte - Flipflapp
+  <%= t(".title") %>
 <% end %>
 
-<h1>Salut <%= @resource.first_name %>,<br> ton compte a été verrouillé !</h1>
+<h1><%= t(".greeting", first_name: @resource.first_name) %><br><%= t(".headline") %></h1>
 
-<p>Ton compte a été verrouillé suite à un nombre excessif de tentatives de connexion infructueuses.</p>
+<p><%= t(".body") %></p>
 
-<p>Pour déverrouiller ton compte, clique sur le bouton ci-dessous :</p>
+<p><%= t(".instructions") %></p>
 
 <p style="text-align: center;">
-  <%= link_to 'Déverrouiller mon compte', unlock_url(@resource, unlock_token: @token), class: "btn" %>
+  <%= link_to t(".cta"), unlock_url(@resource, unlock_token: @token), class: "btn" %>
 </p>
 
-<p style="text-align: center;">Une fois déverrouillé, tu pourras te reconnecter normalement sur Flipflapp.</p>
+<p style="text-align: center;"><%= t(".after_unlock") %></p>
