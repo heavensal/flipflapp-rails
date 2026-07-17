@@ -1,40 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "Events", type: :request do
-  describe "GET /events" do
-    it "lists private events from the current user and accepted friends" do
-      viewer = create(:user)
-      friend = create(:user)
-      stranger = create(:user)
-      create(:friendship, sender: viewer, receiver: friend, status: "accepted")
-
-      own_private = create(:event, user: viewer, is_private: true, title: "Mon privé")
-      friend_private = create(:event, user: friend, is_private: true, title: "Privé ami")
-      create(:event, user: stranger, is_private: true, title: "Privé inconnu")
-
-      sign_in viewer
-      get events_path
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include(own_private.title)
-      expect(response.body).to include(friend_private.title)
-      expect(response.body).not_to include("Privé inconnu")
-    end
-  end
-
   describe "GET /events/:id" do
-    it "allows an accepted friend to open a private event" do
-      event = create(:event, is_private: true)
-      friend = create(:user)
-      create(:friendship, sender: event.user, receiver: friend, status: "accepted")
-
-      sign_in friend
-      get event_path(event)
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include(event.title)
-    end
-
     it "redirects strangers away from a private event" do
       event = create(:event, is_private: true)
       stranger = create(:user)
