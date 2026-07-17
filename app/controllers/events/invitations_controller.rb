@@ -24,10 +24,10 @@ class Events::InvitationsController < ApplicationController
       end
     end
 
-    redirect_to @event, notice: "Invitations envoyées avec succès."
+    redirect_to @event, notice: t("events.invitations.create.success")
   rescue StandardError => e
     Rails.logger.error("Erreur invitation: #{e.message}")
-    redirect_to @event, alert: "Une erreur est survenue lors de l'envoi des invitations."
+    redirect_to @event, alert: t("events.invitations.create.failure")
   end
 
   private

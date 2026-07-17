@@ -21,7 +21,15 @@ class Friendship < ApplicationRecord
 
   scope :pending, -> { where(status: "pending") }
   scope :accepted, -> { where(status: "accepted") }
-  # scope :declined, -> { where(status: "declined") }
+
+  def self.accepted_friend_ids_for(user)
+    accepted
+      .where("sender_id = :id OR receiver_id = :id", id: user.id)
+      .select(sanitize_sql_array([
+        "CASE WHEN sender_id = ? THEN receiver_id ELSE sender_id END",
+        user.id
+      ]))
+  end
 
   def accept
     update(status: "accepted")

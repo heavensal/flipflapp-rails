@@ -126,7 +126,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 |-----------|------|
 | `title`, `location`, `start_time` | Required; `start_time` must be in the future |
 | `number_of_participants` | Positive integer — **official player capacity** for `team_one` + `team_two` combined (e.g. 10 for 5v5, 11 for 11v11) |
-| `price` | ≥ 0 |
+| `price` | ≥ 0; whole euros only (step `1.00`); always displayed with 2 decimal places |
 | `is_private` | Boolean; **defaults to `true`** |
 | `description` | Optional |
 | `latitude`, `longitude` | Optional; no model validation today |
@@ -157,6 +157,10 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 ### Scopes
 
 - `Event.upcoming` — `start_time` in the future, ordered by `start_time` (used on index).
+- `Event.visible_to(user)` — browse list for an authenticated `User` (public + own + participant + invited + accepted friends' private `Event` records). Friend authors via `Friendship.accepted_friend_ids_for` subquery (no Ruby `pluck`).
+- `Event.private_visible_to(user)` — **only** private `Event` records authored by the `User` or by accepted `Friendship` friends (`event.user`). Excludes public `Event` records and private `Event` records reached only via participant/invite paths.
+- `Event.with_countable_participants_count` — annotates each row with countable-headcount SQL (used by index to avoid N+1 `participants_count`).
+- `Event#fill_level` — `:open` / `:tight` / `:full` for UI occupancy badges.
 
 ### `Notification` side effects
 
@@ -255,7 +259,7 @@ An `Event` appears in browse/index when the `User` is authenticated and any of:
 - `user_id` = current `User`
 - current `User` has an `EventParticipant`
 - current `User` has `Notification.invited`
-- **(target)** current `User` has accepted `Friendship` with `event.user`
+- current `User` has accepted `Friendship` with `event.user`
 
 ### View / join (`Event#viewable_by?` / `Event#joinable_by?`)
 
@@ -272,7 +276,7 @@ Same rules as private access above; for public `Event` records, any authenticate
 - `User` selects an `EventTeam` (`event_team_id`) by `slot`: `team_one`, `team_two`, or `bench`.
 - Joining `team_one` or `team_two` emits `joined` `Notification` records for other countable-squad `User` records. Joining `bench` does not.
 - **Capacity:** `number_of_participants` caps the total on **countable** teams (`participants_count`). When full, new joins to countable teams are rejected; **bench** remains available.
-- **Per-team cap:** each countable team accepts at most `Event#countable_slots_per_team` (= `number_of_participants / 2`). `EventTeam#full?` when at cap; join button hidden when `!joinable?` (`bench` is always joinable).
+- **Per-team cap:** `Event#countable_slots_for(team)` — `team_one` gets `number_of_participants / 2` (floor), `team_two` gets `(number_of_participants + 1) / 2` (ceil). Example: capacity `11` → `5` + `6`. `EventTeam#full?` when at cap; join button hidden when `!joinable?` (`bench` is always joinable).
 
 ### Participation notifications (Z1)
 
@@ -466,9 +470,16 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 
 | Rule | Status |
 |------|--------|
-| Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
-| Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
-| `Event` validation messages | Hardcoded French in model — not I18n |
+| Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Implemented** |
+| Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Implemented** |
+| `Event.private_visible_to(user)` (author + accepted friends only) | **Implemented** |
+| `number_of_participants` enforced on join (`countable_teams` only; bench when full) | **Implemented** |
+| Odd capacity split (`floor` / `ceil` via `countable_slots_for`) | **Implemented** — `11` → `5` + `6` |
+| `EventTeamsController#edit` / `#update` (rename countable `EventTeam` `label`) | **Implemented** — participants only; bench blocked |
+| `EventTeam` `slot` + `label` columns | **Implemented** |
+| `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |
+| `Event` validation messages | **Implemented** — I18n (`config/locales/<locale>/event.yml`) |
+| `Event` create/update strong params include `latitude` / `longitude` | **Implemented** |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Not implemented** — `kind` not in enum yet |
 | Push delivery (APNs / FCM) | **Not implemented** — web inbox + JSON API first |
 | `reminder` / `created` `Notification` kinds | Enum defined; **no behavior** |

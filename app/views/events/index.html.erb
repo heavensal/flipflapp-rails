@@ -2,11 +2,11 @@
   <section class="grid grid-cols-1 space-y-2" id="events" data-turbo-permanent>
     <% if @events.empty? %>
     <section class="text-center py-12" aria-live="polite">
-      <p class="text-indigo-100/60 text-lg" role="status">Aucun événement n'est disponible pour le moment.</p>
-      <%= link_to "Créer le premier événement", new_event_path,
+      <p class="text-indigo-100/60 text-lg" role="status"><%= t("events.index.empty") %></p>
+      <%= link_to t("events.index.create_first"), new_event_path,
           class: "inline-block mt-4 px-4 py-2 bg-form-green text-white rounded-lg transition-colors",
           role: "button",
-          aria_label: "Créer le premier événement",
+          aria_label: t("events.index.create_first"),
           data: { turbo_frame: "_top" } %>
     </section>
     <% end %>
