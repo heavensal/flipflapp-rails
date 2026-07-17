@@ -61,10 +61,6 @@ Every `User` is a **player** who can also **organize** `Event` records. There is
 - **player** (default) — full MVP player behavior above.
 - **admin** — same player experience, plus unrestricted back-office access (see Admin). `role` on the same `User` record; not a separate account type.
 
-### Removed from domain
-
-- `User.status` (`private` / `public`) — **no longer used**; column to remove from the schema in a future migration.
-
 ---
 
 ## Friendship
@@ -412,17 +408,15 @@ No guardrails: an admin may edit or delete data that breaks realistic state (wro
 
 Player rules still apply when an admin acts **as a player** (e.g. only `event.user` updates their own `Event` unless using admin tools).
 
-### Web UI (target)
+### Web UI
 
-- Admin-only routes / controllers (namespace or `before_action` on `current_user.role`).
-- Entry point: link visible only when `current_user.admin?` (or `role == "admin"`).
-- MVP: CRUD screens for all models above.
+- Admin-only routes / controllers (`Admin::BaseController` + `require_admin!`).
+- Entry point: link visible only when `current_user.admin?`.
+- CRUD screens for all models above via `Admin::Resourceful`.
 
 ### Later (not MVP)
 
-- **Dashboard** — extra admin link with aggregate stats (user counts, event counts, etc.). Document when scoped; not required for first admin CRUD pass.
-
-> **Gap:** `role: admin` exists on `User` but admin authorization and CRUD UI are **not implemented** yet.
+- **Dashboard stats** — aggregate counts (users, events, etc.). Document when scoped.
 
 ---
 
@@ -474,17 +468,11 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 |------|--------|
 | Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
 | Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Not implemented** |
-| `number_of_participants` enforced on join (`countable_teams` only; bench when full) | **Implemented** |
-| `EventTeamsController#edit` / `#update` (rename countable `EventTeam` `label`) | **Implemented** — participants only; bench blocked |
-| `EventTeam` `slot` + `label` columns | **Implemented** |
-| `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |
 | `Event` validation messages | Hardcoded French in model — not I18n |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Not implemented** — `kind` not in enum yet |
 | Push delivery (APNs / FCM) | **Not implemented** — web inbox + JSON API first |
 | `reminder` / `created` `Notification` kinds | Enum defined; **no behavior** |
-| Admin CRUD + admin UI | **Not implemented** — `role: admin` column only |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
 | JSON API | **Not implemented** |
-| `User.status` column | **To remove** — no domain rule |
-| Google OAuth remnants | **To remove** — email auth only |
+| Google OAuth remnants (`users.tokens`, etc.) | **To remove** — email auth only |
 | `Friendship#decline` / `status: declined` | Model supports it; web flow destroys on refuse instead |

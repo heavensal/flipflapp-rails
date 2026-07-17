@@ -34,5 +34,3 @@ fr:
               taken: "Cet identifiant d'authentification est déjà utilisé."
             role:
               inclusion: "Ce rôle n'est pas autorisé."
-            status:
-              inclusion: "Ce statut n'est pas autorisé."

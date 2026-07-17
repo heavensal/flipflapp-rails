@@ -4,7 +4,7 @@
     <!-- Header de profil -->
     <section class="text-center mb-8">
       <!-- Avatar principal -->
-      <div class="relative inline-block mb-6">
+      <div class="inline-block mb-6">
         <div class="size-32 rounded-full bg-gradient-to-tr from-amber-400 to-amber-600 p-1 shadow-xl">
           <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-br from-bg-green to-bg-green-2 flex items-center justify-center">
             <% if @user.avatar? %>
@@ -16,9 +16,6 @@
             <% end %>
           </div>
         </div>
-
-        <!-- Badge du statut en ligne -->
-        <div class="absolute bottom-2 right-2 w-6 h-6 bg-green-500 rounded-full border-4 border-gray-800 shadow-lg"></div>
       </div>
 
       <!-- Nom et username -->
@@ -91,9 +88,7 @@
     </section>
 
     <!-- Informations du profil -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-      <!-- Carte informations personnelles -->
+    <section class="mb-8">
       <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6">
         <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,46 +116,9 @@
             <span class="text-indigo-100/60">Membre depuis</span>
             <span class="font-medium"><%= human_future_date(@user.created_at) %></span>
           </div>
-
-          <div class="flex justify-between items-center">
-            <span class="text-indigo-100/60">Statut</span>
-            <div class="flex items-center gap-2">
-              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="text-green-400 font-medium">Actif</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Carte statistiques -->
-      <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6">
-        <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary-text" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          Statistiques
-        </h2>
-
-        <div class="space-y-3">
-          <div class="flex justify-between items-center">
-            <span class="text-indigo-100/60">Événements organisés</span>
-            <span class="text-2xl font-bold text-amber-400"><%= @user.events.count %></span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <span class="text-indigo-100/60">Participations</span>
-            <span class="text-2xl font-bold text-amber-400"><%= @user.event_participants.count %></span>
-          </div>
-
-          <div class="flex justify-between items-center">
-            <span class="text-indigo-100/60">Amis</span>
-            <span class="text-2xl font-bold text-amber-400"><%# @user.friendships.count %></span>
-          </div>
         </div>
       </div>
     </section>
-
-    <!-- Derniers événements -->
 
   </div>
 </main>

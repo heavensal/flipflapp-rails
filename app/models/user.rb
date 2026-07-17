@@ -2,7 +2,6 @@ require "securerandom"
 
 class User < ApplicationRecord
   ROLES = %w[player admin].freeze
-  STATUSES = %w[private public].freeze
 
   mount_uploader :avatar, AvatarUploader
   # Include default devise modules.
@@ -16,7 +15,6 @@ class User < ApplicationRecord
   validates :provider, presence: true
   validates :uid, presence: true, uniqueness: { scope: :provider, case_sensitive: false }
   validates :role, inclusion: { in: ROLES }
-  validates :status, inclusion: { in: STATUSES }
 
   def admin?
     role == "admin"
