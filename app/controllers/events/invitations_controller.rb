@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Events::InvitationsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_event
@@ -9,24 +11,11 @@ class Events::InvitationsController < ApplicationController
 
     invited_friends = current_user.get_my_friends_but_not_participants(@event).where(id: params[:user_ids] || [])
 
-    Notification.transaction do
-      invited_friends.find_each do |friend|
-        Notification.create!(
-          user: friend,
-          notifiable: @event,
-          kind: :invited,
-          payload: {
-            title: @event.title,
-            start_time: @event.start_time,
-            sender: current_user.first_name
-          }
-        )
-      end
-    end
+    @event.invite!(users: invited_friends, sender: current_user)
 
     redirect_to @event, notice: t("events.invitations.create.success")
   rescue StandardError => e
-    Rails.logger.error("Erreur invitation: #{e.message}")
+    Rails.logger.error("Invitation error: #{e.message}")
     redirect_to @event, alert: t("events.invitations.create.failure")
   end
 

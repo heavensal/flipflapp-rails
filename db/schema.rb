@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_16_220000) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_17_221000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -70,7 +70,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_16_220000) do
     t.datetime "updated_at", null: false
     t.string "notifiable_type"
     t.bigint "notifiable_id"
-    t.integer "kind", default: 0, null: false
+    t.integer "kind", null: false
     t.jsonb "payload", default: {}
     t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
     t.index ["user_id", "notifiable_type", "notifiable_id"], name: "idx_on_user_id_notifiable_type_notifiable_id_ffac34041e"

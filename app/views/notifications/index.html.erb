@@ -1,11 +1,19 @@
 <%= turbo_frame_tag "notifications" do %>
+  <% if @notifications.any? { |n| !n.read? } %>
+    <div class="mb-4 flex justify-end">
+      <%= button_to t("notifications.actions.mark_all_read"),
+                    read_all_notifications_path,
+                    method: :patch,
+                    class: "text-sm px-3 py-1.5 rounded-lg bg-amber-500 text-white font-medium hover:bg-amber-600" %>
+    </div>
+  <% end %>
+
   <section class="grid grid-cols-1 space-y-2">
     <% if @notifications.empty? %>
-      <p class="text-secondary-text text-center">Aucune notification</p>
+      <p class="text-secondary-text text-center"><%= t("notifications.empty") %></p>
     <% end %>
     <% @notifications.each do |notification| %>
       <%= render "notifications/components/one_notification", notification: notification %>
     <% end %>
   </section>
-
 <% end %>

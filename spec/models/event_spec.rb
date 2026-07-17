@@ -255,6 +255,19 @@ RSpec.describe Event, type: :model do
       expect(event.can_invite?(stranger)).to be(false)
     end
 
+    it "creates invited notifications via invite!" do
+      event = create(:event)
+      friend = create(:user)
+
+      expect {
+        event.invite!(users: [ friend ], sender: event.user)
+      }.to change { friend.notifications.invited.count }.by(1)
+
+      notification = friend.notifications.invited.last
+      expect(notification.notifiable).to eq(event)
+      expect(notification.payload["sender"]).to eq(event.user.first_name)
+    end
+
     it "allows an accepted friend of the author to view and join a private event" do
       event = create(:event, is_private: true)
       friend = create(:user)

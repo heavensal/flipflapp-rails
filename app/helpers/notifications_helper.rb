@@ -1,4 +1,24 @@
+# frozen_string_literal: true
+
 module NotificationsHelper
+  KIND_ICON_CLASSES = {
+    "updated" => "bg-orange-100 text-orange-600",
+    "canceled" => "bg-red-100 text-red-600",
+    "joined" => "text-green-600",
+    "left" => "bg-gray-100 text-gray-600",
+    "invited" => "bg-indigo-100 text-indigo-600",
+    "reminder" => "bg-blue-100 text-blue-600"
+  }.freeze
+
+  KIND_ROW_CLASSES = {
+    "updated" => ->(read) { read ? "bg-amber-500/50" : "bg-amber-500" },
+    "canceled" => ->(read) { read ? "bg-red-900/50" : "bg-red-900" },
+    "joined" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" },
+    "left" => ->(read) { read ? "bg-red-900/50" : "bg-red-900" },
+    "invited" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" },
+    "reminder" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" }
+  }.freeze
+
   def notification_message(notification)
     case notification.kind
     when "joined"
@@ -21,22 +41,30 @@ module NotificationsHelper
         start_time: human_future_date(notification.payload["start_time"]),
         author: notification.payload["author"]
       )
+    when "reminder"
+      t("notifications.messages.reminder", title: notification.payload["title"])
     else
       t("notifications.messages.default")
     end
   end
 
   def notification_icon(kind)
-    case kind
-    when "created" then "🆕"
-    when "updated" then "✏️"
-    when "canceled" then "❌"
-    when "joined" then "👤"
-    when "left" then "🚪"
-    when "invited" then "📨"
-    when "reminder" then "⏰"
-    else "🔔"
-    end
+    {
+      "updated" => "✏️",
+      "canceled" => "❌",
+      "joined" => "👤",
+      "left" => "🚪",
+      "invited" => "📨",
+      "reminder" => "⏰"
+    }.fetch(kind, "🔔")
+  end
+
+  def notification_icon_classes(kind)
+    KIND_ICON_CLASSES.fetch(kind, "bg-gray-100 text-gray-400")
+  end
+
+  def notification_row_classes(notification)
+    KIND_ROW_CLASSES.fetch(notification.kind, ->(_) { "bg-white/10" }).call(notification.read?)
   end
 
   def notification_update_message(notification)
