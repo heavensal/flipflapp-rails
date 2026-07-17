@@ -39,4 +39,3 @@ class Friendship < ApplicationRecord
     update(status: "declined")
   end
 end
-
