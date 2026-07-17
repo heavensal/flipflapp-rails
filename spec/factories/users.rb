@@ -1,6 +1,9 @@
+require "securerandom"
+
 FactoryBot.define do
   factory :user do
-    sequence(:email) { |n| "user#{n}@example.com" }
+    # SecureRandom avoids collisions when the test DB could not be purged (Neon pooler).
+    sequence(:email) { |n| "user#{n}.#{SecureRandom.hex(4)}@example.com" }
     password { "password123" }
     password_confirmation { "password123" }
     first_name { Faker::Name.first_name }

@@ -1,0 +1,8 @@
+fr:
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "La validation a échoué : %{errors}"
+        restrict_dependent_destroy:
+          has_one: "Impossible de supprimer l'enregistrement car un(e) %{record} dépendant(e) existe"
+          has_many: "Impossible de supprimer l'enregistrement car des %{record} dépendant(e)s existent"

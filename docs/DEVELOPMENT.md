@@ -55,6 +55,8 @@ Copy `.env.example` → `.env`. Wired in `config/database.yml`.
 
 Use **separate** Neon databases (or branches) for development and test. Never point local env at production.
 
+For `TEST_NEON_DB`, prefer Neon’s **direct** host (not `-pooler`). Locally, Rails does not purge/rebuild the test DB on each `rspec` run (that triggers `PG::ObjectInUse` on Neon); apply schema with `RAILS_ENV=test bin/rails db:migrate`. CI still rebuilds the schema.
+
 Production URL (`PRODUCTION_NEON_DB`) is for deploy only — see [DEPLOYMENT.md](DEPLOYMENT.md). Kamal does not read `.env`.
 
 ### Local `.env` (typical)
