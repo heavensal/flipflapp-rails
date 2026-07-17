@@ -1,5 +1,5 @@
 class Event < ApplicationRecord
-  include EventNotifications
+  include Event::Notifications
 
   TEAM_SLOTS = %w[team_one team_two bench].freeze
   SLOT_DEFAULT_LABEL_KEYS = TEAM_SLOTS.index_with { |slot| "event_team.slots.#{slot}.default_label" }.freeze

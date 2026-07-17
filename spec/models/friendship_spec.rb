@@ -30,4 +30,45 @@ RSpec.describe Friendship, type: :model do
       expect(friendship.reload.status).to eq("accepted")
     end
   end
+
+  describe "notifications" do
+    it "creates a friendship_requested notification for the receiver" do
+      sender = create(:user)
+      receiver = create(:user)
+
+      expect {
+        create(:friendship, sender: sender, receiver: receiver, status: "pending")
+      }.to change { receiver.notifications.friendship_requested.count }.by(1)
+
+      notification = receiver.notifications.friendship_requested.last
+      expect(notification.notifiable).to be_a(Friendship)
+      expect(notification.payload["first_name"]).to eq(sender.first_name)
+    end
+
+    it "hides friendship_requested from the inbox scope" do
+      friendship = create(:friendship, status: "pending")
+      notification = friendship.receiver.notifications.friendship_requested.last
+
+      expect(friendship.receiver.notifications.inbox).not_to include(notification)
+    end
+
+    it "removes the notification when the friendship is accepted" do
+      friendship = create(:friendship, status: "pending")
+      receiver = friendship.receiver
+
+      expect {
+        friendship.accept
+      }.to change { receiver.notifications.friendship_requested.count }.from(1).to(0)
+    end
+
+    it "removes the notification when the friendship is destroyed" do
+      friendship = create(:friendship, status: "pending")
+      receiver = friendship.receiver
+
+      expect {
+        friendship.destroy!
+      }.to change { receiver.notifications.friendship_requested.count }.from(1).to(0)
+    end
+  end
 end
+

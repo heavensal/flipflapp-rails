@@ -1,9 +1,8 @@
 <h1 class="text-3xl font-bold text-white text-center my-8">
-  Notifications
+  <%= t("notifications.title") %>
 </h1>
 
 <main class="p-4 min-h-dvh" aria-labelledby="notifications">
-
   <%= turbo_frame_tag "notifications", src: notifications_path, loading: "lazy" do %>
     <section class="grid grid-cols-1 space-y-2">
       <% 20.times do %>
@@ -11,5 +10,4 @@
       <% end %>
     </section>
   <% end %>
-
 </main>

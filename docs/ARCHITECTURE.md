@@ -15,7 +15,7 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 
 | Layer | Path | Responsibility |
 |-------|------|----------------|
-| Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects |
+| Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects via per-model modules (`Event::Notifications`, etc.) + `Notification::Delivery` |
 | Controllers | `app/controllers/` | Auth, strong params, HTTP — thin; call model domain methods |
 | Views | `app/views/` | ERB + Tailwind; components under `<feature>/components/` |
 | JavaScript | `app/javascript/` | Stimulus when needed; ask before new controllers |

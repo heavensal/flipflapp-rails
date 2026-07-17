@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :notification do
     association :user
-    kind { :created }
+    kind { :invited }
     read { false }
     payload { {} }
   end

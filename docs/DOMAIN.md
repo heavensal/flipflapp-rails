@@ -83,7 +83,7 @@ Both paths create the same `Friendship` record (`sender` = current `User`, `rece
 
 | Action | Who | Result |
 |--------|-----|--------|
-| Send request | `sender` | `Friendship` with `status: pending`; **`Notification` to `receiver`** (see Notification) |
+| Send request | `sender` | `Friendship` with `status: pending`; **`friendship_requested` `Notification` to `receiver`** (hidden from inbox — see Notification) |
 | Accept | `receiver` | `status` → `accepted` |
 | Refuse | `receiver` | `Friendship` destroyed |
 | Cancel request | `sender` (pending) | `Friendship` destroyed |
@@ -309,7 +309,7 @@ Emit `joined` / `left` only for these transitions:
 - `User` records returned by `get_my_friends_but_not_participants(event)` (accepted `Friendship`, no `EventParticipant` yet).
 
 ### Effect
-- Creates one `Notification` per invited `User` (`kind: invited`, `notifiable: event`).
+- Creates one `Notification` per invited `User` via `Event#invite!` (`kind: invited`, `notifiable: event`).
 - Invited `User` records can view and join a private `Event` even without accepted `Friendship` with `event.user`.
 
 ---
@@ -320,29 +320,31 @@ Emit `joined` / `left` only for these transitions:
 
 `Notification` records are the **single source of truth** for user alerts. The web app implements the full inbox first so iOS and Android can mirror the same `kind`, `notifiable`, and `payload` as **push notifications** later.
 
-Web today: list (`NotificationsController#index`), mark read (`#read`), navigate via `target_url`.  
-Mobile later: same records exposed via JSON API → APNs / FCM.
+Web today: inbox (`NotificationsController`), mark read / mark all read / destroy, navigate via `target_url`.  
+Mobile later: same records exposed via JSON API → APNs / FCM (SolidQueue).
+
+Producers live in per-model modules: `Event::Notifications`, `EventParticipant::Notifications`, `Friendship::Notifications`. Fan-out goes through `Notification::Delivery`.
 
 ### MVP triggers
 
-**Every `Notification` kind below is in scope for web inbox and future push (iOS / Android).**
-
 A `User` receives a `Notification` when:
 
-| Trigger | `kind` | `notifiable` | Recipient |
-|---------|--------|--------------|-----------|
-| Pending `Friendship` request | `friendship_requested` *(target)* | `Friendship` | `receiver` |
-| Invited to an `Event` | `invited` | `Event` | invited `User` |
-| Joins `EventTeam` `team_one` or `team_two` | `joined` | `Event` | other `User` records on official squads |
-| Leaves `EventTeam` `team_one` or `team_two` | `left` | `Event` | other `User` records on official squads |
-| Tracked `Event` field changes | `updated` | `Event` | each `EventParticipant` `User` except `event.user` |
-| `Event` destroyed | `canceled` | `nil` | each `EventParticipant` `User` except `event.user` |
+| Trigger | `kind` | `notifiable` | Recipient | Inbox |
+|---------|--------|--------------|-----------|-------|
+| Pending `Friendship` request | `friendship_requested` | `Friendship` | `receiver` | **Hidden** — UX is the friends badge (`pending_received_friendships`) |
+| Invited to an `Event` | `invited` | `Event` | invited `User` | Shown |
+| Joins `EventTeam` `team_one` or `team_two` | `joined` | `Event` | other `User` records on official squads | Shown |
+| Leaves `EventTeam` `team_one` or `team_two` | `left` | `Event` | other `User` records on official squads | Shown |
+| Tracked `Event` field changes | `updated` | `Event` | each `EventParticipant` `User` except `event.user` | Shown |
+| `Event` destroyed | `canceled` | `nil` | each `EventParticipant` `User` except `event.user` | Shown |
 
 Participation includes `bench` for `updated` and `canceled`. `joined` / `left` apply only to `team_one` and `team_two`, not `bench`.
 
+`Notification.inbox` excludes `friendship_requested`. Header unread badge uses `notifications.inbox.unread`.
+
 ### `invited`
 
-- Created by `Events::InvitationsController#create` (one per invited `User`).
+- Created by `Event#invite!(users:, sender:)` (one per invited `User`).
 - `payload` includes `Event` context (`title`, `start_time`, sender name).
 - Grants access to private `Event` records (see Visibility).
 
@@ -358,13 +360,13 @@ Participation includes `bench` for `updated` and `canceled`. `joined` / `left` a
 - Deletes existing `Notification` records linked to the `Event` (`notifiable` = `Event`).
 - `notifiable: nil` — not clickable; `payload` retains match context.
 
-### `friendship_requested` *(target MVP)*
+### `friendship_requested`
 
 - Created when a `Friendship` is created with `status: pending`.
 - `notifiable` = `Friendship`; recipient = `receiver`.
 - `payload` includes sender identity (`first_name`, etc.).
-
-> **Gap:** No `Notification` on `Friendship` create today — only `Friendship` record + UI on profile.
+- **Not shown** in the notifications inbox or unread badge. Players act on requests via `/friendships` (red badge on friends link).
+- Destroyed when the `Friendship` is accepted or destroyed (refuse / cancel).
 
 ### `joined`
 
@@ -379,15 +381,18 @@ Participation includes `bench` for `updated` and `canceled`. `joined` / `left` a
 - Not created for `bench`.
 - Recipients: remaining `User` records on official squads.
 
-### Unused enum values
+### Reserved enum values
 
-- `created`, `reminder` — reserved; no MVP behavior. Remove or implement explicitly later.
+- `reminder` — reserved for phase 2 (SolidQueue scheduled reminders). No producer yet.
+- `created` — **removed** (unused).
 
 ### Read state & navigation
 
-- `Notification#mark_as_read!` sets `read: true`.
-- `clickable?` when `notifiable` is present → `target_url` (e.g. `/events/:id`, `/friendships`).
-- `canceled` and some edge cases use `notifiable: nil` → fallback to notifications list.
+- `Notification#mark_as_read!` sets `read: true` (per row icon or body navigate).
+- `Notification.mark_all_as_read_for!(user)` marks all inbox unread as read.
+- `User` may destroy their own `Notification`.
+- `clickable?` when `notifiable` is present → `target_url` (`Event` → `/events/:id`, `Friendship` → `/friendships`).
+- `canceled` and some edge cases use `notifiable: nil` → fallback to notifications list; still markable as read / deletable.
 
 ---
 
@@ -480,9 +485,10 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |
 | `Event` validation messages | **Implemented** — I18n (`config/locales/<locale>/event.yml`) |
 | `Event` create/update strong params include `latitude` / `longitude` | **Implemented** |
-| `Notification` on pending `Friendship` (`friendship_requested`) | **Not implemented** — `kind` not in enum yet |
-| Push delivery (APNs / FCM) | **Not implemented** — web inbox + JSON API first |
-| `reminder` / `created` `Notification` kinds | Enum defined; **no behavior** |
+| `Notification` on pending `Friendship` (`friendship_requested`) | **Implemented** — hidden from inbox; friends badge UX |
+| Push delivery (APNs / FCM) | **Not implemented** — web inbox first; SolidQueue later |
+| `reminder` `Notification` kind | Enum reserved; **no behavior** until SolidQueue |
+| `created` `Notification` kind | **Removed** |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
 | JSON API | **Not implemented** |
 | Google OAuth remnants (`users.tokens`, etc.) | **To remove** — email auth only |
