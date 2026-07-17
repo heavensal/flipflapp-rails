@@ -56,4 +56,3 @@ Rails.application.configure do
   # locally run `RAILS_ENV=test bin/rails db:migrate` when migrations are pending.
   config.active_record.maintain_test_schema = ENV["CI"].present?
 end
-
