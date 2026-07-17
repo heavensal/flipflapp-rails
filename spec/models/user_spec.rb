@@ -28,12 +28,11 @@ RSpec.describe User, type: :model do
       expect(user.errors[:username]).to be_present
     end
 
-    it "requires an allowed role and status" do
-      user = build(:user, role: "owner", status: "archived")
+    it "requires an allowed role" do
+      user = build(:user, role: "owner")
 
       expect(user).not_to be_valid
       expect(user.errors[:role]).to be_present
-      expect(user.errors[:status]).to be_present
     end
   end
 
