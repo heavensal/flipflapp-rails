@@ -25,15 +25,30 @@ require 'rspec/rails'
 #
 Rails.root.glob("spec/support/**/*.rb").sort_by(&:to_s).each { |f| require f }
 
-# Ensures that the test database schema matches the current schema file.
-# If there are pending migrations it will invoke `db:test:prepare` to
-# recreate the test database by loading the schema.
-# If you are not using ActiveRecord, you can remove these lines.
-begin
-  ActiveRecord::Migration.maintain_test_schema!
-rescue ActiveRecord::PendingMigrationError => e
-  abort e.to_s.strip
+# Ensures migrations are applied. Destructive schema rebuild (purge + load) is
+# enabled only when CI=true — see config/environments/test.rb.
+if ActiveRecord.maintain_test_schema
+  begin
+    ActiveRecord::Migration.maintain_test_schema!
+  rescue ActiveRecord::PendingMigrationError => e
+    abort e.to_s.strip
+  rescue ActiveRecord::StatementInvalid => e
+    raise unless /ObjectInUse|being accessed by other users/i.match?(e.message)
+
+    warn <<~MSG
+      ⚠️  Could not rebuild the test database (PG::ObjectInUse). Continuing with the existing schema.
+         Prefer a non-pooler TEST_NEON_DB URL, or run: RAILS_ENV=test bin/rails db:migrate
+    MSG
+  end
+elsif ActiveRecord::Base.connection_pool.migration_context.needs_migration?
+  abort <<~MSG
+    Pending migrations in the test database. Run:
+
+        RAILS_ENV=test bin/rails db:migrate
+  MSG
 end
+
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_paths = [

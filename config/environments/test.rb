@@ -50,4 +50,10 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Neon (and other shared DBs) often cannot DROP/purge while pooler sessions linger
+  # (PG::ObjectInUse). Keep destructive schema rebuild for CI ephemeral DBs only;
+  # locally run `RAILS_ENV=test bin/rails db:migrate` when migrations are pending.
+  config.active_record.maintain_test_schema = ENV["CI"].present?
 end
+
