@@ -46,13 +46,7 @@ module AdminHelper
     when "role"
       form.select column, User::ROLES, {}, class: admin_input_classes
     when "status"
-      if record.is_a?(Friendship)
-        form.select column, %w[pending accepted declined], {}, class: admin_input_classes
-      elsif record.is_a?(User)
-        form.select column, User::STATUSES, {}, class: admin_input_classes
-      else
-        form.text_field column, class: admin_input_classes
-      end
+      form.select column, %w[pending accepted declined], {}, class: admin_input_classes
     when "start_time", "confirmed_at", "confirmation_sent_at", "reset_password_sent_at",
          "remember_created_at", "current_sign_in_at", "last_sign_in_at", "created_at", "updated_at"
       form.datetime_local_field column, class: admin_input_classes

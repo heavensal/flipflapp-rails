@@ -34,5 +34,3 @@ en:
               taken: "This authentication identifier is already taken."
             role:
               inclusion: "This role is not allowed."
-            status:
-              inclusion: "This status is not allowed."
