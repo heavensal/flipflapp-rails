@@ -25,6 +25,17 @@ RSpec.describe Event, type: :model do
       expect(event).not_to be_valid
       expect(event.errors[:number_of_participants]).to be_present
     end
+
+    it "rejects a price that is not a whole euro" do
+      event = build(:event, price: 10.5)
+      expect(event).not_to be_valid
+      expect(event.errors[:price]).to be_present
+    end
+
+    it "accepts a whole-euro price" do
+      event = build(:event, price: 10.0)
+      expect(event).to be_valid
+    end
   end
 
   describe "after_create" do
@@ -131,6 +142,32 @@ RSpec.describe Event, type: :model do
     end
   end
 
+  describe "#fill_level" do
+    it "returns open, tight, or full from countable occupancy" do
+      open_event = create(:event, number_of_participants: 10)
+      tight_event = create(:event, number_of_participants: 3)
+      create(:event_participant, user: create(:user), event: tight_event, event_team: team_slot(tight_event, "team_two"))
+      full_event = create(:event, number_of_participants: 2)
+      create(:event_participant, user: create(:user), event: full_event, event_team: team_slot(full_event, "team_two"))
+
+      expect(open_event.fill_level).to eq(:open)
+      expect(tight_event.fill_level).to eq(:tight)
+      expect(full_event.fill_level).to eq(:full)
+    end
+  end
+
+  describe ".with_countable_participants_count" do
+    it "loads participants_count without a per-record query" do
+      event = create(:event)
+      create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))
+
+      loaded = described_class.with_countable_participants_count.find(event.id)
+
+      expect(loaded.participants_count).to eq(2)
+      expect(loaded.has_attribute?(:countable_participants_count)).to be(true)
+    end
+  end
+
   describe "notifications" do
     it "creates one update notification per tracked field for every participant except the author" do
       event = create(:event)
@@ -218,14 +255,23 @@ RSpec.describe Event, type: :model do
       expect(event.can_invite?(stranger)).to be(false)
     end
 
-    it "allows an invited friend to view and join a private event" do
+    it "allows an accepted friend of the author to view and join a private event" do
       event = create(:event, is_private: true)
-      invited_friend = create(:user)
+      friend = create(:user)
+      create(:friendship, sender: event.user, receiver: friend, status: "accepted")
 
-      create(:notification, user: invited_friend, notifiable: event, kind: :invited)
+      expect(event.viewable_by?(friend)).to be(true)
+      expect(event.joinable_by?(friend)).to be(true)
+    end
 
-      expect(event.viewable_by?(invited_friend)).to be(true)
-      expect(event.joinable_by?(invited_friend)).to be(true)
+    it "allows an invited user to view and join a private event" do
+      event = create(:event, is_private: true)
+      invited_user = create(:user)
+
+      create(:notification, user: invited_user, notifiable: event, kind: :invited)
+
+      expect(event.viewable_by?(invited_user)).to be(true)
+      expect(event.joinable_by?(invited_user)).to be(true)
     end
 
     it "blocks strangers from viewing or joining a private event" do
@@ -234,6 +280,40 @@ RSpec.describe Event, type: :model do
 
       expect(event.viewable_by?(stranger)).to be(false)
       expect(event.joinable_by?(stranger)).to be(false)
+    end
+  end
+
+  describe ".visible_to" do
+    it "includes private events from accepted friendship friends who are the author" do
+      viewer = create(:user)
+      friend = create(:user)
+      stranger = create(:user)
+      create(:friendship, sender: viewer, receiver: friend, status: "accepted")
+
+      own_private = create(:event, user: viewer, is_private: true)
+      friend_private = create(:event, user: friend, is_private: true)
+      stranger_private = create(:event, user: stranger, is_private: true)
+      public_event = create(:event, user: stranger, is_private: false)
+
+      expect(described_class.visible_to(viewer)).to include(own_private, friend_private, public_event)
+      expect(described_class.visible_to(viewer)).not_to include(stranger_private)
+    end
+  end
+
+  describe ".private_visible_to" do
+    it "returns only private events authored by the user or accepted friends" do
+      viewer = create(:user)
+      friend = create(:user)
+      stranger = create(:user)
+      create(:friendship, sender: friend, receiver: viewer, status: "accepted")
+
+      own_private = create(:event, user: viewer, is_private: true)
+      friend_private = create(:event, user: friend, is_private: true)
+      stranger_private = create(:event, user: stranger, is_private: true)
+      public_event = create(:event, user: friend, is_private: false)
+
+      expect(described_class.private_visible_to(viewer)).to contain_exactly(own_private, friend_private)
+      expect(described_class.private_visible_to(viewer)).not_to include(stranger_private, public_event)
     end
   end
 end

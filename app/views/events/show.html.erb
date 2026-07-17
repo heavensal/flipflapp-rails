@@ -15,7 +15,7 @@
 
   <% if @event.am_i_the_author?(current_user) %>
     <div class="flex justify-center mt-10">
-      <%= render 'events/components/destroy_event_btn', event: @event %>
+      <%= render "events/components/destroy_event_btn", event: @event %>
     </div>
 
   <% elsif @event.in_this_event?(current_user) %>

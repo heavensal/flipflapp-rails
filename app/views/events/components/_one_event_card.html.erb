@@ -1,26 +1,19 @@
 <%= link_to event_path(event), class: "block group", data: { turbo_frame: "_top" } do %>
   <div class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl block p-4 text-center transition duration-150 active:bg-bg-green active:scale-95 active:shadow-transparent min-h-50">
-
-    <!-- En-tête avec titre et statut -->
     <div class="flex justify-between items-start mb-4">
       <h2 class="text-xl text-white truncate"><%= event.title %></h2>
       <span class="bg-form-green px-2 py-1 rounded-full text-secondary-text text-xs">
-        <%= render 'events/components/svg/lock' if event.is_private %>
-        <%= render 'events/components/svg/unlock' if !event.is_private %>
+        <%= render "events/components/svg/lock" if event.is_private %>
+        <%= render "events/components/svg/unlock" unless event.is_private %>
       </span>
     </div>
 
-    <!-- Informations principales -->
     <div class="space-y-2 text-secondary-text">
-      <!-- Date -->
       <div class="flex items-center gap-2">
-        <%= render 'events/components/svg/calendar' %>
-        <p>
-          <%= human_future_date(event.start_time) %>
-        </p>
+        <%= render "events/components/svg/calendar" %>
+        <p><%= human_future_date(event.start_time) %></p>
       </div>
 
-      <!-- Lieu -->
       <div class="flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
@@ -28,58 +21,30 @@
         <span><%= event.location %></span>
       </div>
 
-      <!-- Participants -->
       <div class="flex items-center gap-2">
-        <%= render 'events/components/svg/people' %>
-
-        <%# le nombre de participant en vert %>
-        <% if event.participants_count < (event.number_of_participants * 2 / 3) %>
-          <span class="text-green-500">
-            <%= event.participants_count %> / <%= event.number_of_participants %>
-          </span>
-
-        <%# ou le nombre de participant en jaune si il y a - de 1/3 de places dispo %>
-        <% elsif event.participants_count >= (event.number_of_participants * 2 / 3) && event.participants_count < event.number_of_participants %>
-          <span class="text-primary-yellow">
-            <%= event.participants_count %> / <%= event.number_of_participants %>
-          </span>
-
-        <%# ou COMPLET en rouge si il n'y a plus de place %>
-        <% elsif event.participants_count >= event.number_of_participants %>
-          <span class="text-red-500">
-            Complet
-          </span>
-        <% end %>
+        <%= render "events/components/svg/people" %>
+        <%= event_fill_badge(event) %>
       </div>
-      <!-- Prix -->
-      <div class="flex items-center gap-2">
-        <%= render 'events/components/svg/dollar' %>
 
+      <div class="flex items-center gap-2">
+        <%= render "events/components/svg/dollar" %>
         <% if event.price.zero? %>
-          <span>Gratuit</span>
+          <span><%= t("events.show.free") %></span>
         <% else %>
-          <span>
-            <%= number_to_currency(event.price, unit: "€", separator: ",", delimiter: " ", format: "%n %u") %>
-          </span>
+          <span><%= format_event_price(event.price) %></span>
         <% end %>
-
       </div>
-
     </div>
 
     <div class="flex items-center justify-end gap-2 mt-2">
-      <%# fake avatar %>
       <p class="text-secondary-text text-xs"><%= event.user.first_name %></p>
       <div class="size-16 bg-gray-300 rounded-full">
         <% if event.user.avatar? %>
-          <%= cl_image_tag event.user.avatar, class: 'size-16 rounded-full object-cover' %>
+          <%= cl_image_tag event.user.avatar, class: "size-16 rounded-full object-cover" %>
         <% else %>
-          <%= image_tag 'placeholder-avatar.png', class: 'size-16 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1' %>
+          <%= image_tag "placeholder-avatar.png", class: "size-16 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1" %>
         <% end %>
       </div>
     </div>
-
   </div>
 <% end %>
-
-<%# render "events/components/one_event_card", event: event %>

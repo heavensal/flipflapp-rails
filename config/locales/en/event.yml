@@ -1,11 +1,68 @@
 en:
   events:
+    home:
+      title: "Upcoming events"
+      create:
+        title: "Create a new event"
+        aria_label: "Create a new event"
+    index:
+      empty: "No events are available right now."
+      create_first: "Create the first event"
+    show:
+      free: "Free"
+      private: "Private"
+      public: "Public"
+      full: "Full"
+      organized_by: "Organized by %{name}"
+      me: "Me"
+      invite:
+        title: "Invite friends"
+        empty: "No friends to invite"
+        cancel: "Cancel"
+      aria:
+        start_time: "Start date"
+        location: "Location"
+        free: "Free event"
+        price: "Price"
+        privacy: "Privacy setting"
+        available: "Spots available"
+        almost_full: "Almost full"
+        full: "Full"
+        organizer: "Organizer"
+    new:
+      title: "Create a football match"
+      submit: "Create match"
+      cancel: "Cancel"
+    edit:
+      title: "Edit my event"
+      submit: "Update event"
+      cancel: "Cancel"
+    form:
+      placeholders:
+        title: "Friendly match at the park"
+        location: "Stadium"
+        description: "Bring a ball"
+    create:
+      success: "Event created successfully."
+      failure: "Could not create the event. Please fix the errors below."
+    update:
+      success: "Event updated successfully."
+      failure: "Could not update the event. Please fix the errors below."
+    destroy:
+      action: "Cancel event"
+      confirm: "Are you sure you want to cancel this event?"
+      success: "The event was deleted."
+      failure: "Could not delete the event."
     authorization:
       inaccessible: "This event is not accessible."
       owner_required: "You are not authorized to edit this event."
       invitation_required: "You are not authorized to invite people to this event."
     teams:
       not_found: "Team not found."
+    invitations:
+      create:
+        success: "Invitations sent successfully."
+        failure: "An error occurred while sending invitations."
   event_participants:
     create:
       success: "You joined \"%{label}\"."
@@ -21,3 +78,34 @@ en:
       empty: "No players on the bench"
     leave:
       confirm: "Are you sure you want to leave this event?"
+  activerecord:
+    attributes:
+      event:
+        title: "Title"
+        location: "Location"
+        start_time: "Start date and time"
+        number_of_participants: "Number of participants"
+        price: "Price"
+        description: "Description"
+        is_private: "Private event"
+        latitude: "Latitude"
+        longitude: "Longitude"
+    errors:
+      models:
+        event:
+          attributes:
+            title:
+              blank: "Title is required."
+            location:
+              blank: "Location is required."
+            start_time:
+              blank: "Start date and time are required."
+              in_the_past: "Start time cannot be in the past."
+            number_of_participants:
+              greater_than: "must be greater than %{count}."
+              not_an_integer: "must be an integer."
+            price:
+              greater_than_or_equal_to: "must be greater than or equal to %{count}."
+              not_whole_euro: "must be a whole number of euros (e.g. 10.00)."
+            is_private:
+              inclusion: "must be true or false."
