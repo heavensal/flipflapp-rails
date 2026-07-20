@@ -12,14 +12,17 @@ RSpec.describe Friendship, type: :model do
       user = create(:user)
       friendship = build(:friendship, sender: user, receiver: user)
       expect(friendship).not_to be_valid
-      expect(friendship.errors[:receiver_id]).to be_present
+      expect(friendship.errors.details[:receiver_id]).to include(error: :self)
     end
 
     it "rejects duplicate requests between the same users" do
       friendship = create(:friendship)
       duplicate = build(:friendship, sender: friendship.sender, receiver: friendship.receiver)
+      reverse_duplicate = build(:friendship, sender: friendship.receiver, receiver: friendship.sender)
       expect(duplicate).not_to be_valid
-      expect(duplicate.errors[:sender_id]).to be_present
+      expect(duplicate.errors.details[:sender_id]).to include(error: :taken)
+      expect(reverse_duplicate).not_to be_valid
+      expect(reverse_duplicate.errors.details[:base]).to include(error: :already_exists)
     end
   end
 
