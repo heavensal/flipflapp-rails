@@ -5,6 +5,7 @@ fr:
       search: "Rechercher des amis"
       received: "Demandes reçues"
       sent: "Demandes envoyées"
+      declined: "Demandes refusées"
       friends: "Mes amis"
       results: "Résultats de recherche"
     flash:
@@ -13,9 +14,10 @@ fr:
         failure: "Impossible d'envoyer la demande d'amitié."
       update:
         success: "Vous êtes maintenant amis avec %{name}."
-        failure: "Impossible d'accepter la demande d'amitié."
-      destroy:
         declined: "Demande d'amitié refusée."
+        failure: "Impossible de mettre à jour cette demande d'amitié."
+      destroy:
+        removed_declined: "Demande refusée supprimée. Cette personne pourra vous renvoyer une demande."
         unfriended: "Vous n'êtes plus ami avec %{name}."
         cancelled: "Demande d'amitié annulée."
         unauthorized: "Action non autorisée."
@@ -26,11 +28,13 @@ fr:
       decline: "Refuser"
       cancel_request: "Annuler"
       remove: "Supprimer"
+      remove_declined: "Supprimer"
       add: "Ajouter"
     confirms:
       decline: "Refuser cette demande d'amitié ?"
       cancel: "Annuler cette demande d'amitié ?"
       remove: "Supprimer %{name} de vos amis ?"
+      remove_declined: "Supprimer ce refus pour qu'une nouvelle demande soit possible ?"
     empty:
       received: "Aucune demande d'amitié reçue"
       sent: "Aucune demande d'amitié envoyée"
@@ -40,9 +44,12 @@ fr:
       search_results: "Aucun utilisateur trouvé pour cette recherche"
     labels:
       search_field: "Rechercher un joueur"
+      declined_by_you: "Vous avez refusé sa demande d'amis"
+
     placeholders:
       search: "Rechercher un joueur..."
     aria:
+      tabs: "Catégories d'amitié"
       back: "Retour aux amis"
       search_field: "Rechercher un joueur"
       search_submit: "Lancer la recherche"

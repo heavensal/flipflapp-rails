@@ -1,0 +1,16 @@
+<%# locals: (friendships:) %>
+<section>
+  <h2 class="sr-only"><%= t("friendships.titles.received") %></h2>
+
+  <% if friendships.empty? %>
+    <div class="text-center py-12 text-secondary-text">
+      <p><%= t("friendships.empty.received") %></p>
+    </div>
+  <% else %>
+    <div class="grid grid-cols-1 gap-4">
+      <% friendships.each do |friendship| %>
+        <%= render "friendships/components/one_received", friendship: friendship %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

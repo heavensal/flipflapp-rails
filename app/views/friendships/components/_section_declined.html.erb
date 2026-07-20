@@ -1,0 +1,10 @@
+<%# locals: (friendships:) %>
+<section>
+  <h2 class="sr-only"><%= t("friendships.titles.declined") %></h2>
+
+  <div class="grid grid-cols-1 gap-4">
+    <% friendships.each do |friendship| %>
+      <%= render "friendships/components/one_declined", friendship: friendship %>
+    <% end %>
+  </div>
+</section>

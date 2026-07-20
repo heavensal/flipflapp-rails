@@ -9,16 +9,19 @@ en:
       decline_request: "Decline request"
       cancel_request: "Cancel request"
       remove_friend: "Remove from friends"
+      remove_declined: "Remove declined request"
     confirms:
       decline: "Are you sure you want to decline this friend request?"
       cancel: "Are you sure you want to cancel your friend request?"
       remove: "Are you sure you want to remove this user from your friends?"
+      remove_declined: "Remove this declined request so they can ask again?"
     labels:
       email: "Email"
       role: "Role"
       role_player: "Player"
       role_admin: "Admin"
       member_since: "Member since"
+      declined_by_you: "You declined their friend request"
   activerecord:
     errors:
       models:

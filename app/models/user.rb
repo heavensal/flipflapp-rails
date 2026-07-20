@@ -82,6 +82,12 @@ class User < ApplicationRecord
           foreign_key: "receiver_id",
           inverse_of: :receiver
 
+  has_many :declined_received_friendships,
+          -> { declined },
+          class_name: "Friendship",
+          foreign_key: "receiver_id",
+          inverse_of: :receiver
+
   # Méthode pour combiner les deux
   def accepted_friendships
     Friendship.where(status: "accepted")

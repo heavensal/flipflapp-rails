@@ -1,10 +1,14 @@
 class FriendshipsController < ApplicationController
   before_action :authenticate_user!
 
+  TABS = %w[friends received sent declined].freeze
+
   def index
     @accepted_friendships = current_user.accepted_friendships.includes(:sender, :receiver)
     @sent_friendships = current_user.pending_sent_friendships.includes(:receiver)
     @received_friendships = current_user.pending_received_friendships.includes(:sender)
+    @declined_friendships = current_user.declined_received_friendships.includes(:sender)
+    @tab = resolve_tab
   end
 
   def search
@@ -30,9 +34,20 @@ class FriendshipsController < ApplicationController
 
   def update
     friendship = Friendship.find(params[:id])
-    @user = friendship.sender
-    if friendship.receiver == current_user && friendship.update(status: "accepted")
-      redirect_to friendships_path, notice: t("friendships.flash.update.success", name: @user.first_name)
+
+    unless friendship.receiver == current_user && friendship.status == "pending"
+      redirect_to friendships_path, alert: t("friendships.flash.update.failure")
+      return
+    end
+
+    if params[:status] == "declined"
+      if friendship.decline
+        redirect_to friendships_path(tab: "declined"), alert: t("friendships.flash.update.declined")
+      else
+        redirect_to friendships_path, alert: t("friendships.flash.update.failure")
+      end
+    elsif friendship.accept
+      redirect_to friendships_path(tab: "friends"), notice: t("friendships.flash.update.success", name: friendship.sender.first_name)
     else
       redirect_to friendships_path, alert: t("friendships.flash.update.failure")
     end
@@ -41,21 +56,30 @@ class FriendshipsController < ApplicationController
   def destroy
     friendship = Friendship.find(params[:id])
 
-    if friendship.receiver == current_user && friendship.status == "pending"
+    if friendship.receiver == current_user && friendship.status == "declined"
       friendship.destroy
-      redirect_back fallback_location: friendships_path, alert: t("friendships.flash.destroy.declined")
+      redirect_to friendships_path(tab: "friends"), notice: t("friendships.flash.destroy.removed_declined")
 
     elsif (friendship.sender == current_user || friendship.receiver == current_user) && friendship.status == "accepted"
       other_user = friendship.sender == current_user ? friendship.receiver : friendship.sender
       friendship.destroy
-      redirect_back fallback_location: friendships_path, alert: t("friendships.flash.destroy.unfriended", name: other_user.first_name)
+      redirect_to friendships_path(tab: "friends"), alert: t("friendships.flash.destroy.unfriended", name: other_user.first_name)
 
     elsif friendship.sender == current_user && friendship.status == "pending"
       friendship.destroy
-      redirect_back fallback_location: friendships_path, alert: t("friendships.flash.destroy.cancelled")
+      redirect_to friendships_path(tab: "sent"), alert: t("friendships.flash.destroy.cancelled")
 
     else
       redirect_back fallback_location: friendships_path, alert: t("friendships.flash.destroy.unauthorized")
     end
+  end
+
+  private
+
+  def resolve_tab
+    tab = TABS.include?(params[:tab]) ? params[:tab] : "friends"
+    return "friends" if tab == "declined" && @declined_friendships.empty?
+
+    tab
   end
 end

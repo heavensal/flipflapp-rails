@@ -84,16 +84,19 @@ Both paths create the same `Friendship` record (`sender` = current `User`, `rece
 | Action | Who | Result |
 |--------|-----|--------|
 | Send request | `sender` | `Friendship` with `status: pending`; **`friendship_requested` `Notification` to `receiver`** (hidden from inbox — see Notification) |
-| Accept | `receiver` | `status` → `accepted` |
-| Refuse | `receiver` | `Friendship` destroyed |
+| Accept | `receiver` (pending only) | `status` → `accepted` |
+| Decline | `receiver` (pending only) | `status` → `declined`; `friendship_requested` `Notification` removed |
 | Cancel request | `sender` (pending) | `Friendship` destroyed |
 | Unfriend | `sender` or `receiver` (accepted) | `Friendship` destroyed |
+| Remove declined | `receiver` (declined only) | `Friendship` destroyed — either party may then send a new request |
+
+`accept` and `decline` only apply from `pending`. A `declined` `Friendship` cannot become `accepted` without destroy + a new request.
 
 ### States
 
-- **pending** — request sent; `receiver` can accept or refuse.
+- **pending** — request sent; `receiver` can accept or decline.
 - **accepted** — friends; enables private `Event` visibility and `Event` invitations.
-- **declined** — allowed by model validation; **not used** in the web flow (refuse destroys the record). Remove or repurpose in a future cleanup if unused.
+- **declined** — soft reject. Visible **only to the `receiver`**. The `sender` sees no declined UI (soft-ghosted: pending sent disappears). Blocks search and reverse requests until the `receiver` removes it.
 
 ### Validation rules
 
@@ -108,11 +111,17 @@ Both paths create the same `Friendship` record (`sender` = current `User`, `rece
 - `has_pending_request_from?(other_user)` — other `User` is `sender`, `status: pending`.
 - `has_asked_to_be_friend_with?(other_user)` — current `User` is `sender`, `status: pending`.
 - `accepted_friendships` — all accepted `Friendship` records involving the `User`.
+- `declined_received_friendships` — declined `Friendship` records where the `User` is `receiver`.
 - `get_my_friends_but_not_participants(event)` — accepted friends not yet on the `Event` (invite picker).
 
 ### Index
 
-`FriendshipsController#index` lists accepted friends, pending sent requests, and pending received requests for the current `User`.
+`FriendshipsController#index` lists accepted friends, pending sent requests, pending received requests, and **declined received** requests (receiver only) for the current `User`.
+
+### Profile (`users#show`)
+
+- **Declined, current `User` is `receiver`:** label that they declined the request + action to remove the declined `Friendship`.
+- **Declined, current `User` is `sender`:** no friendship CTA (nothing shown).
 
 ---
 
@@ -129,7 +138,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 | `price` | ≥ 0; whole euros only (step `1.00`); always displayed with 2 decimal places |
 | `is_private` | Boolean; **defaults to `true`** |
 | `description` | Optional |
-| `latitude`, `longitude` | Optional; no model validation today |
+| `latitude`, `longitude` | Required (set via Places autocomplete on web; needed for the future JSON API / map features). Model presence validation still missing — form HTML `required` only today |
 
 ### Official headcount (`Event#participants_count`)
 
@@ -366,7 +375,7 @@ Participation includes `bench` for `updated` and `canceled`. `joined` / `left` a
 - `notifiable` = `Friendship`; recipient = `receiver`.
 - `payload` includes sender identity (`first_name`, etc.).
 - **Not shown** in the notifications inbox or unread badge. Players act on requests via `/friendships` (red badge on friends link).
-- Destroyed when the `Friendship` is accepted or destroyed (refuse / cancel).
+- Destroyed when the `Friendship` is accepted, declined, or destroyed (cancel / unfriend / remove declined).
 
 ### `joined`
 
@@ -485,6 +494,7 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `EventParticipant` `joined` / `left` keyed on `slot` via `countable_teams` | **Implemented** |
 | `Event` validation messages | **Implemented** — I18n (`config/locales/<locale>/event.yml`) |
 | `Event` create/update strong params include `latitude` / `longitude` | **Implemented** |
+| `Event` `latitude` / `longitude` presence (model + I18n) | **Not implemented** — HTML `required` on form only; columns still nullable in schema |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Implemented** — hidden from inbox; friends badge UX |
 | Push delivery (APNs / FCM) | **Not implemented** — web inbox first; SolidQueue later |
 | `reminder` `Notification` kind | Enum reserved; **no behavior** until SolidQueue |
@@ -492,4 +502,4 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
 | JSON API | **Not implemented** |
 | Google OAuth remnants (`users.tokens`, etc.) | **To remove** — email auth only |
-| `Friendship#decline` / `status: declined` | Model supports it; web flow destroys on refuse instead |
+| `Friendship#decline` / `status: declined` | **Implemented** — receiver-only visibility; remove declined to allow re-request |

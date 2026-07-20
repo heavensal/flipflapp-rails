@@ -9,16 +9,19 @@ fr:
       decline_request: "Refuser la demande"
       cancel_request: "Annuler la demande"
       remove_friend: "Supprimer de mes amis"
+      remove_declined: "Supprimer ce refus"
     confirms:
       decline: "Es-tu sûr de vouloir refuser cette demande d'ami ?"
       cancel: "Es-tu sûr de vouloir annuler ta demande d'ami ?"
       remove: "Es-tu sûr de vouloir supprimer cet utilisateur de tes amis ?"
+      remove_declined: "Supprimer ce refus pour qu'une nouvelle demande soit possible ?"
     labels:
       email: "Email"
       role: "Rôle"
       role_player: "Joueur"
       role_admin: "Admin"
       member_since: "Membre depuis"
+      declined_by_you: "Vous avez refusé sa demande d'amis"
   activerecord:
     errors:
       models:

@@ -29,7 +29,31 @@ RSpec.describe Friendship, type: :model do
   describe "CRUD" do
     it "accepts a pending friendship" do
       friendship = create(:friendship, status: "pending")
-      friendship.accept
+      expect(friendship.accept).to be(true)
+      expect(friendship.reload.status).to eq("accepted")
+    end
+
+    it "declines a pending friendship without destroying it" do
+      friendship = create(:friendship, status: "pending")
+
+      expect {
+        expect(friendship.decline).to be(true)
+      }.not_to change(Friendship, :count)
+
+      expect(friendship.reload.status).to eq("declined")
+    end
+
+    it "does not accept a declined friendship" do
+      friendship = create(:friendship, status: "declined")
+
+      expect(friendship.accept).to be(false)
+      expect(friendship.reload.status).to eq("declined")
+    end
+
+    it "does not decline an accepted friendship" do
+      friendship = create(:friendship, status: "accepted")
+
+      expect(friendship.decline).to be(false)
       expect(friendship.reload.status).to eq("accepted")
     end
   end
@@ -61,6 +85,15 @@ RSpec.describe Friendship, type: :model do
 
       expect {
         friendship.accept
+      }.to change { receiver.notifications.friendship_requested.count }.from(1).to(0)
+    end
+
+    it "removes the notification when the friendship is declined" do
+      friendship = create(:friendship, status: "pending")
+      receiver = friendship.receiver
+
+      expect {
+        friendship.decline
       }.to change { receiver.notifications.friendship_requested.count }.from(1).to(0)
     end
 

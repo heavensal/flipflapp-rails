@@ -5,6 +5,7 @@ en:
       search: "Find friends"
       received: "Received requests"
       sent: "Sent requests"
+      declined: "Declined requests"
       friends: "My friends"
       results: "Search results"
     flash:
@@ -13,9 +14,10 @@ en:
         failure: "Could not send the friend request."
       update:
         success: "You are now friends with %{name}."
-        failure: "Could not accept the friend request."
-      destroy:
         declined: "Friend request declined."
+        failure: "Could not update this friendship."
+      destroy:
+        removed_declined: "Declined request removed. They can send you a new request."
         unfriended: "You are no longer friends with %{name}."
         cancelled: "Friend request cancelled."
         unauthorized: "Action not authorized."
@@ -26,11 +28,13 @@ en:
       decline: "Decline"
       cancel_request: "Cancel"
       remove: "Remove"
+      remove_declined: "Remove"
       add: "Add"
     confirms:
       decline: "Decline this friend request?"
       cancel: "Cancel this friend request?"
       remove: "Remove %{name} from your friends?"
+      remove_declined: "Remove this declined request so they can ask again?"
     empty:
       received: "No friend requests received"
       sent: "No friend requests sent"
@@ -40,9 +44,12 @@ en:
       search_results: "No users found for this search"
     labels:
       search_field: "Search for a player"
+      declined_by_you: "You declined their friend request"
+
     placeholders:
       search: "Search for a player..."
     aria:
+      tabs: "Friendship categories"
       back: "Back to friends"
       search_field: "Search for a player"
       search_submit: "Search"
