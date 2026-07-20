@@ -23,6 +23,7 @@ class Friendship < ApplicationRecord
 
   scope :pending, -> { where(status: "pending") }
   scope :accepted, -> { where(status: "accepted") }
+  scope :declined, -> { where(status: "declined") }
 
   def self.accepted_friend_ids_for(user)
     accepted
@@ -34,10 +35,14 @@ class Friendship < ApplicationRecord
   end
 
   def accept
+    return false unless pending?
+
     update(status: "accepted")
   end
 
   def decline
+    return false unless pending?
+
     update(status: "declined")
   end
 end

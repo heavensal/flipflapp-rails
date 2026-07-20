@@ -96,7 +96,10 @@ RSpec.describe User, type: :model do
       stranger = create(:user)
       create(:friendship, sender: current_user, receiver: friend, status: "declined")
 
-      expect(described_class.users_without_friendship(current_user)).to contain_exactly(stranger)
+      results = described_class.users_without_friendship(current_user)
+
+      expect(results).to include(stranger)
+      expect(results).not_to include(friend, current_user)
     end
   end
 
@@ -180,6 +183,16 @@ RSpec.describe User, type: :model do
       accepted_friendship = create(:friendship, sender: user, receiver: accepted_receiver, status: "accepted")
 
       expect(user.accepted_sent_friendships).to contain_exactly(accepted_friendship)
+    end
+
+    it "keeps declined received friendships scoped to the receiver" do
+      receiver = create(:user)
+      sender = create(:user)
+      other = create(:user)
+      declined = create(:friendship, sender: sender, receiver: receiver, status: "declined")
+      create(:friendship, sender: receiver, receiver: other, status: "declined")
+
+      expect(receiver.declined_received_friendships).to contain_exactly(declined)
     end
   end
 

@@ -1,0 +1,32 @@
+<%# locals: (tab:, received_count:, sent_count:, friends_count:, declined_count:) %>
+<%
+  tabs = [
+    { key: "friends", title: t("friendships.titles.friends"), count: friends_count },
+    { key: "received", title: t("friendships.titles.received"), count: received_count },
+    { key: "sent", title: t("friendships.titles.sent"), count: sent_count }
+  ]
+  tabs << { key: "declined", title: t("friendships.titles.declined"), count: declined_count } if declined_count.positive?
+%>
+
+<nav class="mb-8 overflow-x-auto" aria-label="<%= t("friendships.aria.tabs") %>">
+  <ul class="flex gap-2 min-w-max">
+    <% tabs.each do |item| %>
+      <% active = tab == item[:key] %>
+      <li>
+        <%= link_to friendships_path(tab: item[:key]),
+              class: [
+                "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                active ? "bg-primary-yellow text-white" : "bg-white/5 text-secondary-text hover:bg-white/10 hover:text-white"
+              ].join(" "),
+              aria: { current: (active ? "page" : nil) } do %>
+          <span><%= item[:title] %></span>
+          <% if item[:count].positive? %>
+            <span class="<%= active ? "bg-white/20" : "bg-linear-to-r from-amber-400 to-amber-600" %> flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-white text-xs font-bold">
+              <%= item[:count] %>
+            </span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</nav>

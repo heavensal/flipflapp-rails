@@ -1,0 +1,12 @@
+<%# locals: (user:) %>
+<div class="size-10 rounded-full shadow-lg col-span-1 place-self-center">
+  <div class="w-full h-full rounded-full overflow-hidden bg-linear-to-r from-amber-400 to-amber-600 flex items-center justify-center">
+    <% if user.avatar? %>
+      <%= cl_image_tag user.avatar, class: "w-full h-full object-cover rounded-full" %>
+    <% else %>
+      <svg width="24" height="24" viewBox="0 0 0.6 0.6" xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="text-white" aria-hidden="true">
+        <path d="M.44.06a.06.06 0 1 1-.12 0 .06.06 0 0 1 .12 0m0 .38a.04.04 0 1 0 0 .08.04.04 0 0 0 0-.08M.514.244.438.168A.02.02 0 0 0 .423.161H.14a.02.02 0 0 0 0 .04h.108L.12.452V.46a.02.02 0 0 0 .04.008L.2.4h.08L.203.57.2.58a.02.02 0 0 0 .04.008L.428.213l.058.059A.02.02 0 0 0 .514.244"/>
+      </svg>
+    <% end %>
+  </div>
+</div>
