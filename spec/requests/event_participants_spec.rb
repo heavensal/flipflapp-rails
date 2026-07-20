@@ -19,6 +19,18 @@ RSpec.describe "EventParticipants", type: :request do
       expect(event.event_participants.find_by(user: user).event_team).to eq(team)
     end
 
+    it "destroys the invitation when an invited user joins" do
+      event = create(:event, is_private: true)
+      user = create(:user)
+      create(:invitation, event: event, user: user)
+      team = team_slot(event, "team_two")
+      sign_in user
+
+      expect {
+        post event_event_participants_path(event), params: { event_participant: { event_team_id: team.id } }
+      }.to change { event.invitations.where(user: user).count }.from(1).to(0)
+    end
+
     it "creates a participant on the bench when countable slots are full" do
       event = create(:event, number_of_participants: 2, is_private: false)
       create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "team_two"))

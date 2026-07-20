@@ -23,7 +23,7 @@ fr:
       invitations:
         create:
           success: "Invitations envoyées avec succès."
-          failure: "Une erreur est survenue lors de l'envoi des invitations."
+          empty: "Sélectionne au moins un ami à inviter."
     actions:
       create_first: "Créer le premier événement"
       create_fab: "Créer un nouvel événement"

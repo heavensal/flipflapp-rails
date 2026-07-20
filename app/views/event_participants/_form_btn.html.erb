@@ -5,8 +5,8 @@
     params: { event_participant: { event_team_id: team.id } },
     method: :post,
     class: (switching ?
-      "px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 text-gray-900 text-sm font-semibold shadow-md active:scale-95 transition" :
-      "w-12 h-12 flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 text-gray-900 shadow-md active:scale-95 transition") do %>
+      "px-4 py-2 rounded-2xl bg-linear-to-r from-amber-400 to-amber-500 text-gray-900 text-sm font-semibold shadow-md active:scale-95 transition" :
+      "w-12 h-12 flex items-center justify-center rounded-2xl bg-linear-to-r from-amber-400 to-amber-500 text-gray-900 shadow-md active:scale-95 transition") do %>
     <% if switching %>
       <%= t("event_participants.actions.switch") %>
     <% else %>

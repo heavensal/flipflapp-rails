@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Friendships", type: :request do
   describe "PATCH /friendships/:id" do
-    it "lets the receiver decline a pending friendship" do
+    it "lets the receiver decline a pending friendship", :notification_jobs do
       friendship = create(:friendship, status: "pending")
       sign_in friendship.receiver
 

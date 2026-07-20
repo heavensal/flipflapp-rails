@@ -1,0 +1,21 @@
+en:
+  invitations:
+    titles:
+      list: "Invited"
+    empty:
+      list: "No invited players"
+  activerecord:
+    models:
+      invitation:
+        one: "Invitation"
+        other: "Invitations"
+    attributes:
+      invitation:
+        event: "Event"
+        user: "Invited player"
+    errors:
+      models:
+        invitation:
+          attributes:
+            user_id:
+              taken: "has already been invited to this event"

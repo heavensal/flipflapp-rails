@@ -2,7 +2,7 @@
 
 <%= link_to is_me ? me_path : user_path(event_participant.user) do %>
   <div class="
-    flex items-center gap-2 rounded-lg px-4 py-2 shadow bg-gradient-to-r from-blue-400/20 to-blue-600/20">
+    flex items-center gap-2 rounded-lg px-4 py-2 shadow bg-linear-to-r from-blue-400/20 to-blue-600/20">
     <!-- Avatar -->
     <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 flex items-center justify-center text-white font-bold shadow <%= is_me ? 'border-amber-400 border' : '' %>">
       <% if event_participant.user.avatar? %>

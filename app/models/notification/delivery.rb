@@ -5,12 +5,11 @@ module Notification::Delivery
 
   class_methods do
     def deliver_one!(user:, kind:, notifiable:, payload:)
-      create!(
-        user: user,
-        kind: kind,
-        notifiable: notifiable,
-        payload: payload,
-        read: false
+      Notifications::DeliverOneJob.perform_later(
+        user_id: user.id,
+        kind: kind.to_s,
+        notifiable_gid: notifiable&.to_gid&.to_s,
+        payload: serialize_payload(payload)
       )
     end
 
@@ -18,23 +17,18 @@ module Notification::Delivery
       ids = Array(user_ids).uniq
       return if ids.empty?
 
-      now = Time.current
-      kind_value = kinds.fetch(kind.to_s)
-
-      insert_all(
-        ids.map do |user_id|
-          {
-            user_id: user_id,
-            notifiable_type: notifiable&.class&.name,
-            notifiable_id: notifiable&.id,
-            kind: kind_value,
-            payload: payload,
-            read: false,
-            created_at: now,
-            updated_at: now
-          }
-        end
+      Notifications::DeliverManyJob.perform_later(
+        user_ids: ids,
+        kind: kind.to_s,
+        notifiable_gid: notifiable&.to_gid&.to_s,
+        payload: serialize_payload(payload)
       )
+    end
+
+    def serialize_payload(payload)
+      payload.to_h.transform_values do |value|
+        value.respond_to?(:iso8601) ? value.iso8601 : value
+      end
     end
   end
 end

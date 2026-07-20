@@ -12,15 +12,5 @@ test:
   url: <%= ENV["TEST_NEON_DB"] %>
 
 production:
-  primary: &primary_production
-    <<: *default
-    url: <%= ENV["PRODUCTION_NEON_DB"] %>
-  cache:
-    <<: *primary_production
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    migrations_paths: db/cable_migrate
+  <<: *default
+  url: <%= ENV["PRODUCTION_NEON_DB"] %>

@@ -58,7 +58,7 @@ RSpec.describe Friendship, type: :model do
     end
   end
 
-  describe "notifications" do
+  describe "notifications", :notification_jobs do
     it "creates a friendship_requested notification for the receiver" do
       sender = create(:user)
       receiver = create(:user)

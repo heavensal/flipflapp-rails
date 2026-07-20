@@ -43,9 +43,9 @@
         <div id="user-info" class="flex items-center space-x-4 border-b border-white/20 pb-4 mb-4">
           <div>
             <% if current_user.avatar? %>
-              <%= cl_image_tag current_user.avatar, class: 'size-20 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 object-cover' %>
+              <%= cl_image_tag current_user.avatar, class: 'size-20 rounded-full bg-linear-to-r from-bg-green to-bg-green-2 object-cover' %>
             <% else %>
-              <%= image_tag 'placeholder-avatar.png', class: 'size-20 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1' %>
+              <%= image_tag 'placeholder-avatar.png', class: 'size-20 rounded-full bg-linear-to-r from-bg-green to-bg-green-2 p-1' %>
             <% end %>
           </div>
 
@@ -63,30 +63,26 @@
         <ul class="flex flex-col py-4 space-y-2" id="menu">
 
           <li>
-            <% unread_notifications_count = current_user.notifications.inbox.unread.count %>
             <%= link_to notifications_list_path,
                         data: { action: "click->navbar#closeMenu" },
-                        class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
+                        class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
               <%= t("notifications.titles.index") %>
-              <% if unread_notifications_count > 0 %>
-                <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
-                  <%= unread_notifications_count %>
-                </span>
-              <% end %>
+              <%= render "notifications/components/unread_badge",
+                         count: current_user.notifications.inbox.unread.count %>
             <% end %>
           </li>
 
 
           <li>
-            <%= link_to t("layouts.navigation.events"), authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("layouts.navigation.events"), authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.my_profile"), me_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.my_profile"), me_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
             <%= link_to friendships_path,
                         data: { action: "click->navbar#closeMenu" },
-                        class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
+                        class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
               <%= t("layouts.navigation.friends") %>
               <% if current_user.pending_received_friendships.count > 0 %>
                 <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
@@ -101,7 +97,7 @@
             <li>
               <%= link_to t("admin.navigation.link"), admin_root_path,
                           data: { action: "click->navbar#closeMenu" },
-                          class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+                          class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
             </li>
           <% end %>
 
@@ -111,10 +107,10 @@
 
         <ul class="flex flex-col py-4 space-y-2" id="menu-disconnect">
           <li>
-            <%= link_to t("devise.navigation.edit_account"), edit_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.edit_account"), edit_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.sign_out"), destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_out"), destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
         </ul>
 
@@ -123,10 +119,10 @@
         <ul class="flex flex-col py-4 space-y-2" id="menu">
 
           <li>
-            <%= link_to t("devise.navigation.sign_in"), new_user_session_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_in"), new_user_session_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.sign_up"), new_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_up"), new_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
 
         </ul>

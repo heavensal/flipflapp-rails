@@ -42,7 +42,7 @@
         <% if event.user.avatar? %>
           <%= cl_image_tag event.user.avatar, class: "size-16 rounded-full object-cover" %>
         <% else %>
-          <%= image_tag "placeholder-avatar.png", class: "size-16 rounded-full bg-gradient-to-r from-bg-green to-bg-green-2 p-1" %>
+          <%= image_tag "placeholder-avatar.png", class: "size-16 rounded-full bg-linear-to-r from-bg-green to-bg-green-2 p-1" %>
         <% end %>
       </div>
     </div>

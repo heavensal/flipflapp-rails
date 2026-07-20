@@ -15,7 +15,8 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 
 | Layer | Path | Responsibility |
 |-------|------|----------------|
-| Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects via per-model modules (`Event::Notifications`, etc.) + `Notification::Delivery` |
+| Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects via per-model modules (`Event::Notifications`, etc.) + `Notification::Delivery` (enqueues jobs) |
+| Jobs | `app/jobs/` | Solid Queue workers — e.g. `Notifications::DeliverOneJob` / `DeliverManyJob` (persist + Turbo Stream broadcast) |
 | Controllers | `app/controllers/` | Auth, strong params, HTTP — thin; call model domain methods |
 | Views | `app/views/` | ERB + Tailwind; components under `<feature>/components/` |
 | JavaScript | `app/javascript/` | Stimulus when needed; ask before new controllers |
@@ -23,7 +24,7 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 
 ## MVP models
 
-`User` · `Event` · `EventTeam` · `EventParticipant` · `Friendship` · `Notification`
+`User` · `Event` · `EventTeam` · `EventParticipant` · `Friendship` · `Invitation` · `Notification`
 
 Details: [DOMAIN.md](DOMAIN.md). Schema: `db/schema.rb`.
 

@@ -11,7 +11,7 @@
     <%= render 'event_teams/components/bench', event: @event, bench: @bench %>
   </section>
 
-
+  <%= render "invitations/components/invited_list", invitations: @invitations %>
 
   <% if @event.am_i_the_author?(current_user) %>
     <div class="flex justify-center mt-10">
@@ -23,7 +23,7 @@
       <%= link_to event_participant_path(EventParticipant.find_by(event: @event, user: current_user)),
         data: { turbo_method: :delete, turbo_confirm: t("event_participants.confirms.leave") },
         class: "w-12 h-12 flex items-center justify-center
-                rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white shadow-md
+                rounded-2xl bg-linear-to-r from-red-600 to-red-800 text-white shadow-md
                 active:scale-95 transition" do %>
         <!-- Icône Exit -->
         <svg xmlns="http://www.w3.org/2000/svg"

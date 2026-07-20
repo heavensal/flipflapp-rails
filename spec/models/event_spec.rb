@@ -168,7 +168,7 @@ RSpec.describe Event, type: :model do
     end
   end
 
-  describe "notifications" do
+  describe "notifications", :notification_jobs do
     it "creates one update notification per tracked field for every participant except the author" do
       event = create(:event)
       player = create(:user)
@@ -255,17 +255,30 @@ RSpec.describe Event, type: :model do
       expect(event.can_invite?(stranger)).to be(false)
     end
 
-    it "creates invited notifications via invite!" do
+    it "creates an invitation and invited notification via invite!", :notification_jobs do
       event = create(:event)
       friend = create(:user)
 
       expect {
         event.invite!(users: [ friend ], sender: event.user)
-      }.to change { friend.notifications.invited.count }.by(1)
+      }.to change { event.invitations.where(user: friend).count }.by(1)
+        .and change { friend.notifications.invited.count }.by(1)
 
       notification = friend.notifications.invited.last
       expect(notification.notifiable).to eq(event)
       expect(notification.payload["sender"]).to eq(event.user.first_name)
+    end
+
+    it "does not create a duplicate invitation when invite! is called again", :notification_jobs do
+      event = create(:event)
+      friend = create(:user)
+      event.invite!(users: [ friend ], sender: event.user)
+
+      expect {
+        event.invite!(users: [ friend ], sender: event.user)
+      }.not_to change { event.invitations.where(user: friend).count }
+
+      expect(friend.notifications.invited.count).to eq(1)
     end
 
     it "allows an accepted friend of the author to view and join a private event" do
@@ -281,10 +294,19 @@ RSpec.describe Event, type: :model do
       event = create(:event, is_private: true)
       invited_user = create(:user)
 
-      create(:notification, user: invited_user, notifiable: event, kind: :invited)
+      create(:invitation, event: event, user: invited_user)
 
+      expect(event.invited?(invited_user)).to be(true)
       expect(event.viewable_by?(invited_user)).to be(true)
       expect(event.joinable_by?(invited_user)).to be(true)
+    end
+
+    it "includes private events for invited users in visible_to" do
+      viewer = create(:user)
+      event = create(:event, is_private: true)
+      create(:invitation, event: event, user: viewer)
+
+      expect(described_class.visible_to(viewer)).to include(event)
     end
 
     it "blocks strangers from viewing or joining a private event" do

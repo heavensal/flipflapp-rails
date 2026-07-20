@@ -41,10 +41,12 @@ fr:
       event_teams: "Équipes"
       event_participants: "Participants"
       friendships: "Amitiés"
+      invitations: "Invitations"
       notifications: "Notifications"
     associations:
       events: "Événements"
       event_participants: "Participations"
+      invitations: "Invitations"
       notifications: "Notifications"
       sent_friendships: "Demandes envoyées"
       received_friendships: "Demandes reçues"
