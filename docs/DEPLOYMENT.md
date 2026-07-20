@@ -32,7 +32,7 @@ All environments use **Neon** serverless Postgres in production and local dev. U
 | `TEST_NEON_DB` | `test` | Required in `.env` for local specs |
 | `PRODUCTION_NEON_DB` | `production` | Injected into the Kamal container; not needed in local `.env` unless you deploy from your machine |
 
-Production uses Rails multi-db config (`primary`, `cache`, `queue`, `cable`) — all share the same `PRODUCTION_NEON_DB` URL with separate migration paths (`db/cache_migrate`, etc.).
+Production uses a single Postgres database (`PRODUCTION_NEON_DB`), including Solid Queue / Solid Cable tables.
 
 ### CI test job vs Neon
 
@@ -80,20 +80,11 @@ The deploy job targets the GitHub **environment `production`**. You can require 
 
 ## Background jobs & realtime (production)
 
-Production uses **Solid Queue** (Active Job) and **Solid Cable** (Action Cable). Multi-db roles `primary`, `queue`, and `cable` share `PRODUCTION_NEON_DB` (see `config/database.yml`).
+Production uses **Solid Queue** (Active Job) and **Solid Cable** (Action Cable). Tables live on the primary Neon database (migration `CreateSolidQueueAndCableTables`).
 
 On the single web host, Solid Queue runs **inside Puma** via `SOLID_QUEUE_IN_PUMA=true` (no dedicated Kamal `job` machine yet). Notification create/broadcast and Devise mail (`deliver_later`) are processed by that supervisor.
 
 Live notification toasts use Turbo Streams over Solid Cable to the signed-in user’s stream.
-
-**First deploy after enabling Solid\*:** load schemas once on production Neon (same URL as primary):
-
-```bash
-bin/kamal app exec 'bin/rails db:schema:load:queue'
-bin/kamal app exec 'bin/rails db:schema:load:cable'
-```
-
-Skip if `solid_queue_*` / `solid_cable_*` tables already exist.
 
 ---
 

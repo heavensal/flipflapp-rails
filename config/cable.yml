@@ -1,9 +1,7 @@
-# Solid Cable persists messages so web and Solid Queue workers can broadcast across processes.
+# Solid Cable uses the primary database (same Neon URL). Do not use a separate
+# multi-db `cable:` role on the same URL — schema:load would wipe schema_migrations.
 development:
   adapter: solid_cable
-  connects_to:
-    database:
-      writing: cable
   polling_interval: 0.1.seconds
   message_retention: 1.day
 
@@ -12,8 +10,5 @@ test:
 
 production:
   adapter: solid_cable
-  connects_to:
-    database:
-      writing: cable
   polling_interval: 0.1.seconds
   message_retention: 1.day

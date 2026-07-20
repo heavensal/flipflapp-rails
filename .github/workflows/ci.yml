@@ -57,8 +57,6 @@ jobs:
           TEST_NEON_DB: postgres://postgres:postgres@localhost:5432/flipflapp_test
         run: |
           bin/rails db:test:prepare
-          bin/rails db:schema:load:queue
-          bin/rails db:schema:load:cable
           bundle exec rspec
 
   deploy:
