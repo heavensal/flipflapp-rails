@@ -15,7 +15,7 @@ module Admin
         model_class: User,
         associations: %i[events event_participants notifications sent_friendships received_friendships],
         hidden_columns: %w[
-          encrypted_password reset_password_token remember_created_at confirmation_token tokens
+          encrypted_password reset_password_token remember_created_at confirmation_token
         ],
         readonly_columns: %w[
           sign_in_count current_sign_in_at last_sign_in_at current_sign_in_ip last_sign_in_ip

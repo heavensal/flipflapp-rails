@@ -97,7 +97,7 @@ Listed under `env.secret` in `deploy.yml` (values from `.kamal/secrets`):
 - `RAILS_MASTER_KEY`
 - `PRODUCTION_NEON_DB`
 - `CLOUDINARY_*`
-- `GOOGLE_*` (OAuth + Maps — optional for MVP)
+- `GOOGLE_MAPS_KEY` (Places autocomplete)
 - `SMTP_*`
 
 Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage).
@@ -149,9 +149,7 @@ Set with `gh secret set … --env production` or the repository **Settings → E
 | `CLOUDINARY_CLOUD_NAME` | Avatar uploads |
 | `CLOUDINARY_API_KEY` | |
 | `CLOUDINARY_API_SECRET` | |
-| `GOOGLE_CLIENT_ID` | OAuth (optional) |
-| `GOOGLE_CLIENT_SECRET` | |
-| `GOOGLE_MAPS_KEY` | Maps autocomplete |
+| `GOOGLE_MAPS_KEY` | Maps / Places autocomplete |
 | `SMTP_USERNAME` | Devise confirmable email |
 | `SMTP_PASSWORD` | |
 

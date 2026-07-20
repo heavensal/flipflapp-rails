@@ -10,7 +10,7 @@ module AdminHelper
     case column
     when "avatar"
       value.present? ? image_tag(record.avatar.url, class: "h-16 w-16 rounded-full object-cover") : "—"
-    when "payload", "tokens"
+    when "payload"
       content_tag(:pre, JSON.pretty_generate(value), class: "text-xs whitespace-pre-wrap")
     when "kind"
       record.kind
@@ -35,7 +35,7 @@ module AdminHelper
       form.file_field column, class: admin_input_classes
     when "description"
       form.text_area column, rows: 4, class: admin_input_classes
-    when "payload", "tokens"
+    when "payload"
       form.text_area column, value: JSON.pretty_generate(record.public_send(column) || {}), rows: 6, class: admin_input_classes
     when "is_private", "read"
       form.check_box column, class: "rounded border-white/30"
