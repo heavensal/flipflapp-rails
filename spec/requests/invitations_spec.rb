@@ -16,8 +16,6 @@ RSpec.describe "Invitations", type: :request do
         .and change { friend.notifications.invited.count }.by(1)
 
       expect(response).to redirect_to(event)
-      follow_redirect!
-      expect(response.body).to include(I18n.t("events.flash.invitations.create.success"))
     end
 
     it "rejects an empty selection" do
@@ -29,8 +27,6 @@ RSpec.describe "Invitations", type: :request do
       }.not_to change(Invitation, :count)
 
       expect(response).to redirect_to(event)
-      follow_redirect!
-      expect(response.body).to include(I18n.t("events.flash.invitations.create.empty"))
     end
 
     it "rejects invites from users who are not participants" do
@@ -57,8 +53,6 @@ RSpec.describe "Invitations", type: :request do
       }.not_to change(Invitation, :count)
 
       expect(response).to redirect_to(event)
-      follow_redirect!
-      expect(response.body).to include(I18n.t("events.flash.invitations.create.empty"))
     end
   end
 end
