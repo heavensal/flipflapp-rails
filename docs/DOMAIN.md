@@ -501,5 +501,5 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `created` `Notification` kind | **Removed** |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
 | JSON API | **Not implemented** |
-| Google OAuth remnants (`users.tokens`, etc.) | **To remove** — email auth only |
+| Google OAuth remnants (`users.tokens`, deploy `GOOGLE_CLIENT_*`) | **Removed** — email auth only; `provider`/`uid` kept for future OAuth |
 | `Friendship#decline` / `status: declined` | **Implemented** — receiver-only visibility; remove declined to allow re-request |

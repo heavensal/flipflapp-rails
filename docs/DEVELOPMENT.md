@@ -68,7 +68,7 @@ Production URL (`PRODUCTION_NEON_DB`) is for deploy only — see [DEPLOYMENT.md]
 | `RAILS_MASTER_KEY` | Yes (encrypted credentials) |
 | `CLOUDINARY_*` | Yes (avatar uploads) |
 | `SMTP_*` | Yes (Devise confirmable emails) |
-| `GOOGLE_*` | Optional — OAuth out of MVP scope |
+| `GOOGLE_MAPS_KEY` | Optional locally — Places autocomplete on event forms |
 | `PRODUCTION_NEON_DB` | No — deploy secrets only |
 
 ---
