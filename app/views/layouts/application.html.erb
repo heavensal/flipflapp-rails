@@ -39,7 +39,7 @@
     <%= render 'layouts/components/header' %>
     <%= yield %>
     <%= render "layouts/components/flashes" %>
-    <div id="notification_toasts" class="fixed top-2 left-1/2 transform -translate-x-1/2 w-[90dvw] z-100 flex flex-col gap-2 pointer-events-none [&>*]:pointer-events-auto"></div>
+    <div id="notification_toasts" class="fixed top-2 left-1/2 transform -translate-x-1/2 w-[90dvw] z-100 flex flex-col gap-2 pointer-events-none *:pointer-events-auto"></div>
 
     <%= render "layouts/components/footer" %>
   </body>
