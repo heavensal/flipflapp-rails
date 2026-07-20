@@ -13,7 +13,7 @@ module Admin
       users: ENTRY.new(
         key: :users,
         model_class: User,
-        associations: %i[events event_participants notifications sent_friendships received_friendships],
+        associations: %i[events event_participants invitations notifications sent_friendships received_friendships],
         hidden_columns: %w[
           encrypted_password reset_password_token remember_created_at confirmation_token
         ],
@@ -26,7 +26,7 @@ module Admin
       events: ENTRY.new(
         key: :events,
         model_class: Event,
-        associations: %i[event_teams event_participants user notifications],
+        associations: %i[event_teams event_participants invitations user notifications],
         hidden_columns: [],
         readonly_columns: [],
         index_columns: %w[id title location start_time user_id is_private created_at]
@@ -54,6 +54,14 @@ module Admin
         hidden_columns: [],
         readonly_columns: [],
         index_columns: %w[id sender_id receiver_id status created_at]
+      ),
+      invitations: ENTRY.new(
+        key: :invitations,
+        model_class: Invitation,
+        associations: %i[event user],
+        hidden_columns: [],
+        readonly_columns: [],
+        index_columns: %w[id event_id user_id created_at]
       ),
       notifications: ENTRY.new(
         key: :notifications,
@@ -123,6 +131,7 @@ module Admin
       when EventTeam then helpers.event_path(record.event)
       when EventParticipant then helpers.event_path(record.event)
       when Friendship then helpers.friendships_path
+      when Invitation then helpers.event_path(record.event)
       when Notification then helpers.notifications_list_path
       end
     end
@@ -142,6 +151,7 @@ module Admin
       when EventTeam then "#{record.slot} — #{record.label}"
       when EventParticipant then "User ##{record.user_id} on Event ##{record.event_id}"
       when Friendship then "##{record.id} #{record.status}"
+      when Invitation then "User ##{record.user_id} → Event ##{record.event_id}"
       when Notification then "##{record.id} #{record.kind}"
       else "##{record.id}"
       end

@@ -141,16 +141,19 @@ RSpec.describe User, type: :model do
       expect(current_user.has_asked_to_be_friend_with?(other_user)).to be(false)
     end
 
-    it "returns accepted friends who are not event participants" do
+    it "returns accepted friends who are not participants and not already invited" do
       current_user = create(:user)
-      invited_friend = create(:user)
+      available_friend = create(:user)
       participating_friend = create(:user)
+      already_invited_friend = create(:user)
       event = create(:event)
-      create(:friendship, sender: current_user, receiver: invited_friend, status: "accepted")
+      create(:friendship, sender: current_user, receiver: available_friend, status: "accepted")
       create(:friendship, sender: participating_friend, receiver: current_user, status: "accepted")
+      create(:friendship, sender: current_user, receiver: already_invited_friend, status: "accepted")
       create(:event_participant, event: event, user: participating_friend)
+      create(:invitation, event: event, user: already_invited_friend)
 
-      expect(current_user.get_my_friends_but_not_participants(event)).to contain_exactly(invited_friend)
+      expect(current_user.get_my_friends_but_not_participants(event)).to contain_exactly(available_friend)
     end
 
     it "destroys all sent and received friendships when the user is destroyed" do

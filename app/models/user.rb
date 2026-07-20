@@ -25,6 +25,7 @@ class User < ApplicationRecord
 
   has_many :events, dependent: :destroy
   has_many :event_participants, dependent: :destroy
+  has_many :invitations, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
   ########################## RECHERCHE AVEC RANSACK ##########################
@@ -94,12 +95,13 @@ class User < ApplicationRecord
               .where("sender_id = :id OR receiver_id = :id", id: self.id)
   end
 
-  # Amis qui ne sont pas des event_participants
+  # Accepted friends who are not participants and have no pending Invitation
   def get_my_friends_but_not_participants(event)
     friend_ids = accepted_friendships.pluck(:sender_id, :receiver_id).flatten.uniq - [ id ]
     participant_ids = event.event_participants.pluck(:user_id)
+    invited_ids = event.invitations.pluck(:user_id)
 
-    User.where(id: friend_ids - participant_ids)
+    User.where(id: friend_ids - participant_ids - invited_ids)
   end
 
 

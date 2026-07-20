@@ -4,12 +4,30 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
-  <<: *default
-  url: <%= ENV["DEVELOPMENT_NEON_DB"] %>
+  primary:
+    <<: *default
+    url: <%= ENV["DEVELOPMENT_NEON_DB"] %>
+  queue:
+    <<: *default
+    url: <%= ENV["DEVELOPMENT_NEON_DB"] %>
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    url: <%= ENV["DEVELOPMENT_NEON_DB"] %>
+    migrations_paths: db/cable_migrate
 
 test:
-  <<: *default
-  url: <%= ENV["TEST_NEON_DB"] %>
+  primary:
+    <<: *default
+    url: <%= ENV["TEST_NEON_DB"] %>
+  queue:
+    <<: *default
+    url: <%= ENV["TEST_NEON_DB"] %>
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    url: <%= ENV["TEST_NEON_DB"] %>
+    migrations_paths: db/cable_migrate
 
 production:
   primary: &primary_production

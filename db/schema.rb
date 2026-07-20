@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_20_214610) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_20_223852) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -63,6 +63,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_20_214610) do
     t.index ["sender_id"], name: "index_friendships_on_sender_id"
   end
 
+  create_table "invitations", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id", "user_id"], name: "index_invitations_on_event_id_and_user_id", unique: true
+    t.index ["event_id"], name: "index_invitations_on_event_id"
+    t.index ["user_id"], name: "index_invitations_on_user_id"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.boolean "read", default: false, null: false
@@ -76,6 +86,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_20_214610) do
     t.index ["user_id", "notifiable_type", "notifiable_id"], name: "idx_on_user_id_notifiable_type_notifiable_id_ffac34041e"
     t.index ["user_id", "read"], name: "index_notifications_on_user_id_and_read"
     t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.binary "payload", null: false
+    t.datetime "created_at", null: false
+    t.bigint "channel_hash", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
   end
 
   create_table "users", force: :cascade do |t|
@@ -116,5 +136,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_20_214610) do
   add_foreign_key "events", "users"
   add_foreign_key "friendships", "users", column: "receiver_id"
   add_foreign_key "friendships", "users", column: "sender_id"
+  add_foreign_key "invitations", "events"
+  add_foreign_key "invitations", "users"
   add_foreign_key "notifications", "users"
 end

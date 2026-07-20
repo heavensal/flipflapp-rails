@@ -12,6 +12,8 @@ fr:
       delete: "Supprimer"
     confirms:
       delete: "Supprimer cette notification ?"
+    live_toast:
+      title: "Notification"
     messages:
       joined: "%{player} a rejoint ton événement \"%{title}\"."
       left: "%{player} a quitté ton événement \"%{title}\"."

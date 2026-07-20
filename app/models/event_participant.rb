@@ -10,7 +10,14 @@ class EventParticipant < ApplicationRecord
   validates :user_id, uniqueness: { scope: :event_id }
   validate :countable_team_has_capacity, if: :targeting_countable_team?
 
+  after_create :destroy_pending_invitation
+
   private
+
+  def destroy_pending_invitation
+    event.invitations.where(user: user).destroy_all
+  end
+
 
   def targeting_countable_team?
     return false unless event_team&.countable?

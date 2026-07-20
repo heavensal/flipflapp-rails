@@ -19,6 +19,7 @@ class EventsController < ApplicationController
     @team_1 = teams["team_one"]
     @team_2 = teams["team_two"]
     @bench = teams["bench"]
+    @invitations = @event.invitations.includes(:user).order(:created_at)
     @event_participant = @event.event_participants.find_by(user: current_user)
   end
 

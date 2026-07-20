@@ -257,6 +257,7 @@ me.notifications.inbox.delete_all
 inbox_events = seed_events.select(&:persisted?)
 players = others.map(&:first_name)
 
+Invitation.find_or_create_by!(event: event_private_invited, user: me)
 Notification.create!(
   user: me,
   notifiable: event_private_invited,

@@ -16,6 +16,10 @@ module Event::Notifications
 
     Notification.transaction do
       friends.each do |friend|
+        invitation = invitations.find_or_initialize_by(user: friend)
+        next unless invitation.new_record?
+
+        invitation.save!
         Notification.deliver_one!(
           user: friend,
           kind: :invited,

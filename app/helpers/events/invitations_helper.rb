@@ -1,2 +1,0 @@
-module Events::InvitationsHelper
-end

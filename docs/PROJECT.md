@@ -24,6 +24,7 @@
 | `EventTeam` | `team_one`, `team_two`, `bench` per `Event` |
 | `EventParticipant` | `User` on an `Event` + `EventTeam` |
 | `Friendship` | Social graph; private `Event` visibility and invites |
+| `Invitation` | Pending invite to an `Event` (unique per user); removed on join |
 | `Notification` | In-app alerts (future iOS/Android push) |
 
 ## MVP scope (in)

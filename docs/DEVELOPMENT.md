@@ -31,6 +31,8 @@ bundle install
 npm install
 cp .env.example .env          # fill in local values (see below)
 bin/rails db:prepare
+bin/rails db:schema:load:queue
+bin/rails db:schema:load:cable
 bin/dev
 ```
 
@@ -81,14 +83,25 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 
 | Command | Purpose |
 |---------|---------|
-| `bin/dev` | Start Rails + JS + CSS watchers (daily driver) |
+| `bin/dev` | Start Rails + JS + CSS watchers + Solid Queue worker (`Procfile.dev`) |
+| `bin/jobs` | Solid Queue worker alone (also started by `bin/dev`) |
 | `bin/setup` | Install deps, `db:prepare`, optional start `bin/dev` |
+
+### Background jobs & realtime
+
+- **Active Job** adapter: Solid Queue (development/production). Test uses `:test`.
+- **Action Cable** adapter: Solid Cable (development/production). Test uses `:test`.
+- Multi-db roles `queue` and `cable` share the same Neon URL as primary; schemas live in `db/queue_schema.rb` and `db/cable_schema.rb`.
+- `bin/dev` runs `jobs: bin/jobs` so notification delivery and Devise `deliver_later` mail run out of the web process.
+- Mailers: always `deliver_later` (never `deliver_now` except console/debug). Devise confirmable/reset use Active Job automatically.
 
 ### Database
 
 | Command | Purpose |
 |---------|---------|
-| `bin/rails db:prepare` | Create/migrate DB for current `RAILS_ENV` |
+| `bin/rails db:prepare` | Create/migrate primary for current `RAILS_ENV` |
+| `bin/rails db:schema:load:queue` | Load Solid Queue tables (`db/queue_schema.rb`) |
+| `bin/rails db:schema:load:cable` | Load Solid Cable tables (`db/cable_schema.rb`) |
 | `bin/rails db:migrate` | Run pending migrations (development) |
 | `bin/rails db:test:prepare` | Prepare test DB before specs |
 | `bin/rails db:reset` | Drop, create, migrate, seed (destructive) |

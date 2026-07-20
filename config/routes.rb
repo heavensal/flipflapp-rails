@@ -54,6 +54,7 @@ Rails.application.routes.draw do
     resources :event_teams
     resources :event_participants
     resources :friendships
+    resources :invitations
     resources :notifications
   end
 end

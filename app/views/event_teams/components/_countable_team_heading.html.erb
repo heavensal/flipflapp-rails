@@ -25,7 +25,7 @@
       <dialog
         data-dialog-target="dialog"
         data-action="click->dialog#backdropClose"
-        class="bg-gradient-to-br from-bg-green to-bg-green-2 w-11/12 max-w-md rounded-2xl px-6 py-4 backdrop:bg-black/50 fixed top-1/2 left-1/2 transform -translate-1/2"
+        class="bg-linear-to-br from-bg-green to-bg-green-2 w-11/12 max-w-md rounded-2xl px-6 py-4 backdrop:bg-black/50 fixed top-1/2 left-1/2 transform -translate-1/2"
         aria-labelledby="event-team-label-dialog-<%= team.id %>"
       >
         <h3 id="event-team-label-dialog-<%= team.id %>" class="text-xl font-bold mb-4 text-white text-center">
@@ -54,7 +54,7 @@
               <%= t("event_team.actions.cancel") %>
             </button>
             <%= form.submit t("event_team.actions.save"),
-              class: "bg-gradient-to-r from-amber-400 to-amber-600 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed",
+              class: "bg-linear-to-r from-amber-400 to-amber-600 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed",
               data: { event_team__name_target: "submit" },
               disabled: true %>
           </div>

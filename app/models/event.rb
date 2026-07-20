@@ -16,7 +16,9 @@ class Event < ApplicationRecord
   belongs_to :user
   has_many :event_teams, dependent: :destroy
   has_many :event_participants, dependent: :destroy
+  has_many :invitations, dependent: :destroy
   has_many :players, through: :event_participants, source: :user
+  has_many :invited_users, through: :invitations, source: :user
   has_many :notifications, as: :notifiable
 
   validates :title, :location, :start_time, presence: true
@@ -43,7 +45,7 @@ class Event < ApplicationRecord
     where(is_private: false)
       .or(where(user_id: user.id))
       .or(where(id: EventParticipant.where(user_id: user.id).select(:event_id)))
-      .or(where(id: Notification.invited.where(user_id: user.id, notifiable_type: name).select(:notifiable_id)))
+      .or(where(id: Invitation.where(user_id: user.id).select(:event_id)))
       .or(where(is_private: true, user_id: Friendship.accepted_friend_ids_for(user)))
   end
 
@@ -109,7 +111,7 @@ class Event < ApplicationRecord
   end
 
   def invited?(user)
-    notifications.invited.exists?(user: user)
+    invitations.exists?(user: user)
   end
 
   def fill_level

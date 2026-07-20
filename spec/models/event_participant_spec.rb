@@ -17,6 +17,21 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
+  describe "invitation cleanup" do
+    it "destroys the user's invitation when they join the event" do
+      event = create(:event, is_private: true)
+      invited_user = create(:user)
+      invitation = create(:invitation, event: event, user: invited_user)
+      create(:notification, user: invited_user, notifiable: event, kind: :invited)
+
+      expect {
+        create(:event_participant, user: invited_user, event: event, event_team: team_slot(event, "team_two"))
+      }.to change { Invitation.exists?(invitation.id) }.from(true).to(false)
+
+      expect(invited_user.notifications.invited.where(notifiable: event)).to exist
+    end
+  end
+
   describe "countable capacity" do
     it "rejects joining a countable team when all countable slots are taken" do
       event = create(:event, number_of_participants: 2)
@@ -126,7 +141,7 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
-  describe "data side effects" do
+  describe "data side effects", :notification_jobs do
     it "does not notify anyone when the Event author self-registers" do
       expect {
         create(:event)
@@ -225,7 +240,7 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
-  describe "EventTeam change (update)" do
+  describe "EventTeam change (update)", :notification_jobs do
     it "notifies countable players when a bench player joins a countable team" do
       event = create(:event)
       team_player = create(:user)
@@ -280,7 +295,7 @@ RSpec.describe EventParticipant, type: :model do
     end
   end
 
-  describe "batched notification delivery (insert_all)" do
+  describe "batched notification delivery (insert_all)", :notification_jobs do
     it "inserts all joined notifications in a single Notification.insert_all call" do
       event = create(:event)
       team_player_one = create(:user)
@@ -290,9 +305,9 @@ RSpec.describe EventParticipant, type: :model do
       joining_user = create(:user)
       inserted_rows = nil
 
-      expect(Notification).to receive(:insert_all).once.and_wrap_original do |original, rows|
+      expect(Notification).to receive(:insert_all).once.and_wrap_original do |original, rows, **options|
         inserted_rows = rows
-        original.call(rows)
+        original.call(rows, **options)
       end
 
       expect {

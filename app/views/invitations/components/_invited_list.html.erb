@@ -1,0 +1,15 @@
+<section id="invited-players" class="rounded-2xl bg-slate-700/60 backdrop-blur-md shadow-md p-3 flex flex-col gap-2 mt-4">
+  <h2 class="text-center font-bold text-white">
+    <%= t("invitations.titles.list") %>
+  </h2>
+
+  <div class="grid grid-cols-2 gap-1">
+    <% if invitations.empty? %>
+      <p class="text-center text-gray-400 col-span-2"><%= t("invitations.empty.list") %></p>
+    <% else %>
+      <% invitations.each do |invitation| %>
+        <%= render "invitations/components/one_invited_player_card", invitation: invitation %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

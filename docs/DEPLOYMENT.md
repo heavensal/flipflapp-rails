@@ -78,6 +78,25 @@ The deploy job targets the GitHub **environment `production`**. You can require 
 
 ---
 
+## Background jobs & realtime (production)
+
+Production uses **Solid Queue** (Active Job) and **Solid Cable** (Action Cable). Multi-db roles `primary`, `queue`, and `cable` share `PRODUCTION_NEON_DB` (see `config/database.yml`).
+
+On the single web host, Solid Queue runs **inside Puma** via `SOLID_QUEUE_IN_PUMA=true` (no dedicated Kamal `job` machine yet). Notification create/broadcast and Devise mail (`deliver_later`) are processed by that supervisor.
+
+Live notification toasts use Turbo Streams over Solid Cable to the signed-in user’s stream.
+
+**First deploy after enabling Solid\*:** load schemas once on production Neon (same URL as primary):
+
+```bash
+bin/kamal app exec 'bin/rails db:schema:load:queue'
+bin/kamal app exec 'bin/rails db:schema:load:cable'
+```
+
+Skip if `solid_queue_*` / `solid_cable_*` tables already exist.
+
+---
+
 ## Kamal
 
 Configuration: [`config/deploy.yml`](../config/deploy.yml)
@@ -89,6 +108,7 @@ Configuration: [`config/deploy.yml`](../config/deploy.yml)
 | Host | `flipflapp.fr` (SSL via Kamal proxy / Let's Encrypt) |
 | Server | `51.75.124.208` (SSH user `ubuntu`) |
 | Registry auth | `KAMAL_REGISTRY_PASSWORD` |
+| Jobs | Solid Queue in Puma (`SOLID_QUEUE_IN_PUMA`) |)
 
 ### Secrets injected into the container
 
