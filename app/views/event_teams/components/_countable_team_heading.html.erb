@@ -7,15 +7,15 @@
     <div
       data-controller="dialog event-team--name"
       data-event-team--name-max-length-value="24"
-      data-event-team--name-empty-message-value="<%= t('event_team.edit_label.empty') %>"
-      data-event-team--name-invalid-message-value="<%= t('event_team.edit_label.invalid_characters') %>"
-      data-event-team--name-counter-suffix-value="<%= t('event_team.edit_label.counter_suffix') %>"
+      data-event-team--name-empty-message-value="<%= t('event_team.errors.empty') %>"
+      data-event-team--name-invalid-message-value="<%= t('event_team.errors.invalid_characters') %>"
+      data-event-team--name-counter-suffix-value="<%= t('event_team.labels.counter_suffix') %>"
     >
       <button
         type="button"
         data-action="dialog#open"
         class="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/10 active:scale-95 transition"
-        aria-label="<%= t('event_team.edit_label.open') %>"
+        aria-label="<%= t('event_team.actions.open_rename') %>"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -29,12 +29,12 @@
         aria-labelledby="event-team-label-dialog-<%= team.id %>"
       >
         <h3 id="event-team-label-dialog-<%= team.id %>" class="text-xl font-bold mb-4 text-white text-center">
-          <%= t("event_team.edit_label.title") %>
+          <%= t("event_team.titles.rename") %>
         </h3>
 
         <%= form_with model: team, url: event_event_team_path(event, team), method: :patch, data: { turbo_frame: "_top" } do |form| %>
           <div class="mb-4">
-            <%= form.label :label, t("event_team.edit_label.field"), class: "sr-only" %>
+            <%= form.label :label, t("event_team.labels.name"), class: "sr-only" %>
             <%= form.text_field :label,
               value: team.label,
               class: "w-full rounded-xl bg-white/10 text-white px-3 py-2 border border-white/20 focus:outline-none focus:ring-2 focus:ring-amber-400",
@@ -51,9 +51,9 @@
 
           <div class="grid grid-cols-2 gap-4">
             <button type="button" data-action="dialog#close" class="bg-white/20 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition">
-              <%= t("event_team.edit_label.cancel") %>
+              <%= t("event_team.actions.cancel") %>
             </button>
-            <%= form.submit t("event_team.edit_label.save"),
+            <%= form.submit t("event_team.actions.save"),
               class: "bg-gradient-to-r from-amber-400 to-amber-600 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed",
               data: { event_team__name_target: "submit" },
               disabled: true %>

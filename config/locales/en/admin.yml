@@ -1,16 +1,40 @@
 en:
   admin:
-    navigation:
-      link: "Admin"
-      home: "Back office"
-    authorization:
-      forbidden: "Admins only."
-    dashboard:
-      title: "Administration"
+    titles:
+      dashboard: "Administration"
+      breadcrumbs: "Breadcrumb"
+    flash:
+      created: "Record created."
+      updated: "Record updated."
+      destroyed: "Record deleted."
+      create_failed: "Could not create record."
+      update_failed: "Could not update record."
+      authorization:
+        forbidden: "Admins only."
+      users:
+        password_reset_sent: "Password reset email sent."
+    actions:
+      new: "Create"
+      edit: "Edit"
+      destroy: "Delete"
+      cancel: "Cancel"
+      player_view: "Player view"
+      send_password_reset: "Send password reset email"
+    confirms:
+      destroy: "Permanently delete this record?"
+    empty:
+      index: "No records."
+    labels:
+      "yes": "Yes"
+      "no": "No"
       subtitle: "Inspect and fix data — emergency tool, not daily use."
       record_count:
         one: "%{count} record"
         other: "%{count} records"
+      notifiable: "Linked notifiable"
+    navigation:
+      link: "Admin"
+      home: "Back office"
     models:
       users: "Users"
       events: "Events"
@@ -18,29 +42,6 @@ en:
       event_participants: "Participants"
       friendships: "Friendships"
       notifications: "Notifications"
-    actions:
-      new: "Create"
-      edit: "Edit"
-      destroy: "Delete"
-      cancel: "Cancel"
-      player_view: "Player view"
-      destroy_confirm: "Permanently delete this record?"
-    flash:
-      created: "Record created."
-      updated: "Record updated."
-      destroyed: "Record deleted."
-      create_failed: "Could not create record."
-      update_failed: "Could not update record."
-    index:
-      empty: "No records."
-    show:
-      notifiable: "Linked notifiable"
-    labels:
-      yes: "Yes"
-      no: "No"
-    users:
-      send_password_reset: "Send password reset email"
-      password_reset_sent: "Password reset email sent."
     associations:
       events: "Events"
       event_participants: "Participations"

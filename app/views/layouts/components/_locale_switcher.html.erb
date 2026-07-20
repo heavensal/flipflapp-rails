@@ -1,0 +1,21 @@
+<section class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-4 space-y-3">
+  <h2 class="text-lg font-semibold text-white"><%= t("layouts.locale.titles.section") %></h2>
+  <p class="text-sm text-indigo-100/60"><%= t("layouts.locale.labels.hint") %></p>
+
+  <div class="flex gap-3" role="group" aria-label="<%= t("layouts.locale.titles.section") %>">
+    <% I18n.available_locales.each do |locale| %>
+      <% selected = I18n.locale == locale %>
+      <%= button_to t("layouts.locale.labels.#{locale}"),
+            locale_path(locale: locale),
+            method: :patch,
+            class: [
+              "flex-1 py-2 px-4 rounded-xl font-semibold transition active:scale-95",
+              (selected ?
+                "bg-gradient-to-r from-amber-400 to-amber-600 text-white cursor-default" :
+                "bg-white/10 text-white hover:bg-white/20")
+            ].join(" "),
+            disabled: selected,
+            aria: { pressed: selected } %>
+    <% end %>
+  </div>
+</section>

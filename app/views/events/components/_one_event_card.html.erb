@@ -29,7 +29,7 @@
       <div class="flex items-center gap-2">
         <%= render "events/components/svg/dollar" %>
         <% if event.price.zero? %>
-          <span><%= t("events.show.free") %></span>
+          <span><%= t("events.labels.free") %></span>
         <% else %>
           <span><%= format_event_price(event.price) %></span>
         <% end %>

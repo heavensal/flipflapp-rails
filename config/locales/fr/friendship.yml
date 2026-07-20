@@ -1,0 +1,60 @@
+fr:
+  friendships:
+    titles:
+      index: "Mes amis"
+      search: "Rechercher des amis"
+      received: "Demandes reçues"
+      sent: "Demandes envoyées"
+      friends: "Mes amis"
+      results: "Résultats de recherche"
+    flash:
+      create:
+        success: "Demande d'amitié envoyée à %{name}."
+        failure: "Impossible d'envoyer la demande d'amitié."
+      update:
+        success: "Vous êtes maintenant amis avec %{name}."
+        failure: "Impossible d'accepter la demande d'amitié."
+      destroy:
+        declined: "Demande d'amitié refusée."
+        unfriended: "Vous n'êtes plus ami avec %{name}."
+        cancelled: "Demande d'amitié annulée."
+        unauthorized: "Action non autorisée."
+    actions:
+      search: "Rechercher des amis"
+      back: "← Retour aux amis"
+      accept: "Accepter"
+      decline: "Refuser"
+      cancel_request: "Annuler"
+      remove: "Supprimer"
+      add: "Ajouter"
+    confirms:
+      decline: "Refuser cette demande d'amitié ?"
+      cancel: "Annuler cette demande d'amitié ?"
+      remove: "Supprimer %{name} de vos amis ?"
+    empty:
+      received: "Aucune demande d'amitié reçue"
+      sent: "Aucune demande d'amitié envoyée"
+      friends: "Vous n'avez pas encore d'amis"
+      friends_hint: "Commencez à envoyer des demandes d'amitié !"
+      search_prompt: "Utilisez le formulaire ci-dessus pour rechercher des amis"
+      search_results: "Aucun utilisateur trouvé pour cette recherche"
+    labels:
+      search_field: "Rechercher un joueur"
+    placeholders:
+      search: "Rechercher un joueur..."
+    aria:
+      back: "Retour aux amis"
+      search_field: "Rechercher un joueur"
+      search_submit: "Lancer la recherche"
+      default_avatar: "Avatar par défaut"
+      add_friend: "Ajouter %{name} comme ami"
+  activerecord:
+    errors:
+      models:
+        friendship:
+          attributes:
+            sender_id:
+              taken: "Demande d'amitié déjà envoyée."
+            receiver_id:
+              self: "Vous ne pouvez pas vous envoyer une demande d'amitié à vous-même."
+          already_exists: "Une demande d'amitié existe déjà entre ces utilisateurs."

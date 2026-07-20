@@ -1,7 +1,7 @@
 <main class="min-h-dvh px-4">
-  <h1 class="text-3xl font-bold text-white text-center my-8">Mes amis</h1>
+  <h1 class="text-3xl font-bold text-white text-center my-8"><%= t("friendships.titles.index") %></h1>
 
-  <%= link_to "Rechercher des amis", search_friendships_path, class: "mb-4 inline-block bg-primary-yellow text-white py-2 px-4 rounded-lg font-semibold hover:bg-yellow-500 transition" %>
+  <%= link_to t("friendships.actions.search"), search_friendships_path, class: "mb-4 inline-block bg-primary-yellow text-white py-2 px-4 rounded-lg font-semibold hover:bg-yellow-500 transition" %>
 
     <!-- Demandes reçues (pending) -->
     <section class="my-8">
@@ -14,12 +14,12 @@
         </div>
 
         <h2 class="text-xl col-span-4 text-white">
-          Demandes reçues
+          <%= t("friendships.titles.received") %>
         </h2>
 
         <% if @received_friendships.any? %>
           <div class="col-span-1 place-self-center">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-linear-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
               <%= @received_friendships.count %>
             </span>
           </div>
@@ -30,7 +30,7 @@
 
       <% if @received_friendships.empty? %>
         <div class="text-center py-8 text-secondary-text">
-          <p>Aucune demande d'amitié reçue</p>
+          <p><%= t("friendships.empty.received") %></p>
         </div>
 
       <% else %>
@@ -40,7 +40,7 @@
               <div class="grid grid-cols-6 items-center gap-2">
                 <!-- Avatar -->
                 <div class="size-10 rounded-full shadow-lg col-span-1 place-self-center">
-                  <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center">
+                  <div class="w-full h-full rounded-full overflow-hidden bg-linear-to-r from-amber-400 to-amber-600 flex items-center justify-center">
 
                     <% if friendship.sender.avatar? %>
                       <%= cl_image_tag friendship.sender.avatar, class: "w-full h-full object-cover rounded-full" %>
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="col-span-1 place-self-center">
-                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-red-600 active:bg-red-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: "Refuser cette demande d'amitié ?" } do %>
+                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-red-600 active:bg-red-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: t("friendships.confirms.decline") } do %>
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -99,12 +99,12 @@
         </div>
 
         <h2 class="text-xl col-span-4 text-white">
-          Demandes envoyées
+          <%= t("friendships.titles.sent") %>
         </h2>
 
         <% if @sent_friendships.any? %>
           <div class="col-span-1 place-self-center">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-linear-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
               <%= @sent_friendships.count %>
             </span>
           </div>
@@ -114,7 +114,7 @@
 
       <% if @sent_friendships.empty? %>
         <div class="text-center py-8 text-secondary-text">
-          <p>Aucune demande d'amitié envoyée</p>
+          <p><%= t("friendships.empty.sent") %></p>
         </div>
 
       <% else %>
@@ -124,7 +124,7 @@
               <div class="grid grid-cols-6 items-center gap-2">
                 <!-- Avatar -->
                 <div class="size-10 rounded-full shadow-lg col-span-1 place-self-center">
-                  <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center">
+                  <div class="w-full h-full rounded-full overflow-hidden bg-linear-to-r from-amber-400 to-amber-600 flex items-center justify-center">
 
                     <% if friendship.receiver.avatar? %>
                       <%= cl_image_tag friendship.receiver.avatar, class: "w-full h-full object-cover rounded-full" %>
@@ -146,7 +146,7 @@
                 </ul>
 
                 <div class="col-span-1 place-self-center">
-                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-gray-600 active:bg-gray-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: "Annuler cette demande d'amitié ?" } do %>
+                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-gray-600 active:bg-gray-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: t("friendships.confirms.cancel") } do %>
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -170,12 +170,12 @@
         </div>
 
         <h2 class="text-xl col-span-4 text-white">
-          Mes amis
+          <%= t("friendships.titles.friends") %>
         </h2>
 
         <% if @accepted_friendships.any? %>
           <div class="col-span-1 place-self-center">
-            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
+            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-linear-to-r from-amber-400 to-amber-600 text-white text-xs font-bold">
               <%= @accepted_friendships.count %>
             </span>
           </div>
@@ -185,8 +185,8 @@
 
       <% if @accepted_friendships.empty? %>
         <div class="text-center py-12 text-secondary-text">
-          <p class="text-lg">Vous n'avez pas encore d'amis</p>
-          <p class="text-sm mt-2">Commencez à envoyer des demandes d'amitié !</p>
+          <p class="text-lg"><%= t("friendships.empty.friends") %></p>
+          <p class="text-sm mt-2"><%= t("friendships.empty.friends_hint") %></p>
         </div>
 
       <% else %>
@@ -197,7 +197,7 @@
               <div class="grid grid-cols-6 items-center gap-2">
                 <!-- Avatar -->
                 <div class="size-10 rounded-full shadow-lg col-span-1 place-self-center">
-                  <div class="w-full h-full rounded-full overflow-hidden bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center">
+                  <div class="w-full h-full rounded-full overflow-hidden bg-linear-to-r from-amber-400 to-amber-600 flex items-center justify-center">
 
                     <% if friend.avatar? %>
                       <%= cl_image_tag friend.avatar, class: "w-full h-full object-cover rounded-full" %>
@@ -227,7 +227,7 @@
                 </div>
 
                 <div class="col-span-1 place-self-center">
-                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-red-600 active:bg-red-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: "Supprimer #{friend.first_name} de vos amis ?" } do %>
+                  <%= button_to friendship_path(friendship), method: :delete, class: "flex-1 bg-red-600 active:bg-red-800 text-white font-medium p-2 rounded-lg transition-colors place-content-center", data: { turbo_confirm: t("friendships.confirms.remove", name: friend.first_name) } do %>
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>

@@ -1,7 +1,23 @@
 fr:
   pages:
-    home:
-      title: "Prêt à jouer ?"
-      description: "Crée un compte ou connecte-toi pour organiser tes matchs et inviter tes amis."
+    titles:
+      home: "Prêt à jouer ?"
+    labels:
+      home_description: "Crée un compte ou connecte-toi pour organiser tes matchs et inviter tes amis."
+      logo_alt: "Logo"
+    actions:
       sign_up: "S'inscrire"
       sign_in: "Se connecter"
+    carousel:
+      slide1:
+        title: "Organise ton match"
+        description: "Planifie rapidement: donne l'heure, l'endroit, le nombre de joueurs. C'est toi qui décide."
+        alt: "organisateur du foot"
+      slide2:
+        title: "Invite tes amis"
+        description: "Ils sont sur la feuille de match? Sur le banc? Tes amis peuvent facilement rejoindre le match."
+        alt: "Joueur de football"
+      slide3:
+        title: "Le match commence!"
+        description: "Pas d'excuse! Les équipes sont faites, les infos sont là. Que le meilleur gagne!"
+        alt: "Équipe prête"

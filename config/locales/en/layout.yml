@@ -1,0 +1,29 @@
+en:
+  layouts:
+    titles:
+      application: "Flipflapp"
+      last_deploy: "Last successful deploy: %{date}"
+    labels:
+      brand: "FlipFlapp"
+      in_development: "In development"
+      coming_soon: "Coming soon"
+    navigation:
+      events: "Events"
+      friends: "My Friends"
+    aria:
+      logo: "Flipflapp logo"
+      open_menu: "Open menu"
+      close_menu: "Close menu"
+    locale:
+      titles:
+        section: "Language"
+      labels:
+        hint: "Choose the app language. It is remembered on this device."
+        fr: "Français"
+        en: "English"
+      flash:
+        updated: "Language updated."
+        invalid: "This language is not available."
+  pwa:
+    manifest:
+      description: "Organize your football matches."

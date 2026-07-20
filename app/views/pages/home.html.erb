@@ -3,16 +3,16 @@
 
   <section class="min-h-screen p-4">
     <div class="max-w-md mx-auto text-center pt-8">
-      <h2 class="text-3xl text-white mb-4"><%= t(".title") %></h2>
+      <h2 class="text-3xl text-white mb-4"><%= t("pages.titles.home") %></h2>
       <p class="text-secondary-text mb-8">
-        <%= t(".description") %>
+        <%= t("pages.labels.home_description") %>
       </p>
 
       <div class="flex flex-col gap-4">
-        <%= link_to t(".sign_up"),
+        <%= link_to t("pages.actions.sign_up"),
               new_user_registration_path,
               class: "block w-full py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 text-white font-semibold shadow-md active:scale-95 transition" %>
-        <%= link_to t(".sign_in"),
+        <%= link_to t("pages.actions.sign_in"),
               new_user_session_path,
               class: "block w-full py-3 px-4 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold active:scale-95 transition" %>
       </div>

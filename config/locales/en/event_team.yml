@@ -7,20 +7,24 @@ en:
         default_label: "Team 2"
       bench:
         default_label: "On the bench"
-    edit_label:
-      open: "Rename team"
-      title: "Team name"
-      field: "Team name"
+    titles:
+      rename: "Team name"
+    flash:
+      update:
+        success: "Team name updated."
+      authorization:
+        participant_required: "Only participants can rename a team."
+        bench_not_renamable: "The bench cannot be renamed."
+    actions:
+      open_rename: "Rename team"
       save: "Save"
       cancel: "Cancel"
+    labels:
+      name: "Team name"
       counter_suffix: "characters remaining"
+    errors:
       empty: "The name cannot be empty."
       invalid_characters: "Only letters, digits, and spaces are allowed."
-    update:
-      success: "Team name updated."
-    authorization:
-      participant_required: "Only participants can rename a team."
-      bench_not_renamable: "The bench cannot be renamed."
   activerecord:
     errors:
       models:
@@ -31,10 +35,3 @@ en:
             label:
               immutable: "cannot be changed on the bench"
           too_many_teams: "cannot exceed three teams per event"
-        event_participant:
-          attributes:
-            user_id:
-              taken: "is already registered for this event"
-            event_team:
-              countable_full: "teams are full — join the bench"
-              team_full: "this team is full"

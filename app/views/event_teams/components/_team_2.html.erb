@@ -9,7 +9,7 @@
 
     <div class="flex flex-col gap-1">
       <% if participants.empty? %>
-        <p class="text-center text-gray-400"><%= t("event_participants.teams.empty") %></p>
+        <p class="text-center text-gray-400"><%= t("event_participants.empty.team") %></p>
       <% end %>
       <% participants.each do |event_participant| %>
         <%= render 'event_participants/one_player_team_2_card', event_participant: event_participant %>

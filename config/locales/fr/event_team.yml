@@ -7,20 +7,24 @@ fr:
         default_label: "Equipe 2"
       bench:
         default_label: "Sur le Banc"
-    edit_label:
-      open: "Renommer l'équipe"
-      title: "Nom de l'équipe"
-      field: "Nom de l'équipe"
+    titles:
+      rename: "Nom de l'équipe"
+    flash:
+      update:
+        success: "Nom de l'équipe mis à jour."
+      authorization:
+        participant_required: "Seuls les participants peuvent renommer une équipe."
+        bench_not_renamable: "Le banc ne peut pas être renommé."
+    actions:
+      open_rename: "Renommer l'équipe"
       save: "Enregistrer"
       cancel: "Annuler"
+    labels:
+      name: "Nom de l'équipe"
       counter_suffix: "caractères restants"
+    errors:
       empty: "Le nom ne peut pas être vide."
       invalid_characters: "Seules les lettres, les chiffres et les espaces sont autorisés."
-    update:
-      success: "Nom de l'équipe mis à jour."
-    authorization:
-      participant_required: "Seuls les participants peuvent renommer une équipe."
-      bench_not_renamable: "Le banc ne peut pas être renommé."
   activerecord:
     errors:
       models:
@@ -31,10 +35,3 @@ fr:
             label:
               immutable: "ne peut pas être modifié sur le banc"
           too_many_teams: "ne peut pas dépasser trois équipes par événement"
-        event_participant:
-          attributes:
-            user_id:
-              taken: "est déjà inscrit à cet événement"
-            event_team:
-              countable_full: "les équipes sont complètes — rejoignez le banc"
-              team_full: "cette équipe est complète"

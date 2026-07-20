@@ -1,7 +1,23 @@
 en:
   pages:
-    home:
-      title: "Ready to play?"
-      description: "Create an account or sign in to organize your matches and invite your friends."
+    titles:
+      home: "Ready to play?"
+    labels:
+      home_description: "Create an account or sign in to organize your matches and invite your friends."
+      logo_alt: "Logo"
+    actions:
       sign_up: "Sign up"
       sign_in: "Sign in"
+    carousel:
+      slide1:
+        title: "Organize your match"
+        description: "Plan quickly: set the time, place, and number of players. You're in charge."
+        alt: "football organizer"
+      slide2:
+        title: "Invite your friends"
+        description: "On the team sheet? On the bench? Your friends can easily join the match."
+        alt: "football player"
+      slide3:
+        title: "Kickoff!"
+        description: "No excuses! Teams are set, info is ready. May the best win!"
+        alt: "team ready"

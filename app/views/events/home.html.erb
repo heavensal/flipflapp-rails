@@ -1,5 +1,5 @@
 <h1 class="text-3xl font-bold text-white text-center my-8" id="prochains-evenements">
-  <%= t("events.home.title") %>
+  <%= t("events.titles.home") %>
 </h1>
 
 <main class="p-4 min-h-dvh" aria-labelledby="prochains-evenements">
@@ -7,8 +7,8 @@
   <%# Bouton pour créer un événement %>
   <%= link_to new_event_path,
     class: "z-80 fixed bottom-8 right-8 inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 text-white animate-bounce shadow-md transition transform active:scale-95 active:shadow-none",
-    title: t("events.home.create.title"),
-    aria_label: t("events.home.create.aria_label") do %>
+    title: t("events.actions.create_fab"),
+    aria_label: t("events.aria.create_fab") do %>
     <svg viewBox="0 0 8 8"
          class="w-6 h-6"
          aria-hidden="true"
@@ -19,7 +19,7 @@
         <rect x="0" y="3" width="8" height="2"/>
       </g>
     </svg>
-    <span class="sr-only"><%= t("events.home.create.aria_label") %></span>
+    <span class="sr-only"><%= t("events.aria.create_fab") %></span>
   <% end %>
 
   <%= turbo_frame_tag "events", src: events_path, loading: "lazy" do %>

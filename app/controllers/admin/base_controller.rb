@@ -10,7 +10,7 @@ module Admin
     def require_admin!
       return if current_user.admin?
 
-      redirect_to authenticated_root_path, alert: t("admin.authorization.forbidden")
+      redirect_to authenticated_root_path, alert: t("admin.flash.authorization.forbidden")
     end
   end
 end

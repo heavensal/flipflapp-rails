@@ -1,7 +1,7 @@
-<%= link_to t("events.destroy.action"),
+<%= link_to t("events.actions.destroy"),
       event_path(event),
       data: {
         turbo_method: :delete,
-        turbo_confirm: t("events.destroy.confirm")
+        turbo_confirm: t("events.confirms.destroy")
       },
       class: "shadow-md bg-gradient-to-r from-red-600 to-red-800 text-white py-2 px-4 rounded-2xl active:scale-95 transition" %>
