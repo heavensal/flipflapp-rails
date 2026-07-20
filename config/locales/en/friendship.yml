@@ -1,0 +1,60 @@
+en:
+  friendships:
+    titles:
+      index: "My friends"
+      search: "Find friends"
+      received: "Received requests"
+      sent: "Sent requests"
+      friends: "My friends"
+      results: "Search results"
+    flash:
+      create:
+        success: "Friend request sent to %{name}."
+        failure: "Could not send the friend request."
+      update:
+        success: "You are now friends with %{name}."
+        failure: "Could not accept the friend request."
+      destroy:
+        declined: "Friend request declined."
+        unfriended: "You are no longer friends with %{name}."
+        cancelled: "Friend request cancelled."
+        unauthorized: "Action not authorized."
+    actions:
+      search: "Find friends"
+      back: "← Back to friends"
+      accept: "Accept"
+      decline: "Decline"
+      cancel_request: "Cancel"
+      remove: "Remove"
+      add: "Add"
+    confirms:
+      decline: "Decline this friend request?"
+      cancel: "Cancel this friend request?"
+      remove: "Remove %{name} from your friends?"
+    empty:
+      received: "No friend requests received"
+      sent: "No friend requests sent"
+      friends: "You have no friends yet"
+      friends_hint: "Start sending friend requests!"
+      search_prompt: "Use the form above to search for friends"
+      search_results: "No users found for this search"
+    labels:
+      search_field: "Search for a player"
+    placeholders:
+      search: "Search for a player..."
+    aria:
+      back: "Back to friends"
+      search_field: "Search for a player"
+      search_submit: "Search"
+      default_avatar: "Default avatar"
+      add_friend: "Add %{name} as a friend"
+  activerecord:
+    errors:
+      models:
+        friendship:
+          attributes:
+            sender_id:
+              taken: "Friend request already sent."
+            receiver_id:
+              self: "You cannot send a friend request to yourself."
+          already_exists: "A friend request already exists between these users."

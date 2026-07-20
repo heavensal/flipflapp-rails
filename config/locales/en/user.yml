@@ -1,8 +1,24 @@
 en:
   users:
-    show:
+    titles:
+      info: "Information"
+    actions:
       edit_profile: "Edit profile"
-
+      add_friend: "Add friend"
+      accept_request: "Accept request"
+      decline_request: "Decline request"
+      cancel_request: "Cancel request"
+      remove_friend: "Remove from friends"
+    confirms:
+      decline: "Are you sure you want to decline this friend request?"
+      cancel: "Are you sure you want to cancel your friend request?"
+      remove: "Are you sure you want to remove this user from your friends?"
+    labels:
+      email: "Email"
+      role: "Role"
+      role_player: "Player"
+      role_admin: "Admin"
+      member_since: "Member since"
   activerecord:
     errors:
       models:

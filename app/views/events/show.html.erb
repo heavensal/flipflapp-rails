@@ -21,7 +21,7 @@
   <% elsif @event.in_this_event?(current_user) %>
     <div class="flex justify-center mt-10">
       <%= link_to event_participant_path(EventParticipant.find_by(event: @event, user: current_user)),
-        data: { turbo_method: :delete, turbo_confirm: t("event_participants.leave.confirm") },
+        data: { turbo_method: :delete, turbo_confirm: t("event_participants.confirms.leave") },
         class: "w-12 h-12 flex items-center justify-center
                 rounded-2xl bg-gradient-to-r from-red-600 to-red-800 text-white shadow-md
                 active:scale-95 transition" do %>

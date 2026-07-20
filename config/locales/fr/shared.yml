@@ -6,3 +6,9 @@ fr:
         restrict_dependent_destroy:
           has_one: "Impossible de supprimer l'enregistrement car un(e) %{record} dépendant(e) existe"
           has_many: "Impossible de supprimer l'enregistrement car des %{record} dépendant(e)s existent"
+  errors:
+    messages:
+      not_saved:
+        one: "Une erreur a empêché l'enregistrement de ce %{resource} :"
+        other: "%{count} erreurs ont empêché l'enregistrement de ce %{resource} :"
+      extension_allowlist_error: "Le format du fichier n'est pas autorisé. Formats acceptés : jpg, jpeg, png, gif."

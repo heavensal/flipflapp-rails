@@ -1,0 +1,26 @@
+en:
+  event_participants:
+    flash:
+      create:
+        success: "You joined \"%{label}\"."
+      destroy:
+        success: "You are no longer participating in this event."
+        not_found: "Participant not found or access unauthorized."
+        failure: "An error occurred while leaving the event."
+    actions:
+      switch: "Switch here"
+    confirms:
+      leave: "Are you sure you want to leave this event?"
+    empty:
+      team: "No players on this team"
+      bench: "No players on the bench"
+  activerecord:
+    errors:
+      models:
+        event_participant:
+          attributes:
+            user_id:
+              taken: "is already registered for this event"
+            event_team:
+              countable_full: "teams are full — join the bench"
+              team_full: "this team is full"

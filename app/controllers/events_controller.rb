@@ -29,9 +29,9 @@ class EventsController < ApplicationController
   def create
     @event = current_user.events.build(event_params)
     if @event.save
-      redirect_to @event, notice: t("events.create.success")
+      redirect_to @event, notice: t("events.flash.create.success")
     else
-      flash.now[:alert] = t("events.create.failure")
+      flash.now[:alert] = t("events.flash.create.failure")
       render :new, status: :unprocessable_entity
     end
   end
@@ -41,18 +41,18 @@ class EventsController < ApplicationController
 
   def update
     if @event.update(event_params)
-      redirect_to @event, notice: t("events.update.success")
+      redirect_to @event, notice: t("events.flash.update.success")
     else
-      flash.now[:alert] = t("events.update.failure")
+      flash.now[:alert] = t("events.flash.update.failure")
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
     if @event.destroy
-      redirect_to authenticated_root_path, alert: t("events.destroy.success")
+      redirect_to authenticated_root_path, alert: t("events.flash.destroy.success")
     else
-      redirect_to @event, alert: t("events.destroy.failure")
+      redirect_to @event, alert: t("events.flash.destroy.failure")
     end
   end
 
@@ -65,13 +65,13 @@ class EventsController < ApplicationController
   def authorize_event_view!
     return if @event.viewable_by?(current_user)
 
-    redirect_to authenticated_root_path, alert: t("events.authorization.inaccessible")
+    redirect_to authenticated_root_path, alert: t("events.flash.authorization.inaccessible")
   end
 
   def authorize_event_owner!
     return if @event.am_i_the_author?(current_user)
 
-    redirect_to @event, alert: t("events.authorization.owner_required")
+    redirect_to @event, alert: t("events.flash.authorization.owner_required")
   end
 
   def event_params

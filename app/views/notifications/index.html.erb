@@ -10,7 +10,7 @@
 
   <section class="grid grid-cols-1 space-y-2">
     <% if @notifications.empty? %>
-      <p class="text-secondary-text text-center"><%= t("notifications.empty") %></p>
+      <p class="text-secondary-text text-center"><%= t("notifications.empty.index") %></p>
     <% end %>
     <% @notifications.each do |notification| %>
       <%= render "notifications/components/one_notification", notification: notification %>

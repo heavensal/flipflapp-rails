@@ -43,6 +43,11 @@ module NotificationsHelper
       )
     when "reminder"
       t("notifications.messages.reminder", title: notification.payload["title"])
+    when "friendship_requested"
+      t(
+        "notifications.messages.friendship_requested",
+        first_name: notification.payload["first_name"]
+      )
     else
       t("notifications.messages.default")
     end

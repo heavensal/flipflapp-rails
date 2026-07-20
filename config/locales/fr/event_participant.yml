@@ -1,0 +1,26 @@
+fr:
+  event_participants:
+    flash:
+      create:
+        success: "Vous avez rejoint l'équipe \"%{label}\"."
+      destroy:
+        success: "Vous ne participez plus à cet événement."
+        not_found: "Participant introuvable ou accès non autorisé."
+        failure: "Une erreur est survenue lors de votre désinscription."
+    actions:
+      switch: "Passer ici"
+    confirms:
+      leave: "Êtes-vous sûr de vouloir quitter cet événement ?"
+    empty:
+      team: "Aucun joueur dans cette équipe"
+      bench: "Aucun joueur sur le banc"
+  activerecord:
+    errors:
+      models:
+        event_participant:
+          attributes:
+            user_id:
+              taken: "est déjà inscrit à cet événement"
+            event_team:
+              countable_full: "les équipes sont complètes — rejoignez le banc"
+              team_full: "cette équipe est complète"

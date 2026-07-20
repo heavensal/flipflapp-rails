@@ -5,13 +5,13 @@
 <% end %>
 
 <h1 class="text-3xl text-center text-white my-4 font-bold">
-  <%= t("events.edit.title") %>
+  <%= t("events.titles.edit") %>
 </h1>
 
 <main class="max-w-4xl mx-auto p-4">
   <%= render "form",
         event: @event,
         cancel_path: event_path(@event),
-        cancel_key: "events.edit.cancel",
-        submit_key: "events.edit.submit" %>
+        cancel_key: "events.actions.cancel",
+        submit_key: "events.actions.submit_edit" %>
 </main>

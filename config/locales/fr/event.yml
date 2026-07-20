@@ -1,83 +1,66 @@
 fr:
   events:
-    home:
-      title: "Prochains Événements"
+    titles:
+      home: "Prochains Événements"
+      new: "Créer une partie de foot"
+      edit: "Modifier mon événement"
+    flash:
       create:
-        title: "Créer un nouvel événement"
-        aria_label: "Créer un nouvel événement"
-    index:
-      empty: "Aucun événement n'est disponible pour le moment."
+        success: "Événement créé avec succès."
+        failure: "Impossible de créer l'événement. Veuillez corriger les erreurs ci-dessous."
+      update:
+        success: "Événement modifié avec succès."
+        failure: "Impossible de modifier l'événement. Veuillez corriger les erreurs ci-dessous."
+      destroy:
+        success: "L'événement a bien été supprimé."
+        failure: "Impossible de supprimer l'événement."
+      authorization:
+        inaccessible: "Cet événement n'est pas accessible."
+        owner_required: "Vous n'êtes pas autorisé à modifier cet événement."
+        invitation_required: "Vous n'êtes pas autorisé à inviter sur cet événement."
+      teams:
+        not_found: "Équipe introuvable."
+      invitations:
+        create:
+          success: "Invitations envoyées avec succès."
+          failure: "Une erreur est survenue lors de l'envoi des invitations."
+    actions:
       create_first: "Créer le premier événement"
-    show:
+      create_fab: "Créer un nouvel événement"
+      destroy: "Annuler l'événement"
+      submit_new: "Créer la partie"
+      submit_edit: "Modifier l'événement"
+      cancel: "Annuler"
+    confirms:
+      destroy: "Êtes-vous sûr de vouloir annuler cet événement ?"
+    empty:
+      index: "Aucun événement n'est disponible pour le moment."
+    labels:
       free: "Gratuit"
       private: "Privé"
       public: "Public"
       full: "Complet"
       organized_by: "Organisé par %{name}"
       me: "Moi"
-      invite:
-        title: "Inviter des amis"
-        empty: "Aucun ami à inviter"
-        cancel: "Annuler"
-      aria:
-        start_time: "Date de début"
-        location: "Emplacement"
-        free: "Événement gratuit"
-        price: "Prix"
-        privacy: "Paramètre de confidentialité"
-        available: "Places disponibles"
-        almost_full: "Presque complet"
-        full: "Complet"
-        organizer: "Organisateur"
-    new:
-      title: "Créer une partie de foot"
-      submit: "Créer la partie"
+    placeholders:
+      title: "Foot à Frais Vallon"
+      location: "Stade de France"
+      description: "Isaac ramène ton ballon"
+    aria:
+      create_fab: "Créer un nouvel événement"
+      start_time: "Date de début"
+      location: "Emplacement"
+      free: "Événement gratuit"
+      price: "Prix"
+      privacy: "Paramètre de confidentialité"
+      available: "Places disponibles"
+      almost_full: "Presque complet"
+      full: "Complet"
+      organizer: "Organisateur"
+    invite:
+      title: "Inviter des amis"
+      empty: "Aucun ami à inviter"
       cancel: "Annuler"
-    edit:
-      title: "Modifier mon événement"
-      submit: "Modifier l'événement"
-      cancel: "Annuler"
-    form:
-      placeholders:
-        title: "Foot à Frais Vallon"
-        location: "Stade de France"
-        description: "Isaac ramène ton ballon"
-    create:
-      success: "Événement créé avec succès."
-      failure: "Impossible de créer l'événement. Veuillez corriger les erreurs ci-dessous."
-    update:
-      success: "Événement modifié avec succès."
-      failure: "Impossible de modifier l'événement. Veuillez corriger les erreurs ci-dessous."
-    destroy:
-      action: "Annuler l'événement"
-      confirm: "Êtes-vous sûr de vouloir annuler cet événement ?"
-      success: "L'événement a bien été supprimé."
-      failure: "Impossible de supprimer l'événement."
-    authorization:
-      inaccessible: "Cet événement n'est pas accessible."
-      owner_required: "Vous n'êtes pas autorisé à modifier cet événement."
-      invitation_required: "Vous n'êtes pas autorisé à inviter sur cet événement."
-    teams:
-      not_found: "Équipe introuvable."
-    invitations:
-      create:
-        success: "Invitations envoyées avec succès."
-        failure: "Une erreur est survenue lors de l'envoi des invitations."
-  event_participants:
-    create:
-      success: "Vous avez rejoint l'équipe \"%{label}\"."
-    destroy:
-      success: "Vous ne participez plus à cet événement."
-      not_found: "Participant introuvable ou accès non autorisé."
-      failure: "Une erreur est survenue lors de votre désinscription."
-    join:
-      switch: "Passer ici"
-    teams:
-      empty: "Aucun joueur dans cette équipe"
-    bench:
-      empty: "Aucun joueur sur le banc"
-    leave:
-      confirm: "Êtes-vous sûr de vouloir quitter cet événement ?"
   activerecord:
     attributes:
       event:

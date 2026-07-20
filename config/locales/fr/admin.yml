@@ -1,16 +1,40 @@
 fr:
   admin:
-    navigation:
-      link: "Admin"
-      home: "Back office"
-    authorization:
-      forbidden: "Accès réservé aux administrateurs."
-    dashboard:
-      title: "Administration"
+    titles:
+      dashboard: "Administration"
+      breadcrumbs: "Fil d'Ariane"
+    flash:
+      created: "Enregistrement créé."
+      updated: "Enregistrement mis à jour."
+      destroyed: "Enregistrement supprimé."
+      create_failed: "Impossible de créer l'enregistrement."
+      update_failed: "Impossible de mettre à jour l'enregistrement."
+      authorization:
+        forbidden: "Accès réservé aux administrateurs."
+      users:
+        password_reset_sent: "E-mail de réinitialisation envoyé."
+    actions:
+      new: "Créer"
+      edit: "Modifier"
+      destroy: "Supprimer"
+      cancel: "Annuler"
+      player_view: "Vue joueur"
+      send_password_reset: "Envoyer un e-mail de réinitialisation du mot de passe"
+    confirms:
+      destroy: "Supprimer définitivement cet enregistrement ?"
+    empty:
+      index: "Aucun enregistrement."
+    labels:
+      "yes": "Oui"
+      "no": "Non"
       subtitle: "Consultation et intervention sur les données — outil de secours, pas un usage quotidien."
       record_count:
         one: "%{count} enregistrement"
         other: "%{count} enregistrements"
+      notifiable: "Objet lié (notifiable)"
+    navigation:
+      link: "Admin"
+      home: "Back office"
     models:
       users: "Utilisateurs"
       events: "Événements"
@@ -18,29 +42,6 @@ fr:
       event_participants: "Participants"
       friendships: "Amitiés"
       notifications: "Notifications"
-    actions:
-      new: "Créer"
-      edit: "Modifier"
-      destroy: "Supprimer"
-      cancel: "Annuler"
-      player_view: "Vue joueur"
-      destroy_confirm: "Supprimer définitivement cet enregistrement ?"
-    flash:
-      created: "Enregistrement créé."
-      updated: "Enregistrement mis à jour."
-      destroyed: "Enregistrement supprimé."
-      create_failed: "Impossible de créer l'enregistrement."
-      update_failed: "Impossible de mettre à jour l'enregistrement."
-    index:
-      empty: "Aucun enregistrement."
-    show:
-      notifiable: "Objet lié (notifiable)"
-    labels:
-      yes: "Oui"
-      no: "Non"
-    users:
-      send_password_reset: "Envoyer un e-mail de réinitialisation du mot de passe"
-      password_reset_sent: "E-mail de réinitialisation envoyé."
     associations:
       events: "Événements"
       event_participants: "Participations"

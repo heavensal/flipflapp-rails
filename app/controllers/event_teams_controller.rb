@@ -11,7 +11,7 @@ class EventTeamsController < ApplicationController
 
   def update
     if @event_team.update(event_team_params)
-      redirect_to @event, notice: t("event_team.update.success")
+      redirect_to @event, notice: t("event_team.flash.update.success")
     else
       redirect_to @event, alert: @event_team.errors.full_messages.to_sentence
     end
@@ -23,7 +23,7 @@ class EventTeamsController < ApplicationController
     @event = Event.find(params[:event_id])
     return if @event.viewable_by?(current_user)
 
-    redirect_to authenticated_root_path, alert: t("events.authorization.inaccessible")
+    redirect_to authenticated_root_path, alert: t("events.flash.authorization.inaccessible")
   end
 
   def set_event_team
@@ -33,13 +33,13 @@ class EventTeamsController < ApplicationController
   def authorize_participant!
     return if @event.in_this_event?(current_user)
 
-    redirect_to @event, alert: t("event_team.authorization.participant_required")
+    redirect_to @event, alert: t("event_team.flash.authorization.participant_required")
   end
 
   def authorize_countable_team!
     return if @event_team.countable?
 
-    redirect_to @event, alert: t("event_team.authorization.bench_not_renamable")
+    redirect_to @event, alert: t("event_team.flash.authorization.bench_not_renamable")
   end
 
   def event_team_params

@@ -14,14 +14,14 @@
         <% user_signed_in? ? path = authenticated_root_path : path = unauthenticated_root_path %>
         <%= link_to path, class: "flex items-center space-x-2" do %>
           <%= image_tag 'flipflapp_logo.png',
-                alt: 'Logo Flipflapp',
+                alt: t("layouts.aria.logo"),
                 class: 'h-12 relative bottom-2' %>
           <span class="text-lg font-semibold bg-linear-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent animate-slide-gradient">
-            FlipFlapp
+            <%= t("layouts.labels.brand") %>
           </span>
         <% end %>
         <p class="text-[0.65rem] leading-none text-white/70">
-          Dernier deploy reussi : 29/05/2026
+          <%= t("layouts.titles.last_deploy", date: "29/05/2026") %>
         </p>
       </div>
 
@@ -67,7 +67,7 @@
             <%= link_to notifications_list_path,
                         data: { action: "click->navbar#closeMenu" },
                         class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
-              <%= t("notifications.title") %>
+              <%= t("notifications.titles.index") %>
               <% if unread_notifications_count > 0 %>
                 <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
                   <%= unread_notifications_count %>
@@ -78,7 +78,7 @@
 
 
           <li>
-            <%= link_to "Événements", authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("layouts.navigation.events"), authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
           </li>
           <li>
             <%= link_to t("devise.navigation.my_profile"), me_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
@@ -87,7 +87,7 @@
             <%= link_to friendships_path,
                         data: { action: "click->navbar#closeMenu" },
                         class: "p-1 rounded focus:bg-gradient-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
-              Mes Amis
+              <%= t("layouts.navigation.friends") %>
               <% if current_user.pending_received_friendships.count > 0 %>
                 <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
                   <%= current_user.pending_received_friendships.count %>

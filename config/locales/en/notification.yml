@@ -1,19 +1,24 @@
 en:
   notifications:
-    title: Notifications
-    empty: No notifications
-    time_ago: "%{time} ago"
+    titles:
+      index: "Notifications"
+    empty:
+      index: "No notifications"
+    labels:
+      time_ago: "%{time} ago"
     actions:
-      mark_read: Mark as read
-      mark_all_read: Mark all as read
-      delete: Delete
-      delete_confirm: Delete this notification?
+      mark_read: "Mark as read"
+      mark_all_read: "Mark all as read"
+      delete: "Delete"
+    confirms:
+      delete: "Delete this notification?"
     messages:
       joined: "%{player} joined your event \"%{title}\"."
       left: "%{player} left your event \"%{title}\"."
       invited: "%{sender} invited you to the event \"%{title}\" scheduled for %{start_time}."
       canceled: "The event \"%{title}\" scheduled for %{start_time} and organized by %{author} was canceled."
       reminder: "Reminder: \"%{title}\" is coming up."
+      friendship_requested: "%{first_name} sent you a friend request."
       default: "You have a new notification."
       updated:
         title: "%{actor} changed the title of \"%{title}\" -> \"%{value}\"."

@@ -39,13 +39,13 @@ module EventsHelper
   def event_fill_badge(event, context: :card)
     level = event.fill_level
     classes = context == :show ? SHOW_FILL_LEVEL_CLASSES : FILL_LEVEL_CLASSES
-    label = level == :full ? t("events.show.full") : "#{event.participants_count} / #{event.number_of_participants}"
+    label = level == :full ? t("events.labels.full") : "#{event.participants_count} / #{event.number_of_participants}"
 
     content_tag(
       :span,
       label,
       class: classes.fetch(level),
-      aria: { label: t("events.show.aria.#{FILL_ARIA_KEYS.fetch(level)}") }
+      aria: { label: t("events.aria.#{FILL_ARIA_KEYS.fetch(level)}") }
     )
   end
 

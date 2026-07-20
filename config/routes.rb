@@ -26,6 +26,7 @@ Rails.application.routes.draw do
   }
   get "me", to: "users#me", as: :me
   resources :users, only: [ :show ]
+  patch "locale/:locale", to: "locales#update", as: :locale
 
   resources :events do
     resources :event_teams, only: [ :edit, :update ]

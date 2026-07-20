@@ -1,12 +1,12 @@
 <%= form_for event, html: { class: "space-y-4" } do |f| %>
   <div>
     <%= f.label :title, class: "block text-secondary-text mb-2" %>
-    <%= f.text_field :title, class: "form-text-input", placeholder: t("events.form.placeholders.title"), required: true %>
+    <%= f.text_field :title, class: "form-text-input", placeholder: t("events.placeholders.title"), required: true %>
   </div>
 
   <div data-controller="maps--autocomplete">
     <%= f.label :location, class: "block text-secondary-text mb-2" %>
-    <%= f.text_field :location, class: "form-text-input", placeholder: t("events.form.placeholders.location"), required: true, data: { maps__autocomplete_target: "address" } %>
+    <%= f.text_field :location, class: "form-text-input", placeholder: t("events.placeholders.location"), required: true, data: { maps__autocomplete_target: "address" } %>
     <%= f.hidden_field :latitude, id: "event_latitude", class: "form-text-input", placeholder: "48.8566", required: true, data: { maps__autocomplete_target: "latitude" } %>
     <%= f.hidden_field :longitude, id: "event_longitude", class: "form-text-input", placeholder: "2.3522", required: true, data: { maps__autocomplete_target: "longitude" } %>
   </div>
@@ -37,7 +37,7 @@
 
   <div>
     <%= f.label :description, class: "block text-secondary-text mb-2" %>
-    <%= f.text_area :description, class: "form-text-input", placeholder: t("events.form.placeholders.description") %>
+    <%= f.text_area :description, class: "form-text-input", placeholder: t("events.placeholders.description") %>
   </div>
 
   <div>
