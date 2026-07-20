@@ -2,7 +2,8 @@
 
 class NotificationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_notification, only: %i[read destroy]
+  before_action :set_notification, only: :read
+  before_action :set_inbox_notification, only: :destroy
 
   def list
   end
@@ -35,6 +36,10 @@ class NotificationsController < ApplicationController
   private
 
   def set_notification
+    @notification = current_user.notifications.find(params[:id])
+  end
+
+  def set_inbox_notification
     @notification = current_user.notifications.inbox.find(params[:id])
   end
 end
