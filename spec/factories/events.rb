@@ -8,7 +8,5 @@ FactoryBot.define do
     number_of_participants { 10 }
     price { 10.0 }
     is_private { true }
-    latitude { 48.856613 }
-    longitude { 2.352222 }
   end
 end

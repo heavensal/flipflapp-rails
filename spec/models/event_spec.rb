@@ -36,18 +36,6 @@ RSpec.describe Event, type: :model do
       event = build(:event, price: 10.0)
       expect(event).to be_valid
     end
-
-    it "requires latitude and longitude" do
-      event = build(:event, latitude: nil, longitude: nil)
-      expect(event).not_to be_valid
-      expect(event.errors[:latitude]).to be_present
-      expect(event.errors[:longitude]).to be_present
-    end
-
-    it "accepts an event with latitude and longitude" do
-      event = build(:event, latitude: 48.856613, longitude: 2.352222)
-      expect(event).to be_valid
-    end
   end
 
   describe "after_create" do
