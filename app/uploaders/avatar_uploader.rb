@@ -51,7 +51,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   #   end
   # end
   def public_id
-    "flipflapp/avatars/#{model.username}_#{mounted_as}_#{model.id}"
+    "flipflapp/avatars/#{model.username.parameterize}_#{mounted_as}_#{model.id}"
   end
   process tags: [ "avatar" ]
 end
