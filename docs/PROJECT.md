@@ -33,6 +33,32 @@
 - `User` with `role: admin` — CRUD all MVP data (see [DOMAIN.md](DOMAIN.md)).
 - JSON API after web flows are reliable.
 
+## MVP quality target
+
+"MVP" limits product breadth, not engineering quality. A flow is complete only when all applicable gates below pass:
+
+- **Documented behavior** — the rule is explicit in [DOMAIN.md](DOMAIN.md), including access, edge cases, and side effects.
+- **End-to-end web flow** — an authenticated user can complete the intended action through the Rails UI without console or database intervention.
+- **Data integrity** — model validations, associations, transactions where needed, and database constraints protect the rule.
+- **Authorization** — controllers explicitly authenticate and authorize every protected read or write; admin override remains intentional.
+- **TDD contract** — model behavior is covered in `spec/models/`; material HTTP contracts are covered in `spec/requests/`.
+- **Consistent UI** — semantic ERB, existing Tailwind language, responsive layout, and I18n keys for user-facing copy.
+- **Operational fit** — background work uses the installed Rails stack, errors fail safely, and no secret or production-only assumption leaks into code.
+- **MVP discipline** — the solution adds no payments, chat, rankings, OAuth, mobile implementation, speculative API, or generalized abstraction.
+
+The target is a coherent, secure, maintainable football organizer—not a prototype with incomplete rules and not a platform built ahead of demand.
+
+## Product decision order
+
+When requirements compete, decide in this order:
+
+1. Rules and explicit user decisions in [DOMAIN.md](DOMAIN.md).
+2. Security, authorization, and data integrity.
+3. Complete web MVP flow for the normal player journey.
+4. Simple conventional Rails implementation.
+5. UI polish using the existing Tailwind language.
+6. JSON API and future mobile needs only after the web behavior is reliable.
+
 ## Out of scope
 
 - Payments, chat, rankings, Google OAuth.

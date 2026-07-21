@@ -4,7 +4,7 @@
 
 Product context: [PROJECT.md](PROJECT.md). Business rules: [DOMAIN.md](DOMAIN.md). TDD: [TESTING.md](TESTING.md). Production deploy: [DEPLOYMENT.md](DEPLOYMENT.md).
 
-Agents: do not run shell commands unless the user explicitly asks. Full policy: [AGENTS.md](../AGENTS.md).
+Agents: commands below are reference material, not standing permission to execute them. Propose the exact command and its effects; run it only when the user explicitly approves. Full policy: [AGENTS.md](../AGENTS.md).
 
 ---
 
@@ -120,6 +120,21 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 | `bin/rails console` | Rails console (development) |
 | `bin/rails routes` | HTTP surface |
 | `bin/rails db:schema:load` | Load `db/schema.rb` into empty DB |
+
+### Generators (framework-first, approval required)
+
+Before creating conventional Rails boilerplate manually, inspect available generators with `bin/rails generate` or the relevant installed framework documentation. Propose the narrowest command and list its expected output.
+
+Examples—not permission to run them:
+
+| Need | Command to propose |
+|------|--------------------|
+| Controller without unwanted assets/specs | `bin/rails generate controller NAME ACTIONS --skip-routes --no-helper --no-assets` |
+| Background job | `bin/rails generate job NAMESPACE/NAME` |
+| RSpec model/request file | Prefer a focused hand-written spec matching existing files; do not generate a model merely to obtain a spec |
+| Schema change | Propose the migration shape first; generate only after explicit schema approval |
+
+Review generated output immediately. Keep only files needed by the approved task, adapt naming to the existing architecture, and never run generated migrations automatically.
 
 ### Dependencies
 

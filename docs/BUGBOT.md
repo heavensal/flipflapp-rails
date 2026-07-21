@@ -72,7 +72,7 @@ This repo prefers **review comments over automatic commits**.
 2. Review via inline comments; use **Fix in Cursor** / **Fix in Web** when you want a human-triggered fix
 3. Manual review: comment `cursor review` or `bugbot run` on the PR
 
-When Autofix is enabled anyway, [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) limits it to **trivial, unambiguous policy fixes**. Design debates get **❌ Issue + options**, not silent rewrites.
+When Autofix is enabled anyway, [.cursor/BUGBOT.md](../.cursor/BUGBOT.md) limits it to **trivial, unambiguous policy fixes**. **Never Autofix** anything under `db/**` (migrations, `schema.rb`, seeds) — review comments and options only. Design debates get **❌ Issue + options**, not silent rewrites.
 
 Trigger a review (not a Cloud Agent): `cursor review` or `bugbot run` — full list in [docs/BUGBOT.md](BUGBOT.md#commands).
 
@@ -81,6 +81,7 @@ Trigger a review (not a Cloud Agent): `cursor review` or `bugbot run` — full l
 | Path | When included |
 |------|----------------|
 | `.cursor/BUGBOT.md` | Every review (project-wide) |
+| `db/.cursor/BUGBOT.md` | Changes under `db/` (no Autofix) |
 | `app/models/.cursor/BUGBOT.md` | Changes under `app/models/` |
 | `app/controllers/.cursor/BUGBOT.md` | Changes under `app/controllers/` |
 | `app/views/.cursor/BUGBOT.md` | Changes under `app/views/` |
