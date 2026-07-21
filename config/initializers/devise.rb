@@ -24,7 +24,7 @@ Devise.setup do |config|
   # Configure the e-mail address which will be shown in Devise::Mailer,
   # note that it will be overwritten if you use your own mailer class
   # with default "from" parameter.
-  config.mailer_sender = ENV["SMTP_USERNAME"]
+  config.mailer_sender = ENV["SMTP_USERNAME"].presence || "noreply@flipflapp.fr"
 
   # Configure the class responsible to send e-mails.
   # config.mailer = 'Devise::Mailer'
@@ -310,4 +310,17 @@ Devise.setup do |config|
   # When set to false, does not sign a user in automatically after their password is
   # changed. Defaults to true, so a user is signed in automatically after changing a password.
   # config.sign_in_after_change_password = true
+
+  # ==> Configuration for devise-jwt (API Bearer tokens; web sessions unchanged)
+  config.jwt do |jwt|
+    jwt.secret = ENV.fetch("DEVISE_JWT_SECRET_KEY") { Rails.application.secret_key_base }
+    jwt.dispatch_requests = [
+      [ "POST", %r{^/api/v1/users/sign_in$} ],
+      [ "POST", %r{^/api/v1/users$} ]
+    ]
+    jwt.revocation_requests = [
+      [ "DELETE", %r{^/api/v1/users/sign_out$} ]
+    ]
+    jwt.expiration_time = 7.days.to_i
+  end
 end

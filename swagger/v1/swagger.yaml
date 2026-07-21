@@ -1,0 +1,177 @@
+---
+openapi: 3.0.1
+info:
+  title: FlipFlapp API V1
+  version: v1
+  description: JSON API for FlipFlapp iOS/Android clients. Resource names mirror the
+    web app (Convention over Configuration).
+paths:
+  "/api/v1/events":
+    get:
+      summary: List events
+      tags:
+      - Events
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: events listed
+        '401':
+          description: unauthorized
+    post:
+      summary: Create event
+      tags:
+      - Events
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: event created
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event:
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    location:
+                      type: string
+                    start_time:
+                      type: string
+                      format: date-time
+                    number_of_participants:
+                      type: integer
+                    price:
+                      type: number
+                    is_private:
+                      type: boolean
+                    latitude:
+                      type: number
+                    longitude:
+                      type: number
+                  required:
+                  - title
+                  - location
+                  - start_time
+                  - number_of_participants
+                  - price
+                  - latitude
+                  - longitude
+  "/api/v1/events/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: Show event
+      tags:
+      - Events
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: event found
+  "/api/v1/me":
+    get:
+      summary: Current user
+      tags:
+      - Users
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: current user
+  "/api/v1/events/{event_id}/event_teams":
+    parameters:
+    - name: event_id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: List event_teams
+      tags:
+      - EventTeams
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: event_teams listed
+  "/api/v1/events/{event_id}/event_teams/{event_team_id}/event_participants":
+    parameters:
+    - name: event_id
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: event_team_id
+      in: path
+      required: true
+      schema:
+        type: string
+    get:
+      summary: List event_participants for an event_team
+      tags:
+      - EventParticipants
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: event_participants listed
+  "/api/v1/users/sign_in":
+    post:
+      summary: Sign in
+      tags:
+      - Users
+      parameters: []
+      responses:
+        '200':
+          description: signed in
+        '401':
+          description: invalid credentials
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user:
+                  type: object
+                  properties:
+                    email:
+                      type: string
+                    password:
+                      type: string
+                  required:
+                  - email
+                  - password
+  "/api/v1/users/sign_out":
+    delete:
+      summary: Sign out
+      tags:
+      - Users
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: signed out
+components:
+  securitySchemes:
+    bearer_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+servers:
+- url: http://{defaultHost}
+  variables:
+    defaultHost:
+      default: localhost:3000

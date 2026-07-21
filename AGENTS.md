@@ -20,10 +20,11 @@ Codex must understand the task before editing. For every non-trivial change:
 
 1. [docs/PROJECT.md](docs/PROJECT.md) — scope and MVP completion gates
 2. [docs/DOMAIN.md](docs/DOMAIN.md) — business rules
-3. [docs/TESTING.md](docs/TESTING.md) — feature workflow (clarify → migrations if approved → specs → code)
+3. [docs/TESTING.md](docs/TESTING.md) — feature workflow (clarify → migrations if approved → specs → code → API if mobile contract changes)
 4. [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, &lt;150 lines
 5. [docs/FRONTEND.md](docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
-6. [docs/CODEX_PLAYBOOK.md](docs/CODEX_PLAYBOOK.md) — Codex task protocol and permission matrix
+6. [docs/API.md](docs/API.md) — JSON `/api/v1` for mobile
+7. [docs/CODEX_PLAYBOOK.md](docs/CODEX_PLAYBOOK.md) — Codex task protocol and permission matrix
 
 ## Hard limits
 
@@ -36,7 +37,7 @@ Codex must understand the task before editing. For every non-trivial change:
 
 ## Framework-first implementation
 
-- Prefer Rails 8, Active Record, Devise, Hotwire, Stimulus, Solid Queue, Solid Cable, Ransack, CarrierWave, and existing project APIs before custom infrastructure.
+- Prefer Rails 8, Active Record, Devise (+ devise-jwt for `/api/v1`), Hotwire, Stimulus, Solid Queue, Solid Cable, Ransack, CarrierWave, Alba, and existing project APIs before custom infrastructure.
 - Before hand-writing framework boilerplate, identify the installed framework generator or command that would create it.
 - Because commands require approval, propose the exact command and expected files first. Run it only after the user approves.
 - After an approved generator runs, remove unused output and adapt the result to project conventions. Never use a generator as permission for a migration.
@@ -77,6 +78,7 @@ Codex must understand the task before editing. For every non-trivial change:
 |-------|-----|
 | Product | [docs/PROJECT.md](docs/PROJECT.md) |
 | Domain | [docs/DOMAIN.md](docs/DOMAIN.md) |
+| JSON API | [docs/API.md](docs/API.md) |
 | TDD / features | [docs/TESTING.md](docs/TESTING.md) |
 | Style | [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) |
 | Commands | [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) |
@@ -96,6 +98,6 @@ Codex must understand the task before editing. For every non-trivial change:
 | GitHub Copilot | [.github/copilot-instructions.md](.github/copilot-instructions.md) |
 | Codex prompts | [docs/CODEX_PLAYBOOK.md](docs/CODEX_PLAYBOOK.md) |
 
-Layer context when editing: `app/models/AGENTS.md`, `app/controllers/AGENTS.md`, `app/jobs/AGENTS.md`, `app/views/AGENTS.md`, `app/javascript/AGENTS.md`, `spec/AGENTS.md`.
+Layer context when editing: `app/models/AGENTS.md`, `app/controllers/AGENTS.md`, `app/controllers/api/AGENTS.md`, `app/jobs/AGENTS.md`, `app/views/AGENTS.md`, `app/javascript/AGENTS.md`, `spec/AGENTS.md`.
 
 Do not duplicate long rule blocks outside `docs/` — link instead.

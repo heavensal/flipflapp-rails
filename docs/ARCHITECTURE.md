@@ -9,7 +9,7 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 ## Delivery phases
 
 1. **Web UI** — primary surface to implement and verify MVP behavior
-2. **JSON API** — same domain rules, after web flows are reliable (separate iOS/Android repos)
+2. **JSON API** — `/api/v1`, same domain rules (separate iOS/Android repos). See [API.md](API.md)
 
 ## MVC layers
 
@@ -18,6 +18,7 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 | Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects via per-model modules (`Event::Notifications`, etc.) + `Notification::Delivery` (enqueues jobs) |
 | Jobs | `app/jobs/` | Solid Queue workers — e.g. `Notifications::DeliverOneJob` / `DeliverManyJob` (persist + Turbo Stream broadcast); local rules in [app/jobs/AGENTS.md](../app/jobs/AGENTS.md) |
 | Controllers | `app/controllers/` | Auth, strong params, HTTP — thin; call model domain methods |
+| API | `app/controllers/api/v1/` | JSON `/api/v1` — Bearer JWT; resource names mirror web; serializers in `app/serializers/` |
 | Views | `app/views/` | ERB + Tailwind; components under `<feature>/components/` |
 | JavaScript | `app/javascript/` | Stimulus when needed; ask before new controllers |
 | Specs | `spec/models/` | Behavior tests (strict TDD) |
@@ -30,7 +31,7 @@ Details: [DOMAIN.md](DOMAIN.md). Schema: `db/schema.rb`.
 
 ## HTTP surface
 
-`config/routes.rb` — RESTful resources, Devise, nested `Events::InvitationsController`, notifications.
+`config/routes.rb` — RESTful web resources, Devise sessions, nested `Events::InvitationsController`, notifications, plus `namespace :api / :v1` for mobile.
 
 ## Principles
 
@@ -50,5 +51,6 @@ Lock behavior with model specs before changing logic.
 | Need | Doc |
 |------|-----|
 | Rules | [DOMAIN.md](DOMAIN.md) |
+| JSON API | [API.md](API.md) |
 | Style | [RAILS_STYLEGUIDE.md](RAILS_STYLEGUIDE.md) |
 | Commands | [DEVELOPMENT.md](DEVELOPMENT.md) |
