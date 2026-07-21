@@ -22,6 +22,8 @@ Apply a **small patch** (roughly ≤10 lines, one file) when the violation is **
 - Obvious secret/credential committed (revert the line — still flag the author)
 - Clear policy violation with one obvious correction (e.g. new `spec/requests/` file → delete or move logic to model spec)
 
+**Never** treat anything under `db/**` as trivial autofix (migrations, `schema.rb`, seeds, structure) — see [Migrations and schema](#migrations-and-schema-blocking-when-applicable).
+
 Post the diff as a **suggested snippet** in a comment unless the human enabled Autofix and the fix fits this bucket.
 
 ### Debate / large change (no autofix)
@@ -31,7 +33,7 @@ When the finding needs **design or product judgment**, multiple approaches, or t
 - Mark **❌ Issue** (blocking if security, data integrity, or explicit policy breach).
 - State the **rule** violated ([DOMAIN.md](../docs/DOMAIN.md), [TESTING.md](../docs/TESTING.md), etc.).
 - List **2–3 solution options** with trade-offs — do **not** implement one silently.
-- Examples: new service object, ambiguous domain rule, large refactor, migration without approved scope, friendship/event visibility semantics.
+- Examples: new service object, ambiguous domain rule, large refactor, any `db/**` / schema / migration issue, friendship/event visibility semantics.
 
 ### Severity
 
@@ -60,8 +62,9 @@ Policy: [docs/TESTING.md](../docs/TESTING.md)
 ## Migrations and schema (blocking when applicable)
 
 - **Block** new files under `db/migrate/` unless the PR title or description clearly requests a schema change.
-- **Never autofix** `db/migrate/**` — migrations are prepared and reviewed by humans before push; flag issues only (❌ + explanation).
-- When migrations are present, check for: matching model validations, indexes for uniqueness, and model specs for the new constraints.
+- **Never autofix anything under `db/**`** (including `db/migrate/**`, `db/schema.rb`, seeds, structure dumps). No Autofix branch, no Cloud Agent rewrite, no silent `schema.rb` sync — humans prepare and review schema changes before push.
+- On DB findings: mark **❌ Issue**, explain the rule, and list **options only** (e.g. run `bin/rails db:migrate` locally and commit `schema.rb`; backfill then `change_column_null`; drop an unapproved migration). Do not push a fix.
+- When migrations are present, check for: matching model validations, indexes for uniqueness, `schema.rb` version matching the latest migration timestamp, and model specs for the new constraints.
 
 ## Security (always check)
 

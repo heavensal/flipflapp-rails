@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_21_153050) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_21_153229) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -48,8 +48,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_21_153050) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.decimal "latitude", precision: 10, scale: 6
-    t.decimal "longitude", precision: 10, scale: 6
+    t.decimal "latitude", precision: 10, scale: 6, null: false
+    t.decimal "longitude", precision: 10, scale: 6, null: false
     t.string "bench_reminder_job_id"
     t.index ["user_id"], name: "index_events_on_user_id"
   end
