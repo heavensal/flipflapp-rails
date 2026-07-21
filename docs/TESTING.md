@@ -15,7 +15,7 @@ Use this sequence for every behavior change:
 2. Agent reads DOMAIN.md, flags ambiguities and edge cases — you answer
 3. DOMAIN.md updated if the rule is new or changed
 4. Migrations proposed if needed — you validate before any migration file is created
-5. Failing specs written in spec/models/ (and spec/requests/ when HTTP wiring matters)
+5. Failing specs written in spec/models/ (and spec/requests/ when HTTP wiring matters); framework commands proposed first when boilerplate is needed
 6. Implementation until specs pass (model first, then controllers / views / API as needed)
 ```
 
@@ -59,6 +59,7 @@ Current schema: `db/schema.rb`.
 - Use **Factory Bot** (`spec/factories/`). No YAML fixtures.
 - No `pending` examples.
 - Prefer `expect { }.to change` for `Notification` and record side effects.
+- Prefer focused hand-written specs matching nearby files. Do not generate a model or scaffold merely to obtain a spec file.
 
 Run (when you ask):
 

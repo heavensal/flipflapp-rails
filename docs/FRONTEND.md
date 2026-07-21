@@ -26,6 +26,9 @@ Do not add npm dependencies unless explicitly requested.
 - No business logic in templates (no authorization decisions, no domain calculations).
 - Rails form helpers and URL helpers.
 - Files under **150 lines** — split partials when growing.
+- Tailwind utilities only for styling. Do not add inline `style`, CSS modules, Sass, Bootstrap, or another styling system unless explicitly approved.
+- Search for and copy the closest existing layout, form, card, button, empty state, and responsive pattern before designing a new one.
+- Keep accessible labels, focus states, disabled states, and semantic elements intact.
 
 ## View components
 

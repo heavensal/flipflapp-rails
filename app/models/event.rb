@@ -28,6 +28,7 @@ class Event < ApplicationRecord
   validates :price, numericality: { greater_than_or_equal_to: 0 }
   validate :price_must_be_whole_euro
   validates :is_private, inclusion: { in: [ true, false ] }
+  validates :latitude, :longitude, presence: true
 
   scope :upcoming, -> { where("start_time > ?", Time.current).order(:start_time) }
   scope :with_countable_participants_count, lambda {
