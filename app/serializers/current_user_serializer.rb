@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class UserSerializer
+class CurrentUserSerializer
   include Alba::Resource
 
-  attributes :id, :first_name, :last_name, :username
+  attributes :id, :email, :first_name, :last_name, :username, :role
 
   attribute :avatar_url do |user|
     user.avatar.url.presence

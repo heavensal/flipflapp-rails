@@ -53,7 +53,13 @@ RSpec.describe "Api::V1 Friendships", type: :request do
       api_get "/api/v1/friendships/search", user: user, params: { q: { first_name_or_last_name_or_username_cont: "Zinedine" } }
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body).map { |u| u["id"] }).to include(other.id)
+      result = JSON.parse(response.body).find { |search_user| search_user["id"] == other.id }
+      expect(result).to include(
+        "first_name" => other.first_name,
+        "last_name" => other.last_name,
+        "username" => other.username
+      )
+      expect(result).not_to include("email", "role")
     end
   end
 end

@@ -54,7 +54,14 @@ RSpec.describe "Api::V1 Users", type: :request do
       api_get "/api/v1/users/#{other.id}", user: user
 
       expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)).to include("id" => other.id)
+      body = JSON.parse(response.body)
+      expect(body).to include(
+        "id" => other.id,
+        "first_name" => other.first_name,
+        "last_name" => other.last_name,
+        "username" => other.username
+      )
+      expect(body).not_to include("email", "role")
     end
   end
 end

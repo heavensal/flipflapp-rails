@@ -12,7 +12,7 @@ module Api
 
         def respond_with(resource, _opts = {})
           if resource.persisted?
-            render json: UserSerializer.new(resource).serializable_hash, status: :created
+            render json: CurrentUserSerializer.new(resource).serializable_hash, status: :created
           else
             render json: {
               error: {

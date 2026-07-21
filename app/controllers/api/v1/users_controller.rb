@@ -4,7 +4,7 @@ module Api
   module V1
     class UsersController < BaseController
       def me
-        render json: UserSerializer.new(current_user).serializable_hash
+        render json: CurrentUserSerializer.new(current_user).serializable_hash
       end
 
       def show
@@ -14,7 +14,7 @@ module Api
 
       def update
         if current_user.update(user_params)
-          render json: UserSerializer.new(current_user).serializable_hash
+          render json: CurrentUserSerializer.new(current_user).serializable_hash
         else
           render_validation_errors(current_user)
         end

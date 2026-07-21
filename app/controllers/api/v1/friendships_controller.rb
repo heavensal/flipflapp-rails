@@ -22,7 +22,7 @@ module Api
 
       def search
         q = User.users_without_friendship(current_user).ransack(params[:q])
-        users = params[:q].present? ? q.result.select(:id, :email, :first_name, :last_name, :username, :role).distinct : User.none
+        users = params[:q].present? ? q.result.select(:id, :first_name, :last_name, :username).distinct : User.none
         render json: UserSerializer.new(users).serializable_hash
       end
 

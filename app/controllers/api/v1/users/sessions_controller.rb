@@ -11,7 +11,7 @@ module Api
         private
 
         def respond_with(resource, _opts = {})
-          render json: UserSerializer.new(resource).serializable_hash, status: :ok
+          render json: CurrentUserSerializer.new(resource).serializable_hash, status: :ok
         end
 
         def respond_to_on_destroy(*)
