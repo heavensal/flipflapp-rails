@@ -19,6 +19,8 @@ Use this sequence for every behavior change:
 6. Implementation until specs pass (model first, then controllers / views / API as needed)
 ```
 
+When the change affects data or actions mobile clients use, **update `/api/v1` in the same change** (controllers, Alba serializers, `spec/requests/api/v1/`, OpenAPI via rswag). See [API.md](API.md).
+
 ### Step 1 — You describe the feature
 
 Explain the expected behavior in product terms. Reference models when possible (`Event`, `Friendship`, `Notification`, etc.).
@@ -55,6 +57,7 @@ Current schema: `db/schema.rb`.
 
 - Write or update specs in **`spec/models/`** first for domain rules.
 - Add **`spec/requests/`** when the HTTP contract must be locked (status, auth, side effects exposed via endpoints).
+- Add **`spec/requests/api/v1/`** (and rswag OpenAPI examples) when the JSON API contract changes.
 - Specs describe **behavior** from [DOMAIN.md](DOMAIN.md), not implementation details.
 - Use **Factory Bot** (`spec/factories/`). No YAML fixtures.
 - No `pending` examples.
@@ -66,6 +69,7 @@ Run (when you ask):
 ```bash
 rspec spec/models/
 rspec spec/requests/
+rspec spec/requests/api/v1/
 rspec spec/models/event_spec.rb
 ```
 
@@ -75,7 +79,7 @@ Uses `TEST_NEON_DB` — see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 1. **`app/models/`** — smallest change to pass specs (validations, scopes, callbacks, methods).
 2. **Controllers / views / Stimulus** — only to expose behavior already covered by model specs.
-3. **JSON API** — after web flows, same domain rules and specs as source of truth.
+3. **JSON API (`/api/v1`)** — when the feature changes a mobile HTTP contract: update API controllers, serializers, `spec/requests/api/v1/`, and regenerate OpenAPI (`rake rswag:specs:swaggerize`). Same domain rules as web; resource names match web (Convention over Configuration). See [API.md](API.md).
 
 Refactor only when it makes the tested behavior clearer. No service objects unless you explicitly request them.
 
@@ -92,7 +96,7 @@ Refactor only when it makes the tested behavior clearer. No service objects unle
 
 ## What to test
 
-Specs lock **backend behavior** from [DOMAIN.md](DOMAIN.md). They are the source of truth for the future iOS and Android JSON API — same rules, same side effects.
+Specs lock **backend behavior** from [DOMAIN.md](DOMAIN.md). They are the source of truth for the iOS and Android JSON API — same rules, same side effects.
 
 **`spec/models/`** — domain rules and data side effects:
 
@@ -109,6 +113,12 @@ Specs lock **backend behavior** from [DOMAIN.md](DOMAIN.md). They are the source
 - authentication and authorization (who can call an endpoint)
 - successful and rejected writes (e.g. join rejected when full)
 - backend side effects visible through the API (records created or destroyed)
+
+**`spec/requests/api/v1/`** — JSON API contract + OpenAPI (rswag):
+
+- Bearer JWT auth, status codes, JSON shapes
+- Resource names identical to web (`event_participants`, not aliases)
+- Regenerate `swagger/v1/swagger.yaml` after OpenAPI examples change
 
 Example: accepting a `Friendship` request **creates a `Notification`** → test in model or request spec.  
 Example: a **flash message** after the action → do **not** test; verify visually in the browser.
@@ -138,5 +148,6 @@ When in doubt: if the behavior is **data the mobile apps will need** (records, f
 | Need | Doc |
 |------|-----|
 | Business rules | [DOMAIN.md](DOMAIN.md) |
+| JSON API | [API.md](API.md) |
 | Commands | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | Migrations policy | [AGENTS.md](../AGENTS.md) |

@@ -506,7 +506,7 @@ Normal `User` (`role: player`) rules:
 ## Build order
 
 1. **Web** — full MVP behavior for all models above.
-2. **JSON API** — same behavior for iOS/Android repos once web flows are reliable.
+2. **JSON API** — `/api/v1` with Devise JWT; same domain rules for iOS/Android. See [API.md](API.md).
 
 Out of scope: payments, chat, rankings, Google OAuth. See [PROJECT.md](PROJECT.md).
 
@@ -550,7 +550,7 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `left` recipients include bench | **Implemented** — countable leave / countable→bench |
 | `created` `Notification` kind | **Removed** |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
-| JSON API | **Not implemented** |
+| JSON API | **Implemented** — `/api/v1` (Devise JWT, Alba, OpenAPI/rswag). See [API.md](API.md) |
 | Google OAuth remnants (`users.tokens`, deploy `GOOGLE_CLIENT_*`) | **Removed** — email auth only; `provider`/`uid` kept for future OAuth |
 | `Friendship#decline` / `status: declined` | **Implemented** — receiver-only visibility; remove declined to allow re-request |
 | `Invitation` table (pending invite; unique per event + user) | **Implemented** — access via `Invitation`; `Notification.invited` for inbox only |

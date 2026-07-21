@@ -10,9 +10,10 @@ Football `Event` organizer MVP. Read [docs/PROJECT.md](../../docs/PROJECT.md) fo
 ## Workflow
 
 1. [docs/DOMAIN.md](../../docs/DOMAIN.md) — business rules
-2. [docs/TESTING.md](../../docs/TESTING.md) — clarify → migrations (if approved) → specs → code
+2. [docs/TESTING.md](../../docs/TESTING.md) — clarify → migrations (if approved) → specs → code → API if needed
 3. [docs/RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, file size
 4. [docs/FRONTEND.md](../../docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
+5. [docs/API.md](../../docs/API.md) — JSON `/api/v1` when the mobile contract changes
 
 ## Hard limits
 
@@ -27,6 +28,7 @@ Football `Event` organizer MVP. Read [docs/PROJECT.md](../../docs/PROJECT.md) fo
 |-------|-----|
 | Product | [PROJECT.md](../../docs/PROJECT.md) |
 | Domain | [DOMAIN.md](../../docs/DOMAIN.md) |
+| JSON API | [API.md](../../docs/API.md) |
 | TDD / features | [TESTING.md](../../docs/TESTING.md) |
 | Style | [RAILS_STYLEGUIDE.md](../../docs/RAILS_STYLEGUIDE.md) |
 | Commands | [DEVELOPMENT.md](../../docs/DEVELOPMENT.md) |

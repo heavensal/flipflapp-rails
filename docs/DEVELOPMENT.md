@@ -42,6 +42,8 @@ bin/setup
 
 App URL: **http://localhost:3000** (override with `PORT=3001 bin/dev`).
 
+API docs (Swagger UI): **http://localhost:3000/api-docs** — see [API.md](API.md).
+
 ---
 
 ## Neon (development + test)
@@ -107,9 +109,11 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 
 | Command | Purpose |
 |---------|---------|
-| `rspec` | Full model spec suite (`TEST_NEON_DB` required) |
+| `rspec` | Full model + request spec suite (`TEST_NEON_DB` required) |
 | `rspec spec/models/event_spec.rb` | Single file |
 | `rspec spec/models/event_spec.rb:42` | Single example |
+| `rspec spec/requests/api/v1/` | JSON API request specs |
+| `bundle exec rake rswag:specs:swaggerize` | Regenerate `swagger/v1/swagger.yaml` |
 | `bin/rubocop` | Style (CI: lint job) |
 | `bin/brakeman --no-pager` | Security scan (CI: scan_ruby job) |
 
@@ -156,6 +160,7 @@ Review generated output immediately. Keep only files needed by the approved task
 | Need | Doc |
 |------|-----|
 | What to build | [DOMAIN.md](DOMAIN.md) |
+| JSON API | [API.md](API.md) |
 | How to test (TDD) | [TESTING.md](TESTING.md) |
 | Current schema | `db/schema.rb` |
 | Deploy & prod secrets | [DEPLOYMENT.md](DEPLOYMENT.md) |

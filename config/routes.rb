@@ -1,18 +1,10 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  mount Rswag::Ui::Engine => "/api-docs"
+  mount Rswag::Api::Engine => "/api-docs"
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  # root "posts#index"
-  #
-  # Routes d'authentication
   authenticated :user do
     root to: "events#home", as: :authenticated_root
   end
@@ -20,6 +12,7 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: "pages#home", as: :unauthenticated_root
   end
+
   devise_for :users, controllers: {
     confirmations: "users/confirmations",
     registrations: "users/registrations"
@@ -56,5 +49,42 @@ Rails.application.routes.draw do
     resources :friendships
     resources :invitations
     resources :notifications
+  end
+
+  namespace :api do
+    namespace :v1 do
+      devise_scope :user do
+        post "users/sign_in", to: "users/sessions#create"
+        delete "users/sign_out", to: "users/sessions#destroy"
+        post "users", to: "users/registrations#create"
+        post "users/password", to: "users/passwords#create"
+        patch "users/password", to: "users/passwords#update"
+        put "users/password", to: "users/passwords#update"
+        post "users/confirmation", to: "users/confirmations#create"
+      end
+
+      get "me", to: "users#me"
+      patch "me", to: "users#update"
+      resources :users, only: [ :show ]
+
+      resources :events, only: %i[index show create update destroy] do
+        resources :event_teams, only: %i[index show update] do
+          resources :event_participants, only: [ :index ]
+        end
+        resources :event_participants, only: %i[index create]
+        scope module: :events do
+          resources :invitations, only: %i[index create]
+        end
+      end
+      resources :event_participants, only: [ :destroy ]
+
+      get "friendships/search", to: "friendships#search"
+      resources :friendships, only: [ :index, :create, :update, :destroy ]
+
+      resources :notifications, only: [ :index, :destroy ] do
+        patch :read, on: :member
+        patch :read_all, on: :collection
+      end
+    end
   end
 end
