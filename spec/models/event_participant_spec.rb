@@ -192,7 +192,7 @@ RSpec.describe EventParticipant, type: :model do
       }.not_to change { Notification.where(kind: :joined).count }
     end
 
-    it "notifies remaining team players when a player leaves team_one or team_two" do
+    it "notifies remaining team and bench players when a player leaves team_one or team_two" do
       event = create(:event)
       player = create(:user)
       team_player = create(:user)
@@ -211,7 +211,7 @@ RSpec.describe EventParticipant, type: :model do
 
       expect(event.user.notifications.where(kind: :left).count).to eq(author_count + 1)
       expect(team_player.notifications.where(kind: :left).count).to eq(team_player_count + 1)
-      expect(bench_player.notifications.where(kind: :left).count).to eq(bench_player_count)
+      expect(bench_player.notifications.where(kind: :left).count).to eq(bench_player_count + 1)
       expect(player.notifications.where(kind: :left).count).to eq(leaving_player_count)
     end
 
@@ -256,18 +256,21 @@ RSpec.describe EventParticipant, type: :model do
         .and change { Notification.where(kind: :left).count }.by(0)
     end
 
-    it "notifies countable players when a player moves from a countable team to the bench" do
+    it "notifies countable and bench players when a player moves from a countable team to the bench" do
       event = create(:event)
       team_player = create(:user)
-      bench_player = create(:user)
-      participant = create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "team_one"))
+      other_bench = create(:user)
+      moving = create(:user)
+      participant = create(:event_participant, user: moving, event: event, event_team: team_slot(event, "team_one"))
 
       create(:event_participant, user: team_player, event: event, event_team: team_slot(event, "team_two"))
+      create(:event_participant, user: other_bench, event: event, event_team: team_slot(event, "bench"))
 
       expect {
         participant.update!(event_team: team_slot(event, "bench"))
       }.to change { event.user.notifications.where(kind: :left).count }.by(1)
         .and change { team_player.notifications.where(kind: :left).count }.by(1)
+        .and change { other_bench.notifications.where(kind: :left).count }.by(1)
         .and change { Notification.where(kind: :joined).count }.by(0)
     end
 

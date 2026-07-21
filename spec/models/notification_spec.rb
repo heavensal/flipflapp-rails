@@ -16,7 +16,7 @@ RSpec.describe Notification, type: :model do
       expect(described_class.kinds).not_to have_key("created")
     end
 
-    it "defines all MVP kinds including reserved reminder" do
+    it "defines all MVP kinds including reminder" do
       expect(described_class.kinds.keys).to contain_exactly(
         "updated", "canceled", "reminder", "joined", "left", "invited", "friendship_requested"
       )
@@ -233,16 +233,19 @@ RSpec.describe Notification, type: :model do
       )
     end
 
-    it "creates left for remaining countable squad members when a player leaves" do
+    it "creates left for remaining countable and bench players when a player leaves" do
       event = create(:event)
       teammate = create(:user)
+      bench_player = create(:user)
       leaving = create(:user)
       create(:event_participant, user: teammate, event: event, event_team: team_slot(event, "team_two"))
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
       participant = create(:event_participant, user: leaving, event: event, event_team: team_slot(event, "team_one"))
 
       expect {
         participant.destroy!
       }.to change { teammate.notifications.left.count }.by(1)
+        .and change { bench_player.notifications.left.count }.by(1)
         .and change { event.user.notifications.left.count }.by(1)
         .and change { leaving.notifications.left.count }.by(0)
 

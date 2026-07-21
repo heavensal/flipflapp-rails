@@ -19,7 +19,9 @@ fr:
       left: "%{player} a quitté ton événement \"%{title}\"."
       invited: "%{sender} t'a invité à l'événement \"%{title}\" prévu %{start_time}."
       canceled: "L'événement \"%{title}\" prévu %{start_time} et organisé par %{author} a été annulé."
-      reminder: "Rappel : \"%{title}\" approche."
+      reminder:
+        one: "Il reste toujours %{count} place dans l'événement \"%{title}\" par %{author}, pour %{start_time}."
+        other: "Il reste toujours %{count} places dans l'événement \"%{title}\" par %{author}, pour %{start_time}."
       friendship_requested: "%{first_name} vous a envoyé une demande d'amitié."
       default: "Vous avez une nouvelle notification."
       updated:

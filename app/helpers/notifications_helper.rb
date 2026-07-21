@@ -42,7 +42,13 @@ module NotificationsHelper
         author: notification.payload["author"]
       )
     when "reminder"
-      t("notifications.messages.reminder", title: notification.payload["title"])
+      t(
+        "notifications.messages.reminder",
+        count: notification.payload["spots_remaining"].to_i,
+        title: notification.payload["title"],
+        author: notification.payload["author"],
+        start_time: human_future_date(notification.payload["start_time"])
+      )
     when "friendship_requested"
       t(
         "notifications.messages.friendship_requested",

@@ -1,5 +1,6 @@
 class Event < ApplicationRecord
   include Event::Notifications
+  include Event::BenchReminder
 
   TEAM_SLOTS = %w[team_one team_two bench].freeze
   SLOT_DEFAULT_LABEL_KEYS = TEAM_SLOTS.index_with { |slot| "event_team.slots.#{slot}.default_label" }.freeze
@@ -73,6 +74,18 @@ class Event < ApplicationRecord
     event_participants.count
   end
 
+  def spots_remaining
+    [ number_of_participants - participants_count, 0 ].max
+  end
+
+  def bench_user_ids
+    event_participants.joins(:event_team).merge(EventTeam.bench).pluck(:user_id)
+  end
+
+  def reminder_due_at
+    start_time - 24.hours
+  end
+
   def countable_slots_full?
     participants_count >= number_of_participants
   end
@@ -130,8 +143,7 @@ class Event < ApplicationRecord
   end
 
   def price_must_be_whole_euro
-    return if price.blank?
-    return if price.to_d == price.to_d.round(0)
+    return if price.blank? || price.to_d == price.to_d.round(0)
 
     errors.add(:price, :not_whole_euro)
   end
