@@ -19,7 +19,9 @@ en:
       left: "%{player} left your event \"%{title}\"."
       invited: "%{sender} invited you to the event \"%{title}\" scheduled for %{start_time}."
       canceled: "The event \"%{title}\" scheduled for %{start_time} and organized by %{author} was canceled."
-      reminder: "Reminder: \"%{title}\" is coming up."
+      reminder:
+        one: "There is still %{count} spot left in the event \"%{title}\" by %{author}, for %{start_time}."
+        other: "There are still %{count} spots left in the event \"%{title}\" by %{author}, for %{start_time}."
       friendship_requested: "%{first_name} sent you a friend request."
       default: "You have a new notification."
       updated:

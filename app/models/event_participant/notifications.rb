@@ -33,7 +33,7 @@ module EventParticipant::Notifications
   private
 
   def deliver_notifications(kind)
-    recipient_ids = team_notification_recipients.pluck(:id)
+    recipient_ids = team_notification_recipients(kind).pluck(:id)
     return if recipient_ids.empty?
 
     Notification.deliver_many!(
@@ -48,11 +48,13 @@ module EventParticipant::Notifications
     )
   end
 
-  def team_notification_recipients
+  def team_notification_recipients(kind)
+    slots = kind.to_sym == :left ? %w[team_one team_two bench] : EventTeam::COUNTABLE_SLOTS
+
     User.where(
       id: event.event_participants
         .joins(:event_team)
-        .merge(EventTeam.countable_teams)
+        .where(event_teams: { slot: slots })
         .where.not(user_id: user_id)
         .select(:user_id)
     )

@@ -359,7 +359,11 @@ end
     notifiable: event,
     kind: :reminder,
     read: false,
-    payload: notification_payload_for(event),
+    payload: notification_payload_for(
+      event,
+      author: event.user.first_name,
+      spots_remaining: event.spots_remaining
+    ),
     created_at: (6 - index).hours.ago
   )
 end

@@ -285,6 +285,7 @@ Same rules as private access above; for public `Event` records, any authenticate
 - One `EventParticipant` per `User` per `Event`.
 - `User` selects an `EventTeam` (`event_team_id`) by `slot`: `team_one`, `team_two`, or `bench`.
 - Joining `team_one` or `team_two` emits `joined` `Notification` records for other countable-squad `User` records. Joining `bench` does not.
+- Leaving `team_one` or `team_two` (or moving countable → bench) emits `left` for other countable-squad **and bench** `User` records (excluding the actor). `joined` recipients stay countable-only.
 - Creating an `EventParticipant` **destroys** that `User`'s `Invitation` for the `Event` (if any). The inbox `Notification.invited` is kept (history).
 - **Capacity:** `number_of_participants` caps the total on **countable** teams (`participants_count`). When full, new joins to countable teams are rejected; **bench** remains available.
 - **Per-team cap:** `Event#countable_slots_for(team)` — `team_one` gets `number_of_participants / 2` (floor), `team_two` gets `(number_of_participants + 1) / 2` (ceil). Example: capacity `11` → `5` + `6`. `EventTeam#full?` when at cap; join button hidden when `!joinable?` (`bench` is always joinable).
@@ -305,7 +306,7 @@ Emit `joined` / `left` only for these transitions:
 ### Leave
 
 - `User` destroys their own `EventParticipant`.
-- Leaving `team_one` or `team_two` emits `left` `Notification` records. Leaving `bench` does not.
+- Leaving `team_one` or `team_two` emits `left` `Notification` records for remaining countable **and bench** participants. Leaving `bench` does not.
 - After leave, if `event.viewable_by?(user)` is false, redirect away from the `Event` page.
 
 ---
@@ -373,11 +374,12 @@ A `User` receives a `Notification` when:
 | Pending `Friendship` request | `friendship_requested` | `Friendship` | `receiver` | **Hidden** — UX is the friends badge (`pending_received_friendships`) |
 | Invited to an `Event` | `invited` | `Event` | invited `User` | Shown |
 | Joins `EventTeam` `team_one` or `team_two` | `joined` | `Event` | other `User` records on official squads | Shown |
-| Leaves `EventTeam` `team_one` or `team_two` | `left` | `Event` | other `User` records on official squads | Shown |
+| Leaves `EventTeam` `team_one` or `team_two` | `left` | `Event` | other countable **and bench** `User` records | Shown |
 | Tracked `Event` field changes | `updated` | `Event` | each `EventParticipant` `User` except `event.user` | Shown |
 | `Event` destroyed | `canceled` | `nil` | each `EventParticipant` `User` except `event.user` | Shown |
+| ~24h before `start_time` with open countable spots | `reminder` | `Event` | current bench `User` records | Shown |
 
-Participation includes `bench` for `updated` and `canceled`. `joined` / `left` apply only to `team_one` and `team_two`, not `bench`.
+Participation includes `bench` for `updated`, `canceled`, and as **recipients** of `left` / `reminder`. Emitting `joined` / `left` still keys off countable-team transitions only (not joining/leaving the bench itself).
 
 `Notification.inbox` excludes `friendship_requested`. Header unread badge uses `notifications.inbox.unread`.
 
@@ -417,13 +419,21 @@ Participation includes `bench` for `updated` and `canceled`. `joined` / `left` a
 
 ### `left`
 
-- Created when a `User` destroys an `EventParticipant` on `slot` `team_one` or `team_two`.
-- Not created for `bench`.
-- Recipients: remaining `User` records on official squads.
+- Created when a `User` destroys an `EventParticipant` on `slot` `team_one` or `team_two`, or moves countable → bench.
+- Not created when leaving the bench itself.
+- Recipients: remaining `User` records on official squads **and** the bench (excluding the actor). This is how bench players learn a countable spot opened after a silent T−24h reminder — not a second `reminder`.
+
+### `reminder`
+
+- Scheduled by `Event` on create and whenever `start_time` changes: `Events::BenchReminderJob` at `max(start_time - 24.hours, Time.current)`.
+- `events.bench_reminder_job_id` stores the Active Job id; previous job is **discarded** on reschedule and on `Event` destroy.
+- At perform time: no-op if event missing, `start_time` ≠ enqueued expectation, `spots_remaining == 0`, or bench empty; otherwise `deliver_many!` to current bench users.
+- Idempotent per `(event, start_time)` — a reminder already sent for that start does not send again; a **new** `start_time` schedules a new cycle even if an older reminder exists.
+- `payload`: `title`, `author` (`event.user.first_name`), `start_time`, `spots_remaining`.
+- Not a retry when spots open after a silent T−24h run (`left` covers that). Users who join the bench after the fire do not get a late reminder.
 
 ### Reserved enum values
 
-- `reminder` — reserved for phase 2 (SolidQueue scheduled reminders). No producer yet.
 - `created` — **removed** (unused).
 
 ### Read state & navigation
@@ -536,7 +546,8 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Implemented** — hidden from inbox; friends badge UX |
 | Push delivery (APNs / FCM) | **Not implemented** — web inbox + live toast first; Solid Queue later for push |
 | Solid Queue + Solid Cable | **Implemented** — notification jobs, Devise mail via Active Job, live toasts |
-| `reminder` `Notification` kind | Enum reserved; **no behavior** until scheduled jobs phase |
+| `reminder` `Notification` kind | **Implemented** — Solid Queue delayed job; `events.bench_reminder_job_id` for discard |
+| `left` recipients include bench | **Implemented** — countable leave / countable→bench |
 | `created` `Notification` kind | **Removed** |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |
 | JSON API | **Not implemented** |
