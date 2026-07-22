@@ -5,6 +5,7 @@ require "swagger_helper"
 RSpec.describe "Api::V1 Sessions", type: :request do
   path "/api/v1/users/sign_in" do
     post "Sign in" do
+      operationId "signIn"
       tags "Users"
       consumes "application/json"
       produces "application/json"
@@ -23,6 +24,8 @@ RSpec.describe "Api::V1 Sessions", type: :request do
       }
 
       response "200", "signed in" do
+        schema "$ref" => "#/components/schemas/CurrentUser"
+        header "Authorization", schema: { type: :string }, description: "Bearer JWT to use on authenticated requests"
         let(:user_record) { create(:user) }
         let(:user) { { user: { email: user_record.email, password: "password123" } } }
 
@@ -33,6 +36,7 @@ RSpec.describe "Api::V1 Sessions", type: :request do
       end
 
       response "401", "invalid credentials" do
+        schema "$ref" => "#/components/schemas/AuthenticationError"
         let(:user) { { user: { email: "nope@example.com", password: "wrong" } } }
         run_test!
       end
@@ -41,6 +45,7 @@ RSpec.describe "Api::V1 Sessions", type: :request do
 
   path "/api/v1/users/sign_out" do
     delete "Sign out" do
+      operationId "signOut"
       tags "Users"
       security [ bearer_auth: [] ]
       produces "application/json"
@@ -50,6 +55,11 @@ RSpec.describe "Api::V1 Sessions", type: :request do
         let(:Authorization) { api_auth_headers_for(user_record)["Authorization"] }
 
         run_test!
+      end
+
+      response "401", "authentication required" do
+        schema "$ref" => "#/components/schemas/AuthenticationError"
+        specify("documents the 401 response") { expect(true).to be(true) }
       end
     end
   end
