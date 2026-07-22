@@ -9,6 +9,7 @@ paths:
   "/api/v1/events":
     get:
       summary: List events
+      operationId: listEvents
       tags:
       - Events
       security:
@@ -16,10 +17,21 @@ paths:
       responses:
         '200':
           description: events listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Event"
         '401':
           description: unauthorized
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
     post:
       summary: Create event
+      operationId: createEvent
       tags:
       - Events
       security:
@@ -28,6 +40,22 @@ paths:
       responses:
         '201':
           description: event created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Event"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '422':
+          description: event validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
       requestBody:
         content:
           application/json:
@@ -70,9 +98,11 @@ paths:
       in: path
       required: true
       schema:
-        type: string
+        type: integer
+        format: int64
     get:
       summary: Show event
+      operationId: getEvent
       tags:
       - Events
       security:
@@ -80,9 +110,92 @@ paths:
       responses:
         '200':
           description: event found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Event"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    patch:
+      summary: Update an event
+      operationId: updateEvent
+      tags:
+      - Events
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: event updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Event"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '403':
+          description: only the event author may update it
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: event validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event
+              properties:
+                event:
+                  "$ref": "#/components/schemas/EventInput"
+        required: true
+    delete:
+      summary: Delete an event
+      operationId: deleteEvent
+      tags:
+      - Events
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: event deleted
+        '401':
+          description: authentication required
+        '403':
+          description: only the event author may delete it
+        '404':
+          description: event missing or not viewable
   "/api/v1/me":
     get:
       summary: Current user
+      operationId: getCurrentUser
       tags:
       - Users
       security:
@@ -90,6 +203,72 @@ paths:
       responses:
         '200':
           description: current user
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CurrentUser"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+    patch:
+      summary: Update the current user
+      operationId: updateCurrentUser
+      tags:
+      - Users
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: current user updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CurrentUser"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '422':
+          description: profile validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  properties:
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    avatar:
+                      type: string
+                      nullable: true
+                      description: CarrierWave upload value
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                      format: password
+                    password_confirmation:
+                      type: string
+                      format: password
+        required: true
   "/api/v1/events/{event_id}/event_teams":
     parameters:
     - name: event_id
@@ -99,6 +278,7 @@ paths:
         type: string
     get:
       summary: List event_teams
+      operationId: listEventTeams
       tags:
       - EventTeams
       security:
@@ -106,6 +286,24 @@ paths:
       responses:
         '200':
           description: event_teams listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/EventTeam"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
   "/api/v1/events/{event_id}/event_teams/{event_team_id}/event_participants":
     parameters:
     - name: event_id
@@ -120,6 +318,7 @@ paths:
         type: string
     get:
       summary: List event_participants for an event_team
+      operationId: listEventTeamParticipants
       tags:
       - EventParticipants
       security:
@@ -127,17 +326,49 @@ paths:
       responses:
         '200':
           description: event_participants listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/EventParticipant"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event or team missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
   "/api/v1/users/sign_in":
     post:
       summary: Sign in
+      operationId: signIn
       tags:
       - Users
       parameters: []
       responses:
         '200':
           description: signed in
+          headers:
+            Authorization:
+              schema:
+                type: string
+              description: Bearer JWT to use on authenticated requests
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CurrentUser"
         '401':
           description: invalid credentials
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
       requestBody:
         content:
           application/json:
@@ -157,6 +388,7 @@ paths:
   "/api/v1/users/sign_out":
     delete:
       summary: Sign out
+      operationId: signOut
       tags:
       - Users
       security:
@@ -164,12 +396,1209 @@ paths:
       responses:
         '204':
           description: signed out
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+  "/api/v1/users":
+    post:
+      summary: Register a user
+      operationId: registerUser
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '201':
+          description: user registered
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CurrentUser"
+        '422':
+          description: registration validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  required:
+                  - email
+                  - password
+                  - password_confirmation
+                  - first_name
+                  - last_name
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                      format: password
+                      minLength: 6
+                    password_confirmation:
+                      type: string
+                      format: password
+                    first_name:
+                      type: string
+                    last_name:
+                      type: string
+                    avatar:
+                      type: string
+                      nullable: true
+                      description: CarrierWave upload value
+        required: true
+  "/api/v1/users/password":
+    post:
+      summary: Request password reset instructions
+      operationId: requestPasswordReset
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '204':
+          description: reset instructions requested
+        '422':
+          description: request validation failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  required:
+                  - email
+                  properties:
+                    email:
+                      type: string
+                      format: email
+        required: true
+    patch:
+      summary: Reset a password
+      operationId: resetPassword
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '204':
+          description: password reset
+        '422':
+          description: reset validation failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  required:
+                  - reset_password_token
+                  - password
+                  - password_confirmation
+                  properties:
+                    reset_password_token:
+                      type: string
+                    password:
+                      type: string
+                      format: password
+                      minLength: 6
+                    password_confirmation:
+                      type: string
+                      format: password
+        required: true
+    put:
+      summary: Reset a password
+      operationId: resetPasswordWithPut
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '204':
+          description: password reset
+        '422':
+          description: reset validation failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  required:
+                  - reset_password_token
+                  - password
+                  - password_confirmation
+                  properties:
+                    reset_password_token:
+                      type: string
+                    password:
+                      type: string
+                      format: password
+                      minLength: 6
+                    password_confirmation:
+                      type: string
+                      format: password
+        required: true
+  "/api/v1/users/confirmation":
+    post:
+      summary: Resend confirmation instructions
+      operationId: resendConfirmation
+      tags:
+      - Authentication
+      parameters: []
+      responses:
+        '204':
+          description: confirmation instructions requested
+        '422':
+          description: request validation failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user
+              properties:
+                user:
+                  type: object
+                  required:
+                  - email
+                  properties:
+                    email:
+                      type: string
+                      format: email
+        required: true
+  "/api/v1/users/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      summary: Show a public user profile
+      operationId: getUser
+      tags:
+      - Users
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: user found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/PublicUser"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: user not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/api/v1/events/{event_id}/event_teams/{id}":
+    parameters:
+    - name: event_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      summary: Show an event team
+      operationId: getEventTeam
+      tags:
+      - Event teams
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: event team found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventTeam"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event or team missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    patch:
+      summary: Rename a countable event team
+      operationId: updateEventTeam
+      tags:
+      - Event teams
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: event team renamed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventTeam"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '403':
+          description: user is not a participant or team is the bench
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: event or team missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: team validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event_team
+              properties:
+                event_team:
+                  type: object
+                  required:
+                  - label
+                  properties:
+                    label:
+                      type: string
+                      maxLength: 24
+        required: true
+  "/api/v1/events/{event_id}/event_participants":
+    parameters:
+    - name: event_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      summary: List event participants
+      operationId: listEventParticipants
+      tags:
+      - Event participants
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: participants listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/EventParticipant"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      summary: Join an event or switch team
+      operationId: joinEvent
+      tags:
+      - Event participants
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: existing participation moved to another team
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventParticipant"
+        '201':
+          description: event joined
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/EventParticipant"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event is not joinable or team does not belong to event
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: participation validation failed or team is full
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event_participant
+              properties:
+                event_participant:
+                  type: object
+                  required:
+                  - event_team_id
+                  properties:
+                    event_team_id:
+                      type: integer
+                      format: int64
+        required: true
+  "/api/v1/event_participants/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    delete:
+      summary: Leave an event
+      operationId: leaveEvent
+      tags:
+      - Event participants
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: participation deleted
+        '401':
+          description: authentication required
+        '404':
+          description: participation not found for current user
+  "/api/v1/events/{event_id}/invitations":
+    parameters:
+    - name: event_id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    get:
+      summary: List event invitations
+      operationId: listInvitations
+      tags:
+      - Invitations
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: invitations listed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Invitation"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+    post:
+      summary: Invite accepted friends to an event
+      operationId: createInvitations
+      tags:
+      - Invitations
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: friends invited
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Invitation"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '403':
+          description: current user is not an event participant
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: event missing or not viewable
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: no eligible users supplied
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user_ids
+              properties:
+                user_ids:
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: integer
+                    format: int64
+        required: true
+  "/api/v1/friendships":
+    get:
+      summary: List friendships grouped by state
+      operationId: listFriendships
+      tags:
+      - Friendships
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: friendship buckets returned
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/FriendshipBuckets"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+    post:
+      summary: Send a friendship request
+      operationId: createFriendship
+      tags:
+      - Friendships
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '201':
+          description: friendship request created
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Friendship"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: target user not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: friendship validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - user_id
+              properties:
+                user_id:
+                  type: integer
+                  format: int64
+        required: true
+  "/api/v1/friendships/search":
+    get:
+      summary: Search users without an existing friendship
+      operationId: searchFriendshipCandidates
+      tags:
+      - Friendships
+      security:
+      - bearer_auth: []
+      parameters:
+      - name: q
+        in: query
+        required: false
+        style: deepObject
+        explode: true
+        schema:
+          type: object
+          description: Ransack filter. Only first_name, last_name and username are
+            searchable.
+          properties:
+            first_name_or_last_name_or_username_cont:
+              type: string
+          additionalProperties: false
+      responses:
+        '200':
+          description: matching users returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/PublicUser"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+  "/api/v1/friendships/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    patch:
+      summary: Accept or decline a friendship request
+      operationId: updateFriendship
+      tags:
+      - Friendships
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: friendship request updated
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Friendship"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '403':
+          description: current user cannot transition this friendship
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '404':
+          description: friendship not found
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+        '422':
+          description: friendship validation failed
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - status
+              properties:
+                status:
+                  type: string
+                  enum:
+                  - accepted
+                  - declined
+        required: true
+    delete:
+      summary: Cancel, remove or delete a friendship
+      operationId: deleteFriendship
+      tags:
+      - Friendships
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: friendship deleted
+        '401':
+          description: authentication required
+        '403':
+          description: current user cannot delete this friendship
+        '404':
+          description: friendship not found
+  "/api/v1/notifications":
+    get:
+      summary: List recent inbox notifications
+      operationId: listNotifications
+      tags:
+      - Notifications
+      description: Returns at most 20 recent notifications and excludes friendship_requested.
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: notifications listed
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 20
+                items:
+                  "$ref": "#/components/schemas/Notification"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+  "/api/v1/notifications/{id}/read":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    patch:
+      summary: Mark a notification as read
+      operationId: readNotification
+      tags:
+      - Notifications
+      security:
+      - bearer_auth: []
+      responses:
+        '200':
+          description: notification marked as read
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Notification"
+        '401':
+          description: authentication required
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/AuthenticationError"
+        '404':
+          description: inbox notification not found for current user
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/Error"
+  "/api/v1/notifications/read_all":
+    patch:
+      summary: Mark every inbox notification as read
+      operationId: readAllNotifications
+      tags:
+      - Notifications
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: all inbox notifications marked as read
+        '401':
+          description: authentication required
+  "/api/v1/notifications/{id}":
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    delete:
+      summary: Delete an inbox notification
+      operationId: deleteNotification
+      tags:
+      - Notifications
+      security:
+      - bearer_auth: []
+      responses:
+        '204':
+          description: notification deleted
+        '401':
+          description: authentication required
+        '404':
+          description: inbox notification not found for current user
 components:
   securitySchemes:
     bearer_auth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    AuthenticationError:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: string
+          example: You need to sign in or sign up before continuing.
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - message
+          properties:
+            message:
+              type: string
+              example: Validation failed
+            details:
+              type: object
+              nullable: true
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+              example:
+                email:
+                - Email has already been taken
+    PublicUser:
+      type: object
+      required:
+      - id
+      - first_name
+      - last_name
+      - username
+      - avatar_url
+      properties:
+        id:
+          type: integer
+          format: int64
+        first_name:
+          type: string
+          nullable: true
+        last_name:
+          type: string
+          nullable: true
+        username:
+          type: string
+          nullable: true
+          example: ada#0001
+        avatar_url:
+          type: string
+          format: uri
+          nullable: true
+    CurrentUser:
+      allOf:
+      - "$ref": "#/components/schemas/PublicUser"
+      - type: object
+        required:
+        - email
+        - role
+        properties:
+          email:
+            type: string
+            format: email
+          role:
+            type: string
+            enum:
+            - player
+            - admin
+    EventViewerContext:
+      type: object
+      required:
+      - participant
+      - can_invite
+      - author
+      - invited
+      properties:
+        participant:
+          type: boolean
+        can_invite:
+          type: boolean
+        author:
+          type: boolean
+        invited:
+          type: boolean
+    Event:
+      type: object
+      required:
+      - id
+      - title
+      - description
+      - location
+      - start_time
+      - number_of_participants
+      - price
+      - is_private
+      - latitude
+      - longitude
+      - user_id
+      - created_at
+      - updated_at
+      - participants_count
+      - spots_remaining
+      - fill_level
+      - user
+      - current_user
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        number_of_participants:
+          type: integer
+          minimum: 1
+        price:
+          type: string
+          pattern: "^-?\\d+(?:\\.\\d+)?$"
+          example: '10.0'
+        is_private:
+          type: boolean
+        latitude:
+          type: string
+          pattern: "^-?\\d+(?:\\.\\d+)?$"
+          example: '48.856613'
+        longitude:
+          type: string
+          pattern: "^-?\\d+(?:\\.\\d+)?$"
+          example: '2.352222'
+        user_id:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        participants_count:
+          type: integer
+          minimum: 0
+        spots_remaining:
+          type: integer
+        fill_level:
+          type: string
+          enum:
+          - open
+          - tight
+          - full
+        user:
+          "$ref": "#/components/schemas/PublicUser"
+        current_user:
+          allOf:
+          - "$ref": "#/components/schemas/EventViewerContext"
+          nullable: true
+    EventTeam:
+      type: object
+      required:
+      - id
+      - event_id
+      - slot
+      - label
+      - created_at
+      - updated_at
+      - countable
+      properties:
+        id:
+          type: integer
+          format: int64
+        event_id:
+          type: integer
+          format: int64
+        slot:
+          type: string
+          enum:
+          - team_one
+          - team_two
+          - bench
+        label:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        countable:
+          type: boolean
+    EventParticipant:
+      type: object
+      required:
+      - id
+      - event_id
+      - event_team_id
+      - user_id
+      - created_at
+      - updated_at
+      - user
+      properties:
+        id:
+          type: integer
+          format: int64
+        event_id:
+          type: integer
+          format: int64
+        event_team_id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        user:
+          "$ref": "#/components/schemas/PublicUser"
+    Invitation:
+      type: object
+      required:
+      - id
+      - event_id
+      - user_id
+      - created_at
+      - updated_at
+      - user
+      properties:
+        id:
+          type: integer
+          format: int64
+        event_id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        user:
+          "$ref": "#/components/schemas/PublicUser"
+    Friendship:
+      type: object
+      required:
+      - id
+      - sender_id
+      - receiver_id
+      - status
+      - created_at
+      - updated_at
+      - sender
+      - receiver
+      properties:
+        id:
+          type: integer
+          format: int64
+        sender_id:
+          type: integer
+          format: int64
+        receiver_id:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum:
+          - pending
+          - accepted
+          - declined
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        sender:
+          "$ref": "#/components/schemas/PublicUser"
+        receiver:
+          "$ref": "#/components/schemas/PublicUser"
+    FriendshipBuckets:
+      type: object
+      required:
+      - accepted
+      - sent
+      - received
+      - declined
+      properties:
+        accepted:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Friendship"
+        sent:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Friendship"
+        received:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Friendship"
+        declined:
+          type: array
+          items:
+            "$ref": "#/components/schemas/Friendship"
+    Notification:
+      type: object
+      required:
+      - id
+      - user_id
+      - kind
+      - read
+      - payload
+      - notifiable_type
+      - notifiable_id
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: integer
+          format: int64
+        user_id:
+          type: integer
+          format: int64
+        kind:
+          type: string
+          enum:
+          - updated
+          - canceled
+          - reminder
+          - joined
+          - left
+          - invited
+          - friendship_requested
+        read:
+          type: boolean
+        payload:
+          type: object
+          additionalProperties: true
+        notifiable_type:
+          type: string
+          nullable: true
+        notifiable_id:
+          type: integer
+          format: int64
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    EventInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        location:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        number_of_participants:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+          format: double
+        is_private:
+          type: boolean
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
 servers:
 - url: http://{defaultHost}
   variables:
