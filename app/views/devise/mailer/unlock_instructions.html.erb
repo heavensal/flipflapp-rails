@@ -8,8 +8,8 @@
 
 <p><%= t(".instructions") %></p>
 
-<p style="text-align: center;">
+<p class="action">
   <%= link_to t(".cta"), unlock_url(@resource, unlock_token: @token), class: "btn" %>
 </p>
 
-<p style="text-align: center;"><%= t(".after_unlock") %></p>
+<p class="note"><%= t(".after_unlock") %></p>

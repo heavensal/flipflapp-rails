@@ -2,81 +2,149 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><%= content_for(:title) || t("devise.mailer.layout.default_title") %></title>
     <style>
       body {
         margin: 0;
         padding: 0;
-        background-color: #fafafa;
-        font-family: Arial, Helvetica, sans-serif;
-        color: #333;
-        line-height: 1.5;
+        width: 100%;
+        background-color: #eef2e8;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, Helvetica, sans-serif;
+        color: #243019;
+        line-height: 1.6;
       }
-      .container {
+      table {
+        border-collapse: collapse;
+        border-spacing: 0;
+      }
+      img {
+        border: 0;
+        display: block;
+        outline: none;
+        text-decoration: none;
+      }
+      .email-shell {
+        width: 100%;
+        background-color: #eef2e8;
+      }
+      .email-card {
+        width: 100%;
         max-width: 600px;
-        margin: auto;
-        background: #fff;
-        padding: 20px;
-        border-radius: 12px;
+        background-color: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 14px 38px rgba(45, 70, 8, 0.14);
+        overflow: hidden;
       }
-      header img {
-        max-width: 100%;
+      .brand-header {
+        background-color: #3a5f0b;
+      }
+      .brand-banner {
+        width: 100%;
         height: auto;
-        border-radius: 8px;
+      }
+      .content {
+        padding: 42px 48px 34px;
       }
       h1 {
-        font-size: 24px;
+        margin: 0 0 24px;
+        color: #2d4608;
+        font-size: 28px;
+        line-height: 1.25;
+        letter-spacing: -0.4px;
         text-align: center;
-        margin: 20px 0;
-        color: #000;
       }
       p {
         font-size: 16px;
-        margin: 10px 0;
+        margin: 0 0 16px;
       }
       .btn {
         display: inline-block;
-        margin: 20px auto;
-        padding: 12px 24px;
-        background: #ff7c00;
-        color: #fff;
-        font-size: 18px;
-        font-weight: bold;
+        padding: 14px 26px;
+        background-color: #f4d35e;
+        border: 1px solid #cca508;
+        border-radius: 14px;
+        color: #243019 !important;
+        font-size: 16px;
+        font-weight: 700;
         text-decoration: none;
-        border-radius: 16px;
         text-align: center;
       }
-      footer {
+      .action {
         text-align: center;
+        padding: 10px 0 18px;
+      }
+      .note {
+        color: #617052;
         font-size: 14px;
-        margin-top: 30px;
-        color: #666;
+        text-align: center;
       }
-      footer a {
-        color: #5C68E2;
+      .footer {
+        padding: 26px 32px 30px;
+        background-color: #2d4608;
+        color: #e0e7cc;
+        font-size: 13px;
+        text-align: center;
+      }
+      .footer p {
+        margin: 0;
+        font-size: 13px;
+      }
+      .footer a {
+        color: #f4d35e;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .footer-logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 14px;
       }
       @media (max-width: 600px) {
-        h1 { font-size: 20px; }
-        p { font-size: 14px; }
-        .btn { font-size: 16px; padding: 10px 20px; }
+        .outer-cell { padding: 16px 12px !important; }
+        .email-card { border-radius: 18px; }
+        .content { padding: 32px 24px 26px; }
+        h1 { font-size: 23px; }
+        p { font-size: 15px; }
+        .btn { display: block; padding: 13px 18px; }
       }
     </style>
   </head>
 
   <body>
-    <section class="container" role="main">
-      <header>
-        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_email.jpg", alt: t("devise.mailer.layout.banner_alt") %>
-      </header>
-
-      <main>
-        <%= yield %>
-      </main>
-
-      <footer role="contentinfo">
-        <p><%= t("devise.mailer.layout.powered_by") %> <%= link_to '#1344 Solutions', 'https://www.1344.fr', target: '_blank' %></p>
-        <%= image_tag "#{ActionMailer::Base.asset_host}/mailer/flipflapp_logo.png", alt: t("devise.mailer.layout.logo_alt"), width: 100, style: "margin-top:15px;" %>
-      </footer>
-    </section>
+    <table class="email-shell" role="presentation" width="100%">
+      <tr>
+        <td class="outer-cell" align="center" style="padding: 32px 16px;">
+          <table class="email-card" role="presentation" width="600">
+            <tr>
+              <td class="brand-header">
+                <%= image_tag attachments["flipflapp_email.jpg"].url,
+                              class: "brand-banner",
+                              alt: t("devise.mailer.layout.banner_alt"),
+                              width: 600 %>
+              </td>
+            </tr>
+            <tr>
+              <td class="content" role="main">
+                <%= yield %>
+              </td>
+            </tr>
+            <tr>
+              <td class="footer" role="contentinfo">
+                <%= image_tag attachments["flipflapp_logo.png"].url,
+                              class: "footer-logo",
+                              alt: t("devise.mailer.layout.logo_alt"),
+                              width: 64,
+                              height: 64 %>
+                <p>
+                  <%= t("devise.mailer.layout.powered_by") %>
+                  <%= link_to "#1344 Solutions", "https://www.1344.fr", target: "_blank", rel: "noopener" %>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>
