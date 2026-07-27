@@ -1,7 +1,7 @@
 <main class="min-h-dvh text-white px-4 py-8">
   <h1 class="text-3xl font-bold text-center my-4"><%= @event.title %></h1>
 
-  <section id="event-info-section" class="rounded-2xl bg-white/5 backdrop-blur-md shadow-xl p-6 mb-8 flex flex-col gap-4">
+  <section id="event-info-section" class="ff-card-lg mb-8 flex flex-col gap-4">
     <%= render 'events/components/show_event_info_card', event: @event %>
   </section>
 
@@ -22,9 +22,7 @@
     <div class="flex justify-center mt-10">
       <%= link_to event_participant_path(EventParticipant.find_by(event: @event, user: current_user)),
         data: { turbo_method: :delete, turbo_confirm: t("event_participants.confirms.leave") },
-        class: "w-12 h-12 flex items-center justify-center
-                rounded-2xl bg-linear-to-r from-red-600 to-red-800 text-white shadow-md
-                active:scale-95 transition" do %>
+        class: "btn-danger size-12 !p-0" do %>
         <!-- Icône Exit -->
         <svg xmlns="http://www.w3.org/2000/svg"
             class="w-6 h-6"

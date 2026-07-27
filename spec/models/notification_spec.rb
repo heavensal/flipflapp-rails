@@ -95,6 +95,92 @@ RSpec.describe Notification, type: :model do
     end
   end
 
+  describe "message" do
+    around do |example|
+      I18n.with_locale(:en) { example.run }
+    end
+
+    it "formats joined, left, and friendship_requested kinds" do
+      joined = build(:notification, kind: :joined, payload: { "player" => "Ada", "title" => "Match" })
+      left = build(:notification, kind: :left, payload: { "player" => "Ada", "title" => "Match" })
+      friendship = build(:notification, kind: :friendship_requested, payload: { "first_name" => "Ada" })
+
+      expect(joined.message).to eq('Ada joined your event "Match".')
+      expect(left.message).to eq('Ada left your event "Match".')
+      expect(friendship.message).to eq("Ada sent you a friend request.")
+    end
+
+    it "formats invited, canceled, and reminder kinds with dates" do
+      start_time = Time.zone.parse("2026-07-28 18:00")
+      invited = build(
+        :notification,
+        kind: :invited,
+        payload: { "sender" => "Ada", "title" => "Match", "start_time" => start_time.iso8601 }
+      )
+      canceled = build(
+        :notification,
+        kind: :canceled,
+        payload: { "title" => "Match", "start_time" => start_time.iso8601, "author" => "Ada" }
+      )
+      reminder = build(
+        :notification,
+        kind: :reminder,
+        payload: {
+          "spots_remaining" => 2,
+          "title" => "Match",
+          "author" => "Ada",
+          "start_time" => start_time.iso8601
+        }
+      )
+
+      expect(invited.message).to include("Ada invited you to the event \"Match\"")
+      expect(canceled.message).to include("organized by Ada was canceled")
+      expect(reminder.message).to include("2 spots left")
+    end
+
+    it "formats updated fields including price and start_time" do
+      title_change = build(
+        :notification,
+        kind: :updated,
+        payload: { "actor" => "Ada", "title" => "Match", "field" => "title", "new_value" => "Final" }
+      )
+      price_change = build(
+        :notification,
+        kind: :updated,
+        payload: { "actor" => "Ada", "title" => "Match", "field" => "price", "new_value" => "12.5" }
+      )
+      unknown_field = build(
+        :notification,
+        kind: :updated,
+        payload: { "actor" => "Ada", "title" => "Match", "field" => "venue", "new_value" => "Park" }
+      )
+
+      expect(title_change.message).to eq('Ada changed the title of "Match" -> "Final".')
+      expect(price_change.message).to eq('Ada changed the price of "Match" -> 12.50 €.')
+      expect(unknown_field.message).to eq('Ada changed Venue on "Match" -> Park.')
+    end
+
+    it "falls back to the default message for unknown kinds" do
+      notification = build(:notification, kind: :joined)
+      allow(notification).to receive(:kind).and_return("unknown")
+
+      expect(notification.message).to eq("You have a new notification.")
+    end
+
+    it "uses the notifiable path for push_path when clickable" do
+      event = create(:event)
+      notification = create(:notification, notifiable: event)
+
+      expect(notification.push_path).to eq("/events/#{event.id}")
+    end
+
+    it "falls back to the notifications list path when not clickable" do
+      notification = create(:notification, notifiable: nil)
+
+      expect(notification.push_path).to eq("/list")
+    end
+  end
+
   describe "Delivery" do
     it "enqueues one notification delivery job" do
       user = create(:user)
@@ -147,6 +233,22 @@ RSpec.describe Notification, type: :model do
       expect(notification.kind).to eq("invited")
       expect(notification.notifiable).to eq(event)
       expect(notification.payload["title"]).to eq(event.title)
+    end
+
+    it "enqueues a web push job after delivering one notification" do
+      user = create(:user)
+      event = create(:event)
+
+      allow_any_instance_of(described_class).to receive(:broadcast_live!)
+
+      Notifications::DeliverOneJob.perform_now(
+        user_id: user.id,
+        kind: "invited",
+        notifiable_gid: event.to_gid.to_s,
+        payload: { "title" => event.title }
+      )
+
+      expect(Notifications::WebPushJob).to have_been_enqueued.with(user.notifications.last.id)
     end
 
     it "inserts many notifications when the job runs", :notification_jobs do

@@ -28,5 +28,8 @@ application.register("event-team--name", EventTeamNameController)
 import InvitationFormController from "./invitation/form_controller"
 application.register("invitation--form", InvitationFormController)
 
+import PushSubscriptionController from "./push_subscription_controller"
+application.register("push-subscription", PushSubscriptionController)
+
 import Dialog from '@stimulus-components/dialog'
 application.register('dialog', Dialog)

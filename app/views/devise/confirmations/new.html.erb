@@ -34,11 +34,11 @@
               invalid: resource.errors[:email].any?
             } %>
 
-      <p id="user_email_format_error" class="hidden text-red-400 text-sm mt-1" data-form--email-validation-target="message">
+      <p id="user_email_format_error" class="hidden text-danger text-sm mt-1" data-form--email-validation-target="message">
         <%= t("activerecord.errors.models.user.attributes.email.invalid") %>
       </p>
       <% if resource.errors[:email].any? %>
-        <p id="user_email_server_error" class="text-red-400 text-sm mt-1" data-form--email-validation-target="serverMessage">
+        <p id="user_email_server_error" class="text-danger text-sm mt-1" data-form--email-validation-target="serverMessage">
           <%= resource.errors[:email].first %>
         </p>
       <% end %>
@@ -46,11 +46,7 @@
 
     <div class="mt-6">
       <%= f.submit t(".resend_submit"),
-            class: [
-              "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2",
-              "font-semibold transition active:scale-95 active:bg-yellow-500",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
-            ].join(" "),
+            class: "btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed",
             disabled: !confirmation_email_valid,
             data: { form__email_validation_target: "submit" } %>
     </div>

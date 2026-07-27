@@ -1,16 +1,43 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/forms";
 
+/*
+  FlipFlapp design system — olive pitch + gold
+  One road: dark green field, white text, gold CTAs, soft glass surfaces.
+*/
 
 @theme inline {
-  --color-bg-green: #3A5F0B;
-  --color-bg-green-2: #4B7510;
-  --color-form-green: #2D4608;
-  --color-title-yellow: #F4D35E;
-  --color-secondary-text: rgba(224, 231, 255, 0.8);
-  --color-primary-yellow: #cca508;
-  --color-team-a: #1E3A8A;
-  --color-team-b: #7F1D1D;
+  /* Surfaces */
+  --color-bg-green: #2f4a0c;
+  --color-bg-green-2: #3d5e12;
+  --color-form-green: #24380a;
+  --color-surface: rgba(255, 255, 255, 0.06);
+  --color-surface-hover: rgba(255, 255, 255, 0.1);
+  --color-border: rgba(255, 255, 255, 0.12);
+
+  /* Text */
+  --color-secondary-text: rgba(232, 240, 210, 0.72);
+  --color-muted: rgba(232, 240, 210, 0.48);
+
+  /* Accent (single gold system) */
+  --color-accent: #e5b512;
+  --color-accent-strong: #c9960a;
+  --color-accent-soft: rgba(229, 181, 18, 0.16);
+  --color-title-yellow: #f0d15a;
+  --color-primary-yellow: #e5b512;
+
+  /* Semantic */
+  --color-danger: #c43c2c;
+  --color-danger-strong: #9e2f22;
+  --color-success: #6bbf3a;
+
+  /* Teams */
+  --color-team-a: #1e3a8a;
+  --color-team-b: #7f1d1d;
+  --color-team-bench: #4b5563;
+
+  /* Radius */
+  --radius-ff: 0.875rem;
 }
 
 .scrollbar-hide {
@@ -24,44 +51,153 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #3A5F0B;
+    --background: #2f4a0c;
     --foreground: #ffffff;
   }
 }
 
 @layer components {
-  .form-text-input {
-    width: 100%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.25);
-    border-width: 1px;
-    border-color: var(--color-form-green);
-    color: rgba(199, 210, 254, 0.8);
-    transition: all 0.2s;
-    outline: none;
-  }
-  .form-text-input:focus {
-    border-color: var(--color-primary-yellow);
-    box-shadow: 0 0 0 2px var(--color-primary-yellow) inset;
+  /* ——— Surfaces ——— */
+  .ff-card {
+    @apply rounded-2xl border border-border bg-surface backdrop-blur-md p-4;
   }
 
-  .btn-primary {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-    padding-top: 0.75rem;
-    padding-bottom: 0.75rem;
-    border-radius: 1rem;
-    background-image: linear-gradient(to right, #F59E0B, #D97706);
-    color: #ffffff;
-    font-weight: bold;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s;
+  .ff-card-lg {
+    @apply rounded-2xl border border-border bg-surface backdrop-blur-md p-6;
   }
-  .btn-primary:active {
-    transform: scale(0.95);
+
+  .ff-section {
+    @apply rounded-2xl border border-border bg-surface backdrop-blur-md;
+  }
+
+  /* ——— Typography ——— */
+  .brand-text {
+    @apply text-lg font-semibold text-title-yellow;
+  }
+
+  .ff-label {
+    @apply text-sm text-muted;
+  }
+
+  .ff-meta {
+    @apply text-xs text-muted;
+  }
+
+  /* ——— Buttons (one CTA language) ——— */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-3
+      font-semibold text-form-green shadow-sm transition
+      hover:bg-accent-strong active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-primary-sm {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2
+      text-sm font-semibold text-form-green shadow-sm transition
+      hover:bg-accent-strong active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-border
+      bg-white/10 px-5 py-3 font-semibold text-white transition
+      hover:bg-surface-hover active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-secondary-sm {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border
+      bg-white/10 px-4 py-2 text-sm font-semibold text-white transition
+      hover:bg-surface-hover active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-danger px-5 py-3
+      font-semibold text-white shadow-sm transition
+      hover:bg-danger-strong active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-danger-sm {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-danger px-4 py-2
+      text-sm font-semibold text-white shadow-sm transition
+      hover:bg-danger-strong active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 px-5 py-3
+      font-semibold text-white transition
+      hover:bg-surface-hover active:scale-95
+      disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-fab {
+    @apply z-80 fixed bottom-8 right-8 inline-flex size-14 items-center justify-center
+      rounded-2xl bg-accent text-form-green shadow-md transition
+      hover:bg-accent-strong active:scale-95;
+  }
+
+  /* ——— Nav ——— */
+  .ff-nav-link {
+    @apply block w-full rounded-xl p-2 text-xl text-white transition
+      hover:bg-accent/20 focus:bg-accent focus:text-form-green focus:outline-none;
+  }
+
+  .ff-tab {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors;
+  }
+
+  .ff-tab-active {
+    @apply bg-accent text-form-green;
+  }
+
+  .ff-tab-idle {
+    @apply bg-surface text-secondary-text hover:bg-surface-hover hover:text-white;
+  }
+
+  /* ——— Badges / chips ——— */
+  .ff-badge {
+    @apply inline-flex items-center gap-1 rounded-full bg-form-green/90 px-2 py-1 text-xs font-medium text-secondary-text;
+  }
+
+  .ff-badge-accent {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-form-green;
+  }
+
+  .ff-chip-selected {
+    @apply rounded-2xl bg-accent text-form-green;
+  }
+
+  /* ——— Avatars ——— */
+  .ff-avatar-ring {
+    @apply rounded-full bg-accent p-0.5;
+  }
+
+  .ff-avatar-fallback {
+    @apply flex items-center justify-center rounded-full bg-linear-to-br from-bg-green to-bg-green-2 object-cover;
+  }
+
+  /* ——— Forms ——— */
+  .form-text-input {
+    @apply w-full rounded-xl border border-form-green bg-black/25 px-4 py-2.5
+      text-white outline-none transition
+      placeholder:text-muted
+      focus:border-accent focus:ring-2 focus:ring-accent/40;
+  }
+
+  .form-label {
+    @apply mb-1 block text-sm font-medium text-secondary-text;
+  }
+
+  /* ——— Lists / rows ——— */
+  .ff-list-row {
+    @apply rounded-2xl border border-border bg-surface p-4 transition-colors hover:bg-surface-hover;
+  }
+
+  .ff-player-chip {
+    @apply flex items-center gap-2 rounded-xl border border-border bg-surface px-3 py-2;
   }
 }
 
@@ -186,13 +322,13 @@ dialog[open]::backdrop {
 
 /* Styles pour l’autocomplétion Google Maps */
 .pac-container {
-  background-color: #2D4608 !important; /* fond sombre translucide */
-  border: 1px solid var(--color-form-green) !important;
-  border-radius: 0.375rem !important; /* arrondi */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5) !important;
+  background-color: var(--color-form-green) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
   font-family: inherit !important;
-  color: white !important; /* même couleur que tes inputs */
-  z-index: 9999 !important; /* au-dessus de tout */
+  color: white !important;
+  z-index: 9999 !important;
 }
 
 .pac-item {
@@ -202,14 +338,14 @@ dialog[open]::backdrop {
 }
 
 .pac-item span {
-  color: rgba(224, 231, 255, 0.8) !important; /* couleur secondaire */
+  color: var(--color-secondary-text) !important;
 }
 
 .pac-item:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--color-surface-hover) !important;
   cursor: pointer;
 }
 
 .pac-item-query {
-  color: #fff !important; /* mot clé mis en avant */
+  color: #fff !important;
 }

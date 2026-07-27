@@ -9,6 +9,9 @@
     <meta name="view-transition" content="same-origin" />
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <% if user_signed_in? && Flipflapp::WebPushConfig.configured? %>
+      <%= tag.meta name: "vapid-public-key", content: Flipflapp::WebPushConfig.public_key %>
+    <% end %>
 
     <%= yield :head %>
 
@@ -19,7 +22,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
     <link rel="apple-touch-icon" href="/favicons/apple-touch-icon.png">
-    <meta name="theme-color" content="#3A5F0B">
+    <meta name="theme-color" content="#2f4a0c">
     <script type="text/javascript">
         (function(c,l,a,r,i,t,y){
             c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};

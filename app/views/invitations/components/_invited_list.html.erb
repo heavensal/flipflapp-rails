@@ -5,7 +5,7 @@
 
   <div class="grid grid-cols-2 gap-1">
     <% if invitations.empty? %>
-      <p class="text-center text-gray-400 col-span-2"><%= t("invitations.empty.list") %></p>
+      <p class="text-center text-muted col-span-2"><%= t("invitations.empty.list") %></p>
     <% else %>
       <% invitations.each do |invitation| %>
         <%= render "invitations/components/one_invited_player_card", invitation: invitation %>

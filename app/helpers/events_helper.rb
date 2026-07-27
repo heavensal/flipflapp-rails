@@ -1,14 +1,14 @@
 module EventsHelper
   FILL_LEVEL_CLASSES = {
-    open: "text-green-500",
-    tight: "text-primary-yellow",
-    full: "text-red-500"
+    open: "text-success",
+    tight: "text-accent",
+    full: "text-danger"
   }.freeze
 
   SHOW_FILL_LEVEL_CLASSES = {
-    open: "text-green-400 font-bold",
-    tight: "text-yellow-400 font-bold",
-    full: "text-red-500 font-bold"
+    open: "text-success font-bold",
+    tight: "text-title-yellow font-bold",
+    full: "text-danger font-bold"
   }.freeze
 
   FILL_ARIA_KEYS = {

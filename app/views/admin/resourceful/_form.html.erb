@@ -28,8 +28,8 @@
   <% end %>
 
   <div class="flex gap-3 pt-4">
-    <%= form.submit class: "px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-400 cursor-pointer" %>
+    <%= form.submit class: "btn-primary-sm cursor-pointer" %>
     <%= link_to t("admin.actions.cancel"), resource.admin_index_path(self),
-                class: "px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10" %>
+                class: "btn-secondary-sm" %>
   </div>
 <% end %>

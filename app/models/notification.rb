@@ -3,6 +3,7 @@
 class Notification < ApplicationRecord
   include Notification::Delivery
   include Notification::Broadcasts
+  include Notification::Message
 
   belongs_to :user
   belongs_to :notifiable, polymorphic: true, optional: true

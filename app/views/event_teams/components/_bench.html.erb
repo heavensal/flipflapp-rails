@@ -1,4 +1,4 @@
-<div class="rounded-2xl bg-slate-700/80 backdrop-blur-md shadow-md p-3 flex flex-col gap-2 col-span-2">
+<div class="rounded-2xl bg-team-bench/80 backdrop-blur-md shadow-md p-3 flex flex-col gap-2 col-span-2">
 
   <h2 class="text-center font-bold text-white">
     <%= bench.label %>
@@ -7,7 +7,7 @@
   <div class="grid grid-cols-2 gap-1">
     <% participants = bench.event_participants %>
     <% if participants.empty? %>
-      <p class="text-center text-gray-400 col-span-2"><%= t("event_participants.empty.bench") %></p>
+      <p class="text-center text-muted col-span-2"><%= t("event_participants.empty.bench") %></p>
     <% end %>
     <% participants.each do |event_participant| %>
 

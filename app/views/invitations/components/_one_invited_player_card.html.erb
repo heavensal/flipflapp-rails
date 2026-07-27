@@ -2,8 +2,8 @@
 <% is_me = invited_user == current_user %>
 
 <%= link_to is_me ? me_path : user_path(invited_user) do %>
-  <div class="flex items-center gap-2 rounded-lg px-4 py-2 shadow bg-linear-to-r from-amber-400/10 to-amber-600/10">
-    <div class="w-8 h-8 rounded-full bg-linear-to-tr from-amber-600 to-amber-400 flex items-center justify-center text-white font-bold shadow <%= is_me ? "border-amber-400 border" : "" %>">
+  <div class="ff-player-chip bg-accent-soft border-accent/30">
+    <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-form-green font-bold <%= is_me ? "ring-2 ring-title-yellow" : "" %>">
       <% if invited_user.avatar? %>
         <%= cl_image_tag invited_user.avatar, class: "h-8 w-8 rounded-full object-cover" %>
       <% else %>
@@ -11,7 +11,7 @@
       <% end %>
     </div>
 
-    <span class="text-white">
+    <span class="text-white text-sm font-medium">
       <%= invited_user.first_name %>
     </span>
   </div>

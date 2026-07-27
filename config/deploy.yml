@@ -41,6 +41,9 @@ env:
     - GOOGLE_MAPS_KEY
     - SMTP_USERNAME
     - SMTP_PASSWORD
+    - VAPID_PUBLIC_KEY
+    - VAPID_PRIVATE_KEY
+    - VAPID_SUBJECT
 
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.

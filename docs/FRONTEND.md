@@ -50,4 +50,6 @@ Add a row when an agent repeats a frontend mistake.
 
 | Date | Don't | Do instead |
 |------|-------|------------|
-| | | |
+| 2026-07-27 | Mix amber gradients, `primary-yellow`, and indigo leftovers | Use design tokens + primitives: `btn-primary`, `btn-secondary`, `ff-card`, `accent`, `muted`, `secondary-text` |
+| 2026-07-27 | Invent new CTA colors per screen | Always `btn-primary` / `btn-secondary` / `btn-danger` / `btn-ghost` |
+

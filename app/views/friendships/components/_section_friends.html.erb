@@ -5,11 +5,11 @@
   <% if friendships.empty? %>
     <div class="text-center py-12 text-secondary-text">
       <p class="text-lg"><%= t("friendships.empty.friends") %></p>
-      <p class="text-sm mt-2"><%= t("friendships.empty.friends_hint") %></p>
-      <%= link_to t("friendships.actions.search"), search_friendships_path, class: "mt-6 inline-block bg-primary-yellow text-white py-2 px-4 rounded-lg font-semibold hover:bg-yellow-500 transition" %>
+      <p class="text-sm mt-2 text-muted"><%= t("friendships.empty.friends_hint") %></p>
+      <%= link_to t("friendships.actions.search"), search_friendships_path, class: "btn-primary-sm mt-6" %>
     </div>
   <% else %>
-    <div class="grid grid-cols-1 gap-4">
+    <div class="grid grid-cols-1 gap-3">
       <% friendships.each do |friendship| %>
         <%= render "friendships/components/one_friend", friendship: friendship, current_user: current_user %>
       <% end %>
