@@ -55,4 +55,28 @@ RSpec.describe Notifications::WebPushJob, type: :job do
 
     expect(PushSubscription.exists?(subscription.id)).to be(false)
   end
+
+  it "continues delivering to remaining subscriptions after a non-gone response error" do
+    allow(Flipflapp::WebPushConfig).to receive_messages(
+      configured?: true,
+      vapid_options: { subject: "mailto:test@example.com", public_key: "pub", private_key: "priv" }
+    )
+
+    notification = create(:notification)
+    first = create(:push_subscription, user: notification.user)
+    second = create(:push_subscription, user: notification.user)
+
+    call_count = 0
+    allow(WebPush).to receive(:payload_send) do |**kwargs|
+      call_count += 1
+      if kwargs[:endpoint] == first.endpoint
+        raise WebPush::ResponseError.new(stub_response(500), "fcm.googleapis.com")
+      end
+    end
+
+    expect { described_class.perform_now(notification.id) }.not_to raise_error
+    expect(call_count).to eq(2)
+    expect(PushSubscription.exists?(first.id)).to be(true)
+    expect(PushSubscription.exists?(second.id)).to be(true)
+  end
 end

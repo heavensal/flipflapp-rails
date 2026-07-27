@@ -29,8 +29,13 @@ class Notifications::WebPushJob < ApplicationJob
   rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
     subscription.destroy
   rescue WebPush::ResponseError => error
-    raise unless [ 404, 410 ].include?(error.response.code.to_i)
-
-    subscription.destroy
+    if [ 404, 410 ].include?(error.response.code.to_i)
+      subscription.destroy
+    else
+      Rails.logger.warn(
+        "[WebPush] delivery failed subscription=#{subscription.id} " \
+        "code=#{error.response.code}: #{error.message}"
+      )
+    end
   end
 end

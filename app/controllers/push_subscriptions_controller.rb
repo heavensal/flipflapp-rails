@@ -4,8 +4,12 @@ class PushSubscriptionsController < ApplicationController
   before_action :authenticate_user!
 
   def create
-    subscription = current_user.push_subscriptions.find_or_initialize_by(endpoint: subscription_params[:endpoint])
-    subscription.assign_attributes(subscription_params.slice(:p256dh, :auth))
+    subscription = PushSubscription.register_for(
+      current_user,
+      endpoint: subscription_params[:endpoint],
+      p256dh: subscription_params[:p256dh],
+      auth: subscription_params[:auth]
+    )
 
     if subscription.save
       head :ok

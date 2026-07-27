@@ -34,4 +34,55 @@ RSpec.describe PushSubscription, type: :model do
       expect { user.destroy! }.to change(described_class, :count).by(-1)
     end
   end
+
+  describe ".register_for" do
+    it "creates a subscription for the user" do
+      user = create(:user)
+
+      expect {
+        described_class.register_for(
+          user,
+          endpoint: "https://fcm.googleapis.com/fcm/send/abc",
+          p256dh: "key",
+          auth: "secret"
+        ).save!
+      }.to change(user.push_subscriptions, :count).by(1)
+    end
+
+    it "updates keys when the endpoint already belongs to the user" do
+      user = create(:user)
+      subscription = create(:push_subscription, user: user, p256dh: "old", auth: "old")
+
+      described_class.register_for(
+        user,
+        endpoint: subscription.endpoint,
+        p256dh: "new-key",
+        auth: "new-auth"
+      ).save!
+
+      expect(subscription.reload.p256dh).to eq("new-key")
+      expect(subscription.auth).to eq("new-auth")
+    end
+
+    it "reassigns an endpoint from another user on a shared browser" do
+      previous_owner = create(:user)
+      current_user = create(:user)
+      subscription = create(:push_subscription, user: previous_owner, p256dh: "old", auth: "old")
+
+      expect {
+        described_class.register_for(
+          current_user,
+          endpoint: subscription.endpoint,
+          p256dh: "new-key",
+          auth: "new-auth"
+        ).save!
+      }.not_to change(described_class, :count)
+
+      subscription.reload
+      expect(subscription.user).to eq(current_user)
+      expect(subscription.p256dh).to eq("new-key")
+      expect(subscription.auth).to eq("new-auth")
+      expect(previous_owner.push_subscriptions).to be_empty
+    end
+  end
 end
