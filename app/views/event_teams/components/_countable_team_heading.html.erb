@@ -25,7 +25,7 @@
       <dialog
         data-dialog-target="dialog"
         data-action="click->dialog#backdropClose"
-        class="bg-linear-to-br from-bg-green to-bg-green-2 w-11/12 max-w-md rounded-2xl px-6 py-4 backdrop:bg-black/50 fixed top-1/2 left-1/2 transform -translate-1/2"
+        class="bg-linear-to-br from-bg-green to-bg-green-2 w-11/12 max-w-md rounded-2xl border border-border px-6 py-4 backdrop:bg-black/50 fixed top-1/2 left-1/2 transform -translate-1/2"
         aria-labelledby="event-team-label-dialog-<%= team.id %>"
       >
         <h3 id="event-team-label-dialog-<%= team.id %>" class="text-xl font-bold mb-4 text-white text-center">
@@ -37,24 +37,24 @@
             <%= form.label :label, t("event_team.labels.name"), class: "sr-only" %>
             <%= form.text_field :label,
               value: team.label,
-              class: "w-full rounded-xl bg-white/10 text-white px-3 py-2 border border-white/20 focus:outline-none focus:ring-2 focus:ring-amber-400",
+              class: "form-text-input",
               data: {
                 event_team__name_target: "input",
                 action: "input->event-team--name#validate"
               },
               autocomplete: "off",
               maxlength: 24 %>
-            <p class="mt-2 text-sm text-white/70" data-event-team--name-target="counter" aria-live="polite"></p>
-            <p class="mt-1 text-sm text-red-300 hidden" data-event-team--name-target="emptyMessage" role="alert"></p>
-            <p class="mt-1 text-sm text-amber-200 hidden" data-event-team--name-target="invalidMessage" role="alert"></p>
+            <p class="mt-2 text-sm text-secondary-text" data-event-team--name-target="counter" aria-live="polite"></p>
+            <p class="mt-1 text-sm text-danger hidden" data-event-team--name-target="emptyMessage" role="alert"></p>
+            <p class="mt-1 text-sm text-title-yellow hidden" data-event-team--name-target="invalidMessage" role="alert"></p>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <button type="button" data-action="dialog#close" class="bg-white/20 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition">
+            <button type="button" data-action="dialog#close" class="btn-secondary-sm w-full">
               <%= t("event_team.actions.cancel") %>
             </button>
             <%= form.submit t("event_team.actions.save"),
-              class: "bg-linear-to-r from-amber-400 to-amber-600 text-white px-4 py-2 rounded-2xl shadow-md active:scale-95 transition disabled:opacity-40 disabled:cursor-not-allowed",
+              class: "btn-primary-sm w-full disabled:opacity-40 disabled:cursor-not-allowed",
               data: { event_team__name_target: "submit" },
               disabled: true %>
           </div>

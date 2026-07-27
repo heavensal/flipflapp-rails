@@ -8,13 +8,13 @@
         <%= t("pages.labels.home_description") %>
       </p>
 
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-3">
         <%= link_to t("pages.actions.sign_up"),
               new_user_registration_path,
-              class: "block w-full py-3 px-4 rounded-2xl bg-linear-to-r from-amber-400 to-amber-600 text-white font-semibold shadow-md active:scale-95 transition" %>
+              class: "btn-primary w-full" %>
         <%= link_to t("pages.actions.sign_in"),
               new_user_session_path,
-              class: "block w-full py-3 px-4 rounded-2xl bg-white/10 border border-white/20 text-white font-semibold active:scale-95 transition" %>
+              class: "btn-secondary w-full" %>
       </div>
     </div>
   </section>

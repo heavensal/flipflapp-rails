@@ -1,6 +1,6 @@
 <header class="sticky top-0 left-0 w-full z-90 min-h-[10dvh]">
   <!-- Navbar principal -->
-  <nav class="bg-bg-green text-white w-full z-90 shadow-md flex items-center justify-between h-[10dvh]" data-controller="navbar">
+  <nav class="bg-bg-green text-white w-full z-90 border-b border-border flex items-center justify-between h-[10dvh]" data-controller="navbar">
     <!-- Grille de navigation -->
     <div class="grid grid-cols-6 items-center w-full p-2">
 
@@ -16,11 +16,11 @@
           <%= image_tag 'flipflapp_logo.png',
                 alt: t("layouts.aria.logo"),
                 class: 'h-12 relative bottom-2' %>
-          <span class="text-lg font-semibold bg-linear-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent animate-slide-gradient">
+          <span class="brand-text">
             <%= t("layouts.labels.brand") %>
           </span>
         <% end %>
-        <p class="text-[0.65rem] leading-none text-white/70">
+        <p class="text-[0.65rem] leading-none text-muted">
           <%= t("layouts.titles.last_deploy", date: "29/05/2026") %>
         </p>
       </div>
@@ -32,7 +32,7 @@
 
     <!-- Menu latéral (off-canvas) -->
     <div id="off-canvas"
-         class="w-3/4 fixed top-0 right-0 h-full bg-bg-green/95 backdrop-blur-md shadow-lg translate-x-full z-50 p-4 transition-transform duration-300"
+         class="w-3/4 fixed top-0 right-0 h-full bg-bg-green/95 backdrop-blur-md border-l border-border translate-x-full z-50 p-4 transition-transform duration-300"
          data-navbar-target="menu">
 
       <!-- Bouton fermeture du menu -->
@@ -40,12 +40,12 @@
 
 
       <% if user_signed_in? %>
-        <div id="user-info" class="flex items-center space-x-4 border-b border-white/20 pb-4 mb-4">
+        <div id="user-info" class="flex items-center space-x-4 border-b border-border pb-4 mb-4">
           <div>
             <% if current_user.avatar? %>
-              <%= cl_image_tag current_user.avatar, class: 'size-20 rounded-full bg-linear-to-r from-bg-green to-bg-green-2 object-cover' %>
+              <%= cl_image_tag current_user.avatar, class: 'size-20 rounded-full ff-avatar-fallback object-cover' %>
             <% else %>
-              <%= image_tag 'placeholder-avatar.png', class: 'size-20 rounded-full bg-linear-to-r from-bg-green to-bg-green-2 p-1' %>
+              <%= image_tag 'placeholder-avatar.png', class: 'size-20 rounded-full ff-avatar-fallback p-1' %>
             <% end %>
           </div>
 
@@ -60,12 +60,12 @@
 
 
         <!-- Liste des liens du menu -->
-        <ul class="flex flex-col py-4 space-y-2" id="menu">
+        <ul class="flex flex-col py-4 space-y-1" id="menu">
 
           <li>
             <%= link_to notifications_list_path,
                         data: { action: "click->navbar#closeMenu" },
-                        class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
+                        class: "ff-nav-link flex items-center gap-2" do %>
               <%= t("notifications.titles.index") %>
               <%= render "notifications/components/unread_badge",
                          count: current_user.notifications.inbox.unread.count %>
@@ -74,18 +74,18 @@
 
 
           <li>
-            <%= link_to t("layouts.navigation.events"), authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("layouts.navigation.events"), authenticated_root_path, data: { action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.my_profile"), me_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.my_profile"), me_path, data: { action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
           <li>
             <%= link_to friendships_path,
                         data: { action: "click->navbar#closeMenu" },
-                        class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl flex items-center gap-2" do %>
+                        class: "ff-nav-link flex items-center gap-2" do %>
               <%= t("layouts.navigation.friends") %>
               <% if current_user.pending_received_friendships.count > 0 %>
-                <span class="ml-2 bg-amber-500 text-white text-xs px-2 py-0.5 rounded-full">
+                <span class="ff-badge-accent ml-1">
                   <%= current_user.pending_received_friendships.count %>
                 </span>
               <% end %>
@@ -97,32 +97,32 @@
             <li>
               <%= link_to t("admin.navigation.link"), admin_root_path,
                           data: { action: "click->navbar#closeMenu" },
-                          class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+                          class: "ff-nav-link" %>
             </li>
           <% end %>
 
         </ul>
 
-        <hr class="my-4 border-white/20">
+        <hr class="my-4 border-border">
 
-        <ul class="flex flex-col py-4 space-y-2" id="menu-disconnect">
+        <ul class="flex flex-col py-4 space-y-1" id="menu-disconnect">
           <li>
-            <%= link_to t("devise.navigation.edit_account"), edit_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.edit_account"), edit_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.sign_out"), destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_out"), destroy_user_session_path, data: { turbo_method: :delete, action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
         </ul>
 
 
       <% else %>
-        <ul class="flex flex-col py-4 space-y-2" id="menu">
+        <ul class="flex flex-col py-4 space-y-1" id="menu">
 
           <li>
-            <%= link_to t("devise.navigation.sign_in"), new_user_session_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_in"), new_user_session_path, data: { action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
           <li>
-            <%= link_to t("devise.navigation.sign_up"), new_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "p-1 rounded focus:bg-linear-to-r focus:from-amber-400 focus:to-amber-600 block w-full text-xl" %>
+            <%= link_to t("devise.navigation.sign_up"), new_user_registration_path, data: { action: "click->navbar#closeMenu" }, class: "ff-nav-link" %>
           </li>
 
         </ul>

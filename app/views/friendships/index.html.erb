@@ -2,7 +2,7 @@
   <div class="max-w-2xl mx-auto">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 my-8">
       <h1 class="text-3xl font-bold text-white text-center sm:text-left"><%= t("friendships.titles.index") %></h1>
-      <%= link_to t("friendships.actions.search"), search_friendships_path, class: "inline-block text-center bg-primary-yellow text-white py-2 px-4 rounded-lg font-semibold hover:bg-yellow-500 transition" %>
+      <%= link_to t("friendships.actions.search"), search_friendships_path, class: "btn-primary-sm text-center" %>
     </div>
 
     <%= render "friendships/components/tabs",

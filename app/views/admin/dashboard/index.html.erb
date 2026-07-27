@@ -6,8 +6,8 @@
     <% @resources.each do |resource| %>
       <% entry = Admin::Resource.new(resource) %>
       <%= link_to entry.admin_index_path(self),
-                  class: "rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition" do %>
-        <h2 class="text-xl font-semibold text-amber-400"><%= admin_model_name(entry) %></h2>
+                  class: "ff-card-lg hover:bg-surface-hover transition" do %>
+        <h2 class="text-xl font-semibold text-title-yellow"><%= admin_model_name(entry) %></h2>
         <p class="text-sm text-white/60 mt-1">
           <%= t("admin.labels.record_count", count: entry.model_class.count) %>
         </p>

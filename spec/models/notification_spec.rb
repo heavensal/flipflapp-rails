@@ -149,6 +149,22 @@ RSpec.describe Notification, type: :model do
       expect(notification.payload["title"]).to eq(event.title)
     end
 
+    it "enqueues a web push job after delivering one notification" do
+      user = create(:user)
+      event = create(:event)
+
+      allow_any_instance_of(described_class).to receive(:broadcast_live!)
+
+      Notifications::DeliverOneJob.perform_now(
+        user_id: user.id,
+        kind: "invited",
+        notifiable_gid: event.to_gid.to_s,
+        payload: { "title" => event.title }
+      )
+
+      expect(Notifications::WebPushJob).to have_been_enqueued.with(user.notifications.last.id)
+    end
+
     it "inserts many notifications when the job runs", :notification_jobs do
       users = create_list(:user, 2)
       event = create(:event)

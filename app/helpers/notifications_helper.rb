@@ -2,61 +2,27 @@
 
 module NotificationsHelper
   KIND_ICON_CLASSES = {
-    "updated" => "bg-orange-100 text-orange-600",
-    "canceled" => "bg-red-100 text-red-600",
-    "joined" => "text-green-600",
-    "left" => "bg-gray-100 text-gray-600",
-    "invited" => "bg-indigo-100 text-indigo-600",
-    "reminder" => "bg-blue-100 text-blue-600"
+    "updated" => "bg-accent-soft text-title-yellow",
+    "canceled" => "bg-danger/20 text-danger",
+    "joined" => "bg-success/20 text-success",
+    "left" => "bg-surface text-muted",
+    "invited" => "bg-accent-soft text-accent",
+    "reminder" => "bg-team-a/30 text-secondary-text",
+    "friendship_requested" => "bg-accent-soft text-title-yellow"
   }.freeze
 
   KIND_ROW_CLASSES = {
-    "updated" => ->(read) { read ? "bg-amber-500/50" : "bg-amber-500" },
-    "canceled" => ->(read) { read ? "bg-red-900/50" : "bg-red-900" },
-    "joined" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" },
-    "left" => ->(read) { read ? "bg-red-900/50" : "bg-red-900" },
-    "invited" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" },
-    "reminder" => ->(read) { read ? "bg-blue-800/30" : "bg-blue-800/70" }
+    "updated" => ->(read) { read ? "bg-accent/20 border-border" : "bg-accent/35 border-accent/40" },
+    "canceled" => ->(read) { read ? "bg-danger/15 border-border" : "bg-danger/30 border-danger/40" },
+    "joined" => ->(read) { read ? "bg-success/10 border-border" : "bg-success/25 border-success/40" },
+    "left" => ->(read) { read ? "bg-surface border-border" : "bg-surface-hover border-border" },
+    "invited" => ->(read) { read ? "bg-accent/15 border-border" : "bg-accent/30 border-accent/40" },
+    "reminder" => ->(read) { read ? "bg-team-a/15 border-border" : "bg-team-a/30 border-team-a/40" },
+    "friendship_requested" => ->(read) { read ? "bg-accent/15 border-border" : "bg-accent/30 border-accent/40" }
   }.freeze
 
   def notification_message(notification)
-    case notification.kind
-    when "joined"
-      t("notifications.messages.joined", player: notification.payload["player"], title: notification.payload["title"])
-    when "left"
-      t("notifications.messages.left", player: notification.payload["player"], title: notification.payload["title"])
-    when "updated"
-      notification_update_message(notification)
-    when "invited"
-      t(
-        "notifications.messages.invited",
-        sender: notification.payload["sender"],
-        title: notification.payload["title"],
-        start_time: human_future_date(notification.payload["start_time"])
-      )
-    when "canceled"
-      t(
-        "notifications.messages.canceled",
-        title: notification.payload["title"],
-        start_time: human_future_date(notification.payload["start_time"]),
-        author: notification.payload["author"]
-      )
-    when "reminder"
-      t(
-        "notifications.messages.reminder",
-        count: notification.payload["spots_remaining"].to_i,
-        title: notification.payload["title"],
-        author: notification.payload["author"],
-        start_time: human_future_date(notification.payload["start_time"])
-      )
-    when "friendship_requested"
-      t(
-        "notifications.messages.friendship_requested",
-        first_name: notification.payload["first_name"]
-      )
-    else
-      t("notifications.messages.default")
-    end
+    notification.message
   end
 
   def notification_icon(kind)
@@ -66,40 +32,16 @@ module NotificationsHelper
       "joined" => "👤",
       "left" => "🚪",
       "invited" => "📨",
-      "reminder" => "⏰"
+      "reminder" => "⏰",
+      "friendship_requested" => "🤝"
     }.fetch(kind, "🔔")
   end
 
   def notification_icon_classes(kind)
-    KIND_ICON_CLASSES.fetch(kind, "bg-gray-100 text-gray-400")
+    KIND_ICON_CLASSES.fetch(kind, "bg-surface text-muted")
   end
 
   def notification_row_classes(notification)
-    KIND_ROW_CLASSES.fetch(notification.kind, ->(_) { "bg-white/10" }).call(notification.read?)
-  end
-
-  def notification_update_message(notification)
-    field = notification.payload["field"]
-    translation_key = "notifications.messages.updated.#{field}"
-    translation_key = "notifications.messages.updated.default" unless I18n.exists?(translation_key)
-
-    t(
-      translation_key,
-      actor: notification.payload["actor"],
-      title: notification.payload["title"],
-      field: field.to_s.humanize,
-      value: notification_updated_value(field, notification.payload["new_value"])
-    )
-  end
-
-  def notification_updated_value(field, value)
-    case field
-    when "start_time"
-      human_future_date(value)
-    when "price"
-      "#{format('%.2f', value.to_f)} €"
-    else
-      value
-    end
+    KIND_ROW_CLASSES.fetch(notification.kind, ->(_) { "bg-surface border-border" }).call(notification.read?)
   end
 end

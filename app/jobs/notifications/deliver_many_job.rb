@@ -31,7 +31,10 @@ class Notifications::DeliverManyJob < ApplicationJob
       returning: %w[id]
     )
 
-    Notification.where(id: result.rows.flatten).find_each(&:broadcast_live!)
+    Notification.where(id: result.rows.flatten).find_each do |notification|
+      notification.broadcast_live!
+      Notifications::WebPushJob.perform_later(notification.id)
+    end
   end
 
   private

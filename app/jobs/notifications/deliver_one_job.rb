@@ -21,6 +21,7 @@ class Notifications::DeliverOneJob < ApplicationJob
       read: false
     )
     notification.broadcast_live!
+    Notifications::WebPushJob.perform_later(notification.id)
   end
 
   private

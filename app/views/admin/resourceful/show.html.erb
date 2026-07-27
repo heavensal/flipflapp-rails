@@ -6,15 +6,15 @@
     <div class="flex flex-wrap gap-2">
       <% if resource.player_path(@record, self) %>
         <%= link_to t("admin.actions.player_view"), resource.player_path(@record, self),
-                    class: "px-4 py-2 rounded-lg border border-white/30 hover:bg-white/10",
+                    class: "btn-secondary-sm",
                     target: "_blank", rel: "noopener" %>
       <% end %>
       <%= link_to t("admin.actions.edit"), polymorphic_path([ :admin, @record ], action: :edit),
-                  class: "px-4 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-400" %>
+                  class: "btn-primary-sm" %>
       <%= button_to t("admin.actions.destroy"), polymorphic_path([ :admin, @record ]),
                     method: :delete,
                     form: { data: { turbo_confirm: t("admin.confirms.destroy") } },
-                    class: "px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-semibold" %>
+                    class: "btn-danger-sm" %>
     </div>
   </div>
 
@@ -24,7 +24,7 @@
     <div class="mt-6">
       <%= button_to t("admin.actions.send_password_reset"),
                     send_password_reset_admin_user_path(@record),
-                    class: "px-4 py-2 rounded-lg border border-amber-400 text-amber-400 hover:bg-amber-400/10" %>
+                    class: "btn-secondary-sm" %>
     </div>
   <% end %>
 
@@ -32,7 +32,7 @@
     <% notifiable_resource = Admin::Resource.for_model(@record.notifiable) %>
     <% if notifiable_resource %>
       <section class="mt-10">
-        <h2 class="text-xl font-semibold mb-4 text-amber-400"><%= t("admin.labels.notifiable") %></h2>
+        <h2 class="text-xl font-semibold mb-4 text-title-yellow"><%= t("admin.labels.notifiable") %></h2>
         <%= render "admin/shared/association_table",
                    name: :notifiable,
                    records: [ @record.notifiable ],
@@ -46,7 +46,7 @@
     <% next if associated_records.empty? %>
 
     <section class="mt-10">
-      <h2 class="text-xl font-semibold mb-4 text-amber-400">
+      <h2 class="text-xl font-semibold mb-4 text-title-yellow">
         <%= t("admin.associations.#{association_name}", default: association_name.to_s.humanize) %>
       </h2>
       <%= render "admin/shared/association_table",

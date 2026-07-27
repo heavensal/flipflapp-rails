@@ -4,6 +4,8 @@ fr:
       info: "Informations"
     actions:
       edit_profile: "Modifier mon profil"
+      enable_push: "Activer les notifications"
+      push_enabled: "Notifications activées"
       add_friend: "Ajouter en ami"
       accept_request: "Accepter la demande"
       decline_request: "Refuser la demande"
@@ -22,6 +24,11 @@ fr:
       role_admin: "Admin"
       member_since: "Membre depuis"
       declined_by_you: "Vous avez refusé sa demande d'amis"
+      push_prompt: "Active les notifications pour être alerté même quand l'app est fermée."
+      push_enabled: "Les notifications push sont activées sur cet appareil."
+      push_denied: "Les notifications sont bloquées dans les réglages du navigateur."
+      push_unsupported: "Les notifications push ne sont pas supportées sur cet appareil."
+      push_error: "Impossible d'activer les notifications. Réessaie plus tard."
   activerecord:
     errors:
       models:

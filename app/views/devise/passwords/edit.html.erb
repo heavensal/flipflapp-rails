@@ -7,7 +7,7 @@
   <div>
     <%= f.label :password, t("devise.attributes.new_password"), class: "block text-secondary-text mb-2" %>
     <% if @minimum_password_length %>
-      <span class="text-sm text-indigo-100/60">(<%= t("devise.hints.minimum_password_length", count: @minimum_password_length) %>)</span>
+      <span class="text-sm text-muted">(<%= t("devise.hints.minimum_password_length", count: @minimum_password_length) %>)</span>
     <% end %>
     <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "form-text-input" %>
   </div>
@@ -18,7 +18,7 @@
   </div>
 
   <div class="mt-6">
-    <%= f.submit t(".submit"), class: "w-full gap-2 flex justify-center items-center bg-primary-yellow text-white py-2 font-semibold transition active:scale-95 active:bg-yellow-500 disabled:opacity-50 disabled:cursor-wait" %>
+    <%= f.submit t(".submit"), class: "btn-primary w-full disabled:opacity-50 disabled:cursor-wait" %>
   </div>
 <% end %>
 

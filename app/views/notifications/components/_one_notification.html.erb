@@ -1,5 +1,5 @@
 <%# locals: notification %>
-<div class="grid grid-cols-12 gap-2 items-center p-2 mb-2 rounded-lg <%= notification_row_classes(notification) %>">
+<div class="grid grid-cols-12 gap-2 items-center p-3 mb-2 rounded-2xl border <%= notification_row_classes(notification) %>">
   <div class="col-span-1 flex items-center justify-center">
     <div class="w-8 h-8 flex items-center justify-center rounded-full <%= notification_icon_classes(notification.kind) %>">
       <%= notification_icon(notification.kind) %>
@@ -12,13 +12,13 @@
                   class: "block",
                   data: { turbo_method: :patch, turbo_frame: "_top" } do %>
         <p class="text-sm font-medium text-secondary-text"><%= notification_message(notification) %></p>
-        <p class="text-xs text-indigo-100/60">
+        <p class="ff-meta">
           <%= t("notifications.labels.time_ago", time: time_ago_in_words(notification.created_at)) %>
         </p>
       <% end %>
     <% else %>
       <p class="text-sm font-medium text-secondary-text"><%= notification_message(notification) %></p>
-      <p class="text-xs text-indigo-100/60">
+      <p class="ff-meta">
         <%= t("notifications.labels.time_ago", time: time_ago_in_words(notification.created_at)) %>
       </p>
     <% end %>
@@ -28,7 +28,7 @@
     <% unless notification.read? %>
       <%= button_to read_notification_path(notification),
                     method: :patch,
-                    class: "p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white",
+                    class: "p-1.5 rounded-xl bg-surface hover:bg-surface-hover text-white border border-border",
                     title: t("notifications.actions.mark_read"),
                     aria: { label: t("notifications.actions.mark_read") } do %>
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -39,7 +39,7 @@
 
     <%= button_to notification_path(notification),
                   method: :delete,
-                  class: "p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white",
+                  class: "p-1.5 rounded-xl bg-surface hover:bg-surface-hover text-white border border-border",
                   title: t("notifications.actions.delete"),
                   aria: { label: t("notifications.actions.delete") },
                   data: { turbo_confirm: t("notifications.confirms.delete") } do %>
