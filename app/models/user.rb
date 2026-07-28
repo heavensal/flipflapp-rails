@@ -29,6 +29,7 @@ class User < ApplicationRecord
   has_many :invitations, dependent: :destroy
   has_many :notifications, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+  has_many :device_tokens, dependent: :destroy
 
   ########################## RECHERCHE AVEC RANSACK ##########################
   def self.ransackable_attributes(auth_object = nil)

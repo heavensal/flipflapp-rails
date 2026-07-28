@@ -34,6 +34,7 @@ class Notifications::DeliverManyJob < ApplicationJob
     Notification.where(id: result.rows.flatten).find_each do |notification|
       notification.broadcast_live!
       Notifications::WebPushJob.perform_later(notification.id)
+      Notifications::MobilePushJob.perform_later(notification.id)
     end
   end
 

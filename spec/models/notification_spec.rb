@@ -249,6 +249,7 @@ RSpec.describe Notification, type: :model do
       )
 
       expect(Notifications::WebPushJob).to have_been_enqueued.with(user.notifications.last.id)
+      expect(Notifications::MobilePushJob).to have_been_enqueued.with(user.notifications.last.id)
     end
 
     it "inserts many notifications when the job runs", :notification_jobs do

@@ -18,7 +18,9 @@ Use **Active Record model names** in this doc and in specs — no parallel vocab
 | `EventParticipant` | `User` joined to an `Event` on an `EventTeam` |
 | `Friendship` | Link between two `User` records; enables private `Event` visibility and `Event` invitations |
 | `Invitation` | Pending invite of a `User` to an `Event`; grants private access until the invitee joins |
-| `Notification` | In-app record for a `User`; web inbox now, same payloads for iOS/Android push later |
+| `Notification` | In-app record for a `User`; web inbox + PWA Web Push + Android FCM (same payloads) |
+| `DeviceToken` | FCM registration for a mobile device (`platform`: `android` / `ios`); used by `Notifications::MobilePushJob` |
+| `PushSubscription` | Web Push (VAPID) subscription for the PWA |
 
 ---
 
@@ -356,12 +358,12 @@ Source of truth for a pending invite to an `Event`. No accept / decline / status
 
 ### Purpose
 
-`Notification` records are the **single source of truth** for user alerts. The web app implements the full inbox first so iOS and Android can mirror the same `kind`, `notifiable`, and `payload` as **push notifications** later.
+`Notification` records are the **single source of truth** for user alerts. The web app implements the full inbox; mobile clients mirror the same `kind`, `notifiable`, and `payload` via JSON API and **native push** (FCM).
 
 Web today: inbox (`NotificationsController`), mark read / mark all read / destroy, navigate via `target_url`, and a **live toast** (flash-like) for connected users via Turbo Streams + Solid Cable.  
-Mobile later: same records exposed via JSON API → APNs / FCM (Solid Queue).
+Mobile: same records via `/api/v1/notifications` + FCM delivery through `DeviceToken` + `Notifications::MobilePushJob` (Solid Queue). iOS can reuse the same `device_tokens` table (`platform: ios`) later.
 
-Producers live in per-model modules: `Event::Notifications`, `EventParticipant::Notifications`, `Friendship::Notifications`. Fan-out goes through `Notification::Delivery`, which **enqueues** Active Job work (`Notifications::DeliverOneJob` / `Notifications::DeliverManyJob`) on Solid Queue. Jobs persist the row(s) then broadcast the toast + unread badge refresh to the recipient’s stream.
+Producers live in per-model modules: `Event::Notifications`, `EventParticipant::Notifications`, `Friendship::Notifications`. Fan-out goes through `Notification::Delivery`, which **enqueues** Active Job work (`Notifications::DeliverOneJob` / `Notifications::DeliverManyJob`) on Solid Queue. Jobs persist the row(s) then broadcast the toast + unread badge refresh to the recipient’s stream, enqueue **Web Push** (`Notifications::WebPushJob`) and **mobile push** (`Notifications::MobilePushJob`).
 
 `Invitation` rows stay synchronous inside `Event#invite!` (private access). Only the companion `Notification` is jobified. Friendship notification cleanup (destroy on accept/decline/unfriend) stays synchronous. `DeliverOneJob` skips `friendship_requested` if the `Friendship` is no longer `pending` (accept/decline raced the job).
 
@@ -544,7 +546,7 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `Event` create/update strong params include `latitude` / `longitude` | **Implemented** |
 | `Event` `latitude` / `longitude` presence (model + I18n) | **Not implemented** — HTML `required` on form only; columns still nullable in schema |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Implemented** — hidden from inbox; friends badge UX |
-| Push delivery (APNs / FCM) | **Not implemented** — web inbox + live toast first; Solid Queue later for push |
+| Push delivery (APNs / FCM) | **Implemented for Android (FCM)** — `DeviceToken` + `Notifications::MobilePushJob`; APNs/iOS still pending |
 | Solid Queue + Solid Cable | **Implemented** — notification jobs, Devise mail via Active Job, live toasts |
 | `reminder` `Notification` kind | **Implemented** — Solid Queue delayed job; `events.bench_reminder_job_id` for discard |
 | `left` recipients include bench | **Implemented** — countable leave / countable→bench |

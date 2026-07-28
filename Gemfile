@@ -87,3 +87,4 @@ gem "rswag", "~> 2.17"
 gem "rswag-specs", "~> 2.17", groups: [ :development, :test ]
 
 gem "web-push"
+gem "googleauth"
