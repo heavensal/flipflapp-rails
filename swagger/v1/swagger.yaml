@@ -1199,6 +1199,75 @@ paths:
           description: authentication required
         '404':
           description: inbox notification not found for current user
+  "/api/v1/device_token":
+    post:
+      summary: Register a mobile push device token
+      operationId: registerDeviceToken
+      tags:
+      - DeviceTokens
+      description: Registers an FCM (Android) or APNs-via-FCM (iOS) token for the
+        current user. Reassigns the token if it already belonged to another account.
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '200':
+          description: device token registered
+        '401':
+          description: authentication required
+        '422':
+          description: validation failed
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - device_token
+              properties:
+                device_token:
+                  type: object
+                  required:
+                  - token
+                  properties:
+                    token:
+                      type: string
+                    platform:
+                      type: string
+                      enum:
+                      - android
+                      - ios
+                      default: android
+        required: true
+    delete:
+      summary: Unregister a mobile push device token
+      operationId: unregisterDeviceToken
+      tags:
+      - DeviceTokens
+      security:
+      - bearer_auth: []
+      parameters: []
+      responses:
+        '204':
+          description: device token removed (or already absent)
+        '401':
+          description: authentication required
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - device_token
+              properties:
+                device_token:
+                  type: object
+                  required:
+                  - token
+                  properties:
+                    token:
+                      type: string
+        required: true
 components:
   securitySchemes:
     bearer_auth:

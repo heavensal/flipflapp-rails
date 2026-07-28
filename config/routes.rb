@@ -87,6 +87,8 @@ Rails.application.routes.draw do
         patch :read, on: :member
         patch :read_all, on: :collection
       end
+
+      resource :device_token, only: %i[create destroy]
     end
   end
 end

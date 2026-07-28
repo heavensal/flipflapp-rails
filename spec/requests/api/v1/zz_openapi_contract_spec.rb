@@ -603,4 +603,59 @@ RSpec.describe "Api::V1 complete OpenAPI contract", type: :request do
       end
     end
   end
+
+  path "/api/v1/device_token" do
+    post "Register a mobile push device token" do
+      operationId "registerDeviceToken"
+      tags "DeviceTokens"
+      description "Registers an FCM (Android) or APNs-via-FCM (iOS) token for the current user. Reassigns the token if it already belonged to another account."
+      security [ bearer_auth: [] ]
+      consumes "application/json"
+      parameter name: :device_token_payload, in: :body, required: true, schema: {
+        type: :object,
+        required: [ :device_token ],
+        properties: {
+          device_token: {
+            type: :object,
+            required: [ :token ],
+            properties: {
+              token: { type: :string },
+              platform: { type: :string, enum: %w[android ios], default: "android" }
+            }
+          }
+        }
+      }
+      documented_response "200", "device token registered"
+      documented_response "401", "authentication required" do
+        schema authentication_error_schema
+      end
+      documented_response "422", "validation failed" do
+        schema error_schema
+      end
+    end
+
+    delete "Unregister a mobile push device token" do
+      operationId "unregisterDeviceToken"
+      tags "DeviceTokens"
+      security [ bearer_auth: [] ]
+      consumes "application/json"
+      parameter name: :device_token_payload, in: :body, required: true, schema: {
+        type: :object,
+        required: [ :device_token ],
+        properties: {
+          device_token: {
+            type: :object,
+            required: [ :token ],
+            properties: {
+              token: { type: :string }
+            }
+          }
+        }
+      }
+      documented_response "204", "device token removed (or already absent)"
+      documented_response "401", "authentication required" do
+        schema authentication_error_schema
+      end
+    end
+  end
 end

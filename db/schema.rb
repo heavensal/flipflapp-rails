@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_27_234408) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_28_152058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "device_tokens", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "token", null: false
+    t.string "platform", default: "android", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_device_tokens_on_token", unique: true
+    t.index ["user_id", "platform"], name: "index_device_tokens_on_user_id_and_platform"
+    t.index ["user_id"], name: "index_device_tokens_on_user_id"
+  end
 
   create_table "event_participants", force: :cascade do |t|
     t.bigint "user_id", null: false
@@ -269,6 +280,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_27_234408) do
     t.index ["username"], name: "index_users_on_username", unique: true
   end
 
+  add_foreign_key "device_tokens", "users"
   add_foreign_key "event_participants", "event_teams"
   add_foreign_key "event_participants", "events"
   add_foreign_key "event_participants", "users"

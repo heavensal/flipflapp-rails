@@ -10,7 +10,8 @@ self.addEventListener("push", (event) => {
   const options = {
     body: data.body || "",
     icon: "/favicons/android-chrome-192x192.png",
-    badge: "/favicons/favicon-32x32.png",
+    // White alpha silhouette for Android status-bar badge (PWA)
+    badge: "/favicons/notification-badge-96x96.png",
     data: { path: data.path || "/list" }
   }
 

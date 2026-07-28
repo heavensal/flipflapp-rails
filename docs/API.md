@@ -112,6 +112,16 @@ Create: `{ "user_id": 2 }`. Update: `{ "status": "accepted" }` or `"declined"`.
 
 Inbox excludes `friendship_requested` (same as web).
 
+### Device tokens (mobile push)
+
+| Method | Path |
+|--------|------|
+| `POST` | `/api/v1/device_token` |
+| `DELETE` | `/api/v1/device_token` |
+
+Body: `{ "device_token": { "token": "<fcm-token>", "platform": "android" } }` (`platform` optional on create, defaults to `android`; allowed: `android`, `ios`).  
+Register after sign-in / FCM token refresh; unregister on sign-out. Re-registering the same token reassigns it to the current user.
+
 ## OpenAPI / testing
 
 - Specs: `spec/requests/api/v1/`
