@@ -20,7 +20,9 @@ module Event::BenchReminder
   end
 
   def notify_bench_reminder!
-    discard_bench_reminder_job!
+    # Clear the stored id only — do not discard the Solid Queue job that is
+    # currently executing this method (that raises UndiscardableError).
+    clear_bench_reminder_job_id!
     return if spots_remaining <= 0
 
     ids = bench_user_ids
@@ -66,13 +68,18 @@ module Event::BenchReminder
   def discard_active_job(job_id)
     if defined?(SolidQueue::Job)
       solid_job = SolidQueue::Job.find_by(active_job_id: job_id)
-      return solid_job.discard if solid_job
+      if solid_job
+        solid_job.discard
+        return
+      end
     end
 
     adapter = ActiveJob::Base.queue_adapter
     return unless adapter.respond_to?(:enqueued_jobs)
 
     adapter.enqueued_jobs.reject! { |job| job["job_id"] == job_id }
+  rescue SolidQueue::Execution::UndiscardableError
+    # Job is already claimed/running — clearing bench_reminder_job_id is enough.
   end
 
   def reminder_already_sent_for_current_start_time?

@@ -9,15 +9,15 @@ module Flipflapp
     end
 
     def public_key
-      ENV["VAPID_PUBLIC_KEY"].to_s.strip.presence
+      env_value("VAPID_PUBLIC_KEY")
     end
 
     def private_key
-      ENV["VAPID_PRIVATE_KEY"].to_s.strip.presence
+      env_value("VAPID_PRIVATE_KEY")
     end
 
     def subject
-      ENV.fetch("VAPID_SUBJECT", "mailto:hello@flipflapp.fr")
+      env_value("VAPID_SUBJECT") || "mailto:hello@flipflapp.fr"
     end
 
     def vapid_options
@@ -27,5 +27,16 @@ module Flipflapp
         private_key: private_key
       }
     end
+
+    # Strip optional surrounding quotes from .env / secret managers.
+    def env_value(name)
+      value = ENV[name].to_s.strip
+      if (value.start_with?('"') && value.end_with?('"')) ||
+          (value.start_with?("'") && value.end_with?("'"))
+        value = value[1..-2].to_s.strip
+      end
+      value.presence
+    end
+    private_class_method :env_value
   end
 end

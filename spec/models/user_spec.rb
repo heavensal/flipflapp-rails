@@ -71,6 +71,24 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "Devise mail delivery" do
+    it "enqueues reset password instructions via Active Job" do
+      user = create(:user)
+
+      expect {
+        user.send_reset_password_instructions
+      }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
+        .with("Devise::Mailer", "reset_password_instructions", "deliver_now", any_args)
+    end
+
+    it "enqueues confirmation instructions via Active Job for unconfirmed users" do
+      expect {
+        create(:user, :unconfirmed)
+      }.to have_enqueued_job(ActionMailer::MailDeliveryJob)
+        .with("Devise::Mailer", "confirmation_instructions", "deliver_now", any_args)
+    end
+  end
+
   describe ".find_for_confirmation_email" do
     it "finds a user by email without case or surrounding whitespace sensitivity" do
       user = create(:user, email: "player@example.com")
