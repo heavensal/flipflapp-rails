@@ -40,9 +40,9 @@ Alternative one-shot setup (installs deps, prepares DB, starts `bin/dev`):
 bin/setup
 ```
 
-App URL: **http://localhost:3000** (override with `PORT=3001 bin/dev`).
+App URL: **<http://localhost:3000>** (override with `PORT=3001 bin/dev`).
 
-API docs (Swagger UI): **http://localhost:3000/api-docs** — see [API.md](API.md).
+API docs (Swagger UI): **<http://localhost:3000/api-docs>** — see [API.md](API.md).
 
 ---
 
@@ -50,10 +50,10 @@ API docs (Swagger UI): **http://localhost:3000/api-docs** — see [API.md](API.m
 
 Copy `.env.example` → `.env`. Wired in `config/database.yml`.
 
-| Variable | Used for |
-|----------|----------|
+| Variable              | Used for                                                       |
+| --------------------- | -------------------------------------------------------------- |
 | `DEVELOPMENT_NEON_DB` | `RAILS_ENV=development` — `bin/dev`, `bin/rails db:*`, console |
-| `TEST_NEON_DB` | `RAILS_ENV=test` — `rspec` |
+| `TEST_NEON_DB`        | `RAILS_ENV=test` — `rspec`                                     |
 
 Use **separate** Neon databases (or branches) for development and test. Never point local env at production.
 
@@ -64,7 +64,7 @@ Production URL (`PRODUCTION_NEON_DB`) is for deploy only — see [DEPLOYMENT.md]
 ### Local `.env` (typical)
 
 | Variable | Needed for local dev |
-|----------|----------------------|
+| ---------- | ---------------------- |
 | `DEVELOPMENT_NEON_DB` | Yes |
 | `TEST_NEON_DB` | Yes (specs) |
 | `RAILS_MASTER_KEY` | Yes (encrypted credentials) |
@@ -82,7 +82,7 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 ### Run the app
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `bin/dev` | Start Rails + JS + CSS watchers + Solid Queue worker (`Procfile.dev`) |
 | `bin/jobs` | Solid Queue worker alone (also started by `bin/dev`) |
 | `bin/setup` | Install deps, `db:prepare`, optional start `bin/dev` |
@@ -93,12 +93,12 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 - **Action Cable** adapter: Solid Cable (development/production). Test uses `:test`.
 - Solid Queue / Solid Cable tables live on the **primary** database (same Neon URL). Do **not** use a separate multi-db `queue`/`cable` role on that URL — `db:schema:load:queue` shares `schema_migrations` and wipes primary versions.
 - `bin/dev` runs `jobs: bin/jobs` so notification delivery and Devise `deliver_later` mail run out of the web process.
-- Mailers: always `deliver_later` (never `deliver_now` except console/debug). Devise confirmable/reset use Active Job automatically.
+- Mailers: always `deliver_later` (never `deliver_now` except console/debug). `User#send_devise_notification` queues Devise mail via Active Job after commit.
 
 ### Database
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `bin/rails db:prepare` | Create/migrate DB for current `RAILS_ENV` |
 | `bin/rails db:migrate` | Run pending migrations (development) |
 | `RAILS_ENV=test bin/rails db:migrate` | Apply pending migrations on Neon test DB (local) |
@@ -108,7 +108,7 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 ### Tests & quality (CI runs these on `master`)
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `rspec` | Full model + request spec suite (`TEST_NEON_DB` required) |
 | `rspec spec/models/event_spec.rb` | Single file |
 | `rspec spec/models/event_spec.rb:42` | Single example |
@@ -120,7 +120,7 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 ### Rails helpers
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `bin/rails console` | Rails console (development) |
 | `bin/rails routes` | HTTP surface |
 | `bin/rails db:schema:load` | Load `db/schema.rb` into empty DB |
@@ -132,7 +132,7 @@ Before creating conventional Rails boilerplate manually, inspect available gener
 Examples—not permission to run them:
 
 | Need | Command to propose |
-|------|--------------------|
+| ------ | -------------------- |
 | Controller without unwanted assets/specs | `bin/rails generate controller NAME ACTIONS --skip-routes --no-helper --no-assets` |
 | Background job | `bin/rails generate job NAMESPACE/NAME` |
 | RSpec model/request file | Prefer a focused hand-written spec matching existing files; do not generate a model merely to obtain a spec |
@@ -142,15 +142,15 @@ Review generated output immediately. Keep only files needed by the approved task
 
 ### Dependencies
 
-| Command | Purpose |
-|---------|---------|
-| `bundle install` | Ruby gems |
-| `npm install` | JavaScript packages (**npm only** — not yarn) |
+| Command          | Purpose                                           |
+| ---------------- | ------------------------------------------------- |
+| `bundle install` | Ruby gems                                         |
+| `npm install`    | JavaScript packages (**npm only** — not yarn)     |
 
 ### Deploy (manual — not day one)
 
-| Command | Purpose |
-|---------|---------|
+| Command            | Purpose                                       |
+| ------------------ | --------------------------------------------- |
 | `bin/kamal deploy` | Production deploy (requires `.kamal/secrets`) |
 
 ---
@@ -158,7 +158,7 @@ Review generated output immediately. Keep only files needed by the approved task
 ## Read next
 
 | Need | Doc |
-|------|-----|
+| ------ | ----- |
 | What to build | [DOMAIN.md](DOMAIN.md) |
 | JSON API | [API.md](API.md) |
 | How to test (TDD) | [TESTING.md](TESTING.md) |

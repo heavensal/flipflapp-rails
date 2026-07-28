@@ -138,7 +138,21 @@ RSpec.describe Event, "bench reminder", type: :model do
     end
   end
 
-  describe Events::BenchReminderJob do
+  describe Events::BenchReminderJob, :notification_jobs do
+    it "delivers reminders and clears the stored job id" do
+      event = create(:event, number_of_participants: 4, start_time: 2.days.from_now)
+      bench_player = create(:user)
+      create(:event_participant, user: bench_player, event: event, event_team: team_slot(event, "bench"))
+      expected_start = event.start_time.iso8601
+      expect(event.reload.bench_reminder_job_id).to be_present
+
+      expect {
+        described_class.perform_now(event_id: event.id, expected_start_time: expected_start)
+      }.to change { bench_player.notifications.reminder.count }.by(1)
+
+      expect(event.reload.bench_reminder_job_id).to be_nil
+    end
+
     it "no-ops when expected_start_time is stale" do
       event = create(:event, start_time: 3.days.from_now)
       create(:event_participant, user: create(:user), event: event, event_team: team_slot(event, "bench"))

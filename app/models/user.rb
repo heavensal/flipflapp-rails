@@ -182,6 +182,13 @@ class User < ApplicationRecord
     self.uid = email if provider == "email" && email.present?
   end
 
+  protected
+
+  # Devise defaults to deliver_now. Queue via Active Job / Solid Queue instead.
+  def send_devise_notification(notification, *args)
+    devise_mailer.send(notification, self, *args).deliver_later
+  end
+
   private
 
   def username_base

@@ -1,6 +1,6 @@
 # Deployment
 
-FlipFlapp production runs at **https://flipflapp.fr**. Deploys are automated from **`master`** via GitHub Actions and [Kamal](https://kamal-deploy.org/).
+FlipFlapp production runs at **[flipflapp.fr](https://flipflapp.fr)**. Deploys are automated from **`master`** via GitHub Actions and [Kamal](https://kamal-deploy.org/).
 
 Local setup: [DEVELOPMENT.md](DEVELOPMENT.md). Agent policy: do not run deploy commands unless explicitly asked.
 
@@ -11,7 +11,7 @@ Local setup: [DEVELOPMENT.md](DEVELOPMENT.md). Agent policy: do not run deploy c
 Rails uses three environments. Each has its own database URL and secret storage.
 
 | Rails env | Purpose | Database URL variable | Where secrets live |
-|-----------|---------|----------------------|-------------------|
+| ----------- | --------- | ---------------------- | ------------------- |
 | `development` | Local app (`bin/dev`, console) | `DEVELOPMENT_NEON_DB` | `.env` (gitignored) |
 | `test` | RSpec (`rspec`) | `TEST_NEON_DB` | `.env` locally; ephemeral Postgres in CI |
 | `production` | Live app at `flipflapp.fr` | `PRODUCTION_NEON_DB` | `.kamal/secrets` (local deploy) or GitHub **environment `production`** (CI deploy) |
@@ -27,7 +27,7 @@ Wiring: `config/database.yml` — plain `ENV["…"]` keys matching `.env.example
 All environments use **Neon** serverless Postgres in production and local dev. Use **separate** Neon databases (or branches) per environment — never point development or test at production data.
 
 | Variable | Environment | Notes |
-|----------|-------------|-------|
+| ---------- | ------------- | ------- |
 | `DEVELOPMENT_NEON_DB` | `development` | Required in `.env` for local work |
 | `TEST_NEON_DB` | `test` | Required in `.env` for local specs |
 | `PRODUCTION_NEON_DB` | `production` | Injected into the Kamal container; not needed in local `.env` unless you deploy from your machine |
@@ -53,14 +53,14 @@ Workflow: [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
 ### Triggers
 
 | Event | Jobs that run |
-|-------|----------------|
+| ------- | ---------------- |
 | Pull request | `scan_ruby`, `lint`, `test` |
 | Push to `master` | Same three jobs, then **`deploy`** if all pass |
 
 ### Jobs
 
 | Job | Command | Purpose |
-|-----|---------|---------|
+| ----- | --------- | --------- |
 | `scan_ruby` | `bin/brakeman --no-pager` | Security scan |
 | `lint` | `bin/rubocop -f github` | Style (RuboCop Rails Omakase) |
 | `test` | `bin/rails db:test:prepare` + `bundle exec rspec` | Model specs against CI Postgres |
@@ -93,13 +93,13 @@ Live notification toasts use Turbo Streams over Solid Cable to the signed-in use
 Configuration: [`config/deploy.yml`](../config/deploy.yml)
 
 | Setting | Value |
-|---------|--------|
+| --------- | -------- |
 | Service | `flipflapp_rails` |
 | Image | `adam1344/flipflapp_rails` (Docker Hub) |
 | Host | `flipflapp.fr` (SSL via Kamal proxy / Let's Encrypt) |
 | Server | `51.75.124.208` (SSH user `ubuntu`) |
 | Registry auth | `KAMAL_REGISTRY_PASSWORD` |
-| Jobs | Solid Queue in Puma (`SOLID_QUEUE_IN_PUMA`) |)
+| Jobs | Solid Queue in Puma (`SOLID_QUEUE_IN_PUMA`) | )
 
 ### Secrets injected into the container
 
@@ -110,13 +110,14 @@ Listed under `env.secret` in `deploy.yml` (values from `.kamal/secrets`):
 - `CLOUDINARY_*`
 - `GOOGLE_MAPS_KEY` (Places autocomplete)
 - `SMTP_*`
+- `VAPID_*` (Web Push / PWA)
 
 Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage).
 
 ### Kamal files
 
 | File | Role |
-|------|------|
+| ------ | ------ |
 | `config/deploy.yml` | Service, servers, proxy, env, volumes |
 | `.kamal/secrets` | Local deploy secrets (gitignored) — copy from [`.kamal/secrets.example`](../.kamal/secrets.example) |
 | `.kamal/secrets.cd` | CI template; GitHub Actions copies it and substitutes env vars |
@@ -139,7 +140,7 @@ bin/kamal deploy
 Useful aliases (from `deploy.yml`):
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `bin/kamal console` | Production Rails console |
 | `bin/kamal shell` | Bash in the running container |
 | `bin/kamal logs` | Tail application logs |
@@ -152,7 +153,7 @@ Useful aliases (from `deploy.yml`):
 Set with `gh secret set … --env production` or the repository **Settings → Environments → production**.
 
 | Secret | Used for |
-|--------|----------|
+| -------- | ---------- |
 | `SSH_PRIVATE_KEY` | SSH to deploy server (`ubuntu@51.75.124.208`) |
 | `KAMAL_REGISTRY_PASSWORD` | Docker Hub push/pull |
 | `RAILS_MASTER_KEY` | Rails encrypted credentials |
@@ -163,6 +164,9 @@ Set with `gh secret set … --env production` or the repository **Settings → E
 | `GOOGLE_MAPS_KEY` | Maps / Places autocomplete |
 | `SMTP_USERNAME` | Devise confirmable email |
 | `SMTP_PASSWORD` | |
+| `VAPID_PUBLIC_KEY` | Web Push (PWA) — public key |
+| `VAPID_PRIVATE_KEY` | Web Push (PWA) — private key |
+| `VAPID_SUBJECT` | Web Push contact (`mailto:…`) |
 
 Example (sync Neon URL from local secrets file):
 
@@ -188,7 +192,7 @@ merge to master → same CI → deploy job → Kamal → flipflapp.fr
 ## Read next
 
 | Need | Doc |
-|------|-----|
+| ------ | ----- |
 | Local setup & commands | [DEVELOPMENT.md](DEVELOPMENT.md) |
 | CI workflow source | `.github/workflows/ci.yml` |
 | Kamal config | `config/deploy.yml` |
