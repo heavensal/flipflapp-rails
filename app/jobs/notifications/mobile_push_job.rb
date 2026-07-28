@@ -36,12 +36,16 @@ class Notifications::MobilePushJob < ApplicationJob
     )
   rescue Flipflapp::FcmClient::Error => error
     if error.unregistered?
-      device_token.destroy
+      destroy_unregistered_token(device_token)
     else
       Rails.logger.warn(
         "[FCM] delivery failed device_token=#{device_token.id} " \
         "status=#{error.status} code=#{error.error_code}: #{error.message}"
       )
     end
+  end
+
+  def destroy_unregistered_token(device_token)
+    DeviceToken.find_by(id: device_token.id, user_id: device_token.user_id)&.destroy
   end
 end

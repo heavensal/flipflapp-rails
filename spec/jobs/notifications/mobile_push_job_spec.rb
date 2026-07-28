@@ -58,6 +58,44 @@ RSpec.describe Notifications::MobilePushJob, type: :job do
     expect(DeviceToken.exists?(device_token.id)).to be(false)
   end
 
+  it "does not destroy tokens on INVALID_ARGUMENT payload errors" do
+    allow(Flipflapp::FcmConfig).to receive(:configured?).and_return(true)
+
+    notification = create(:notification)
+    device_token = create(:device_token, user: notification.user)
+    client = instance_double(Flipflapp::FcmClient)
+
+    allow(Flipflapp::FcmClient).to receive(:new).and_return(client)
+    allow(client).to receive(:send_message).and_raise(
+      Flipflapp::FcmClient::Error.new("Invalid data key", status: 400, error_code: "INVALID_ARGUMENT")
+    )
+
+    expect { described_class.perform_now(notification.id) }.not_to change(DeviceToken, :count)
+    expect(DeviceToken.exists?(device_token.id)).to be(true)
+  end
+
+  it "does not destroy a token reassigned to another user" do
+    allow(Flipflapp::FcmConfig).to receive(:configured?).and_return(true)
+
+    notification = create(:notification)
+    device_token = create(:device_token, user: notification.user)
+    other_user = create(:user)
+    client = instance_double(Flipflapp::FcmClient)
+
+    allow(Flipflapp::FcmClient).to receive(:new).and_return(client)
+    allow(client).to receive(:send_message) do
+      device_token.update!(user: other_user)
+      raise Flipflapp::FcmClient::Error.new(
+        "Requested entity was not found.",
+        status: 404,
+        error_code: "UNREGISTERED"
+      )
+    end
+
+    expect { described_class.perform_now(notification.id) }.not_to change(DeviceToken, :count)
+    expect(device_token.reload.user_id).to eq(other_user.id)
+  end
+
   it "continues delivering after a non-unregistered error" do
     allow(Flipflapp::FcmConfig).to receive(:configured?).and_return(true)
 

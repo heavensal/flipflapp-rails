@@ -6,7 +6,7 @@ require "net/http"
 module Flipflapp
   class FcmClient
     SCOPE = "https://www.googleapis.com/auth/firebase.messaging"
-    UNREGISTERED_CODES = %w[UNREGISTERED NOT_FOUND INVALID_ARGUMENT].freeze
+    UNREGISTERED_CODES = %w[UNREGISTERED NOT_FOUND].freeze
 
     class Error < StandardError
       attr_reader :status, :error_code
