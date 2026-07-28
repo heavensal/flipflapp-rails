@@ -44,9 +44,8 @@ env:
     - VAPID_PUBLIC_KEY
     - VAPID_PRIVATE_KEY
     - VAPID_SUBJECT
-    # Add when enabling native push (see docs/DEPLOYMENT.md):
-    # - FCM_PROJECT_ID
-    # - FCM_SERVICE_ACCOUNT_JSON
+    - FCM_PROJECT_ID
+    - FCM_SERVICE_ACCOUNT_JSON
 
   clear:
     # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.

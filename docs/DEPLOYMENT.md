@@ -111,17 +111,16 @@ Listed under `env.secret` in `deploy.yml` (values from `.kamal/secrets`):
 - `GOOGLE_MAPS_KEY` (Places autocomplete)
 - `SMTP_*`
 - `VAPID_*` (Web Push / PWA)
-- Optional native push (uncomment in `deploy.yml` when ready): `FCM_PROJECT_ID`, `FCM_SERVICE_ACCOUNT_JSON` (Firebase service account JSON as a single line)
+- `FCM_PROJECT_ID`, `FCM_SERVICE_ACCOUNT_JSON` (Android/iOS push via FCM HTTP v1; JSON must be a single line)
 
 Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage).
 
-### Enabling Android FCM in production
+### Android / iOS FCM
 
-1. Create a Firebase project, add Android app `fr.flipflapp.android`, download `google-services.json` for the Android client.
-2. Create a service account with Firebase Cloud Messaging API Admin access; put the JSON in `FCM_SERVICE_ACCOUNT_JSON` and set `FCM_PROJECT_ID`.
-3. Uncomment `FCM_PROJECT_ID` / `FCM_SERVICE_ACCOUNT_JSON` under `env.secret` in `config/deploy.yml`, `.kamal/secrets.cd`, and the deploy job env in `.github/workflows/ci.yml`.
-4. Add the same keys to GitHub environment `production` secrets and local `.kamal/secrets`.
-5. Redeploy. Without these vars, `Notifications::MobilePushJob` no-ops (inbox + Web Push still work).
+1. Firebase project + Android app `fr.flipflapp.android` → `google-services.json` in the Android repo.
+2. Service account with Firebase Cloud Messaging access → `FCM_SERVICE_ACCOUNT_JSON` (single-line JSON) and `FCM_PROJECT_ID`.
+3. Same values in local `.env`, `.kamal/secrets`, and GitHub environment `production` secrets (wired through `config/deploy.yml`, `.kamal/secrets.cd`, and the deploy job in `.github/workflows/ci.yml`).
+4. Redeploy so production containers receive the vars. Without them, `Notifications::MobilePushJob` no-ops (inbox + Web Push still work).
 
 ### Kamal files
 
@@ -176,13 +175,14 @@ Set with `gh secret set … --env production` or the repository **Settings → E
 | `VAPID_PUBLIC_KEY` | Web Push (PWA) — public key |
 | `VAPID_PRIVATE_KEY` | Web Push (PWA) — private key |
 | `VAPID_SUBJECT` | Web Push contact (`mailto:…`) |
-| `FCM_PROJECT_ID` | Optional — Firebase project id for Android/iOS FCM |
-| `FCM_SERVICE_ACCOUNT_JSON` | Optional — Firebase service account JSON (single line) |
+| `FCM_PROJECT_ID` | Firebase project id for Android/iOS FCM |
+| `FCM_SERVICE_ACCOUNT_JSON` | Firebase service account JSON (single line) |
 
-Example (sync Neon URL from local secrets file):
+Example (sync FCM from local `.env`):
 
 ```bash
-gh secret set PRODUCTION_NEON_DB --env production --body "$(grep '^PRODUCTION_NEON_DB=' .kamal/secrets | cut -d= -f2-)"
+gh secret set FCM_PROJECT_ID --env production --body "$(ruby -r dotenv -e 'Dotenv.load; print ENV.fetch(%q(FCM_PROJECT_ID))')"
+gh secret set FCM_SERVICE_ACCOUNT_JSON --env production --body "$(ruby -r dotenv -e 'Dotenv.load; print ENV.fetch(%q(FCM_SERVICE_ACCOUNT_JSON))')"
 ```
 
 Never commit `.env`, `.kamal/secrets`, or `config/master.key`.
