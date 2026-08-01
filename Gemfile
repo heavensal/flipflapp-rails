@@ -80,7 +80,7 @@ gem "carrierwave"
 gem "ransack"
 
 gem "devise-jwt", "~> 0.13.0"
-gem "alba", "~> 3.10"
+gem "alba", "~> 3.11"
 gem "rack-cors", "~> 3.0"
 gem "rswag", "~> 2.17"
 
