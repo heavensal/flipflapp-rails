@@ -13,8 +13,25 @@ module Flipflapp
     end
 
     def service_account_json
-      env_value("FCM_SERVICE_ACCOUNT_JSON")
+      raw = env_value("FCM_SERVICE_ACCOUNT_JSON")
+      return unless raw
+
+      normalize_service_account_json(raw)
     end
+
+    # Secret managers / Docker env injection often turn PEM newlines into literal "\n".
+    # googleauth + OpenSSL need real line breaks in private_key.
+    def normalize_service_account_json(raw)
+      data = JSON.parse(raw)
+      private_key = data["private_key"]
+      return raw unless private_key.is_a?(String) && private_key.include?("\\n")
+
+      data["private_key"] = private_key.gsub("\\n", "\n")
+      data.to_json
+    rescue JSON::ParserError
+      raw
+    end
+    private_class_method :normalize_service_account_json
 
     # Strip optional surrounding quotes from .env / secret managers.
     def env_value(name)
