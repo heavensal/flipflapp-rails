@@ -1,0 +1,130 @@
+{
+  "flows": {
+    "coldStartMe": {
+      "objective": "Hydrate authenticated profile after Auth session start.",
+      "steps": [
+        {
+          "from": "docs/mobile/auth",
+          "operationIds": ["signIn", "confirmUser"],
+          "next": "Persist Authorization Bearer JWT."
+        },
+        {
+          "operationId": "getCurrentUser",
+          "success": "200 CurrentUser",
+          "next": "Cache as me; use me.id when composing Friendship rows."
+        },
+        {
+          "on": "401",
+          "client": "Clear session → Auth sign-in."
+        }
+      ]
+    },
+    "editProfileNames": {
+      "objective": "Update display names.",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "contentType": "application/json",
+          "body": { "user": { "first_name": "Ada", "last_name": "Lovelace" } },
+          "success": "200 CurrentUser",
+          "next": "Replace local me cache with response."
+        },
+        {
+          "on": "422",
+          "client": "Bind error.details to name fields."
+        }
+      ]
+    },
+    "changeEmail": {
+      "objective": "Request reconfirmable email change.",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "contentType": "application/json",
+          "body": { "user": { "email": "new@example.com" } },
+          "success": "200 CurrentUser with email still old and unconfirmed_email set",
+          "next": "Tell user to check email; do not treat email as switched yet."
+        },
+        {
+          "operationId": "confirmUser",
+          "bundle": "docs/mobile/auth",
+          "optional": true,
+          "next": "When user has confirmation_token from email; then GET getCurrentUser — email new, unconfirmed_email null."
+        }
+      ]
+    },
+    "changePasswordLoggedIn": {
+      "objective": "Change password while authenticated (not forgot-password).",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "contentType": "application/json",
+          "body": {
+            "user": {
+              "password": "newpass99",
+              "password_confirmation": "newpass99"
+            }
+          },
+          "success": "200 CurrentUser; JWT remains valid",
+          "next": "No forced re-sign-in. For forgot-password use Auth passwordReset → signIn."
+        },
+        {
+          "on": "422",
+          "client": "Show password / password_confirmation details."
+        }
+      ]
+    },
+    "uploadAvatar": {
+      "objective": "Upload a profile photo from the device gallery/camera.",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "contentType": "multipart/form-data",
+          "parts": {
+            "user[avatar]": "binary file jpg|jpeg|gif|png"
+          },
+          "success": "200 CurrentUser with non-null avatar_url",
+          "next": "Replace local me.avatar_url; nested PublicUser elsewhere may still show old URL until refetch."
+        },
+        {
+          "on": "422 avatar",
+          "client": "Show format error; retry with allowed extension."
+        }
+      ]
+    },
+    "removeAvatar": {
+      "objective": "Clear profile photo.",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "contentType": "application/json or multipart/form-data",
+          "body": { "user": { "remove_avatar": true } },
+          "success": "200 CurrentUser with avatar_url null"
+        }
+      ]
+    },
+    "openPublicProfileAddFriend": {
+      "objective": "Open another player's public profile and optionally send a friendship request.",
+      "steps": [
+        {
+          "operationId": "getUser",
+          "path": "/api/v1/users/{id}",
+          "success": "200 PublicUser (no email/role)",
+          "next": "Render public fields; friendship status not embedded."
+        },
+        {
+          "operationId": "createFriendship",
+          "bundle": "docs/api/v1",
+          "body": { "user_id": "<profile user id>" },
+          "when": "No existing Friendship with that user",
+          "success": "201 pending",
+          "next": "See hub flow friendships.profile_add_friend / listFriendships."
+        },
+        {
+          "on": "404",
+          "client": "Treat profile as missing."
+        }
+      ]
+    }
+  }
+}

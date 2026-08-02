@@ -6,7 +6,12 @@ LLM-ready shared rules for iOS/Android. Prefer this directory over Swagger UI wh
 |--------|------|
 | EventTeams + Friendships (this hub) | [`docs/api/v1/`](./) — `openapi.json`, `errors.json`, `flows.json`, this file |
 | Auth | [`docs/mobile/auth/`](../../mobile/auth/) |
-| Events companion | [`swagger/v1/mobile/`](../../../swagger/v1/mobile/) |
+| Users / profile | [`docs/mobile/users/`](../../mobile/users/) |
+| Events / participants / invitations | [`docs/mobile/events/`](../../mobile/events/) |
+| Notifications | [`docs/mobile/notifications/`](../../mobile/notifications/) |
+| Device tokens | [`docs/mobile/device_tokens/`](../../mobile/device_tokens/) |
+
+Mobile index: [`docs/mobile/README.md`](../../mobile/README.md).
 
 Domain rules: [DOMAIN.md](../../DOMAIN.md). Human overview: [API.md](../../API.md).
 
@@ -96,7 +101,7 @@ States: `pending` → `accepted` \| `declined`. From `declined`, receiver must `
 | `accepted` | In `accepted`; unfriend via `deleteFriendship` | Same |
 | `declined` | Soft-ghosted — **no** declined bucket | In `declined`; remove via `deleteFriendship` only |
 
-Index (`listFriendships`) always returns `{ accepted, sent, received, declined }` — empty arrays, never omitted keys. Nested `sender` / `receiver` are PublicUser; other user = compare `me.id` to `sender_id` / `receiver_id`.
+Index (`listFriendships`) always returns `{ accepted, sent, received, declined }` — empty arrays, never omitted keys. Nested `sender` / `receiver` are PublicUser (see [`docs/mobile/users/`](../../mobile/users/)); other user = compare `me.id` from `getCurrentUser` to `sender_id` / `receiver_id`.
 
 **Destroy authz** (else `403` English `"Forbidden"`; success `204` empty):
 

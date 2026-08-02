@@ -95,7 +95,7 @@ RSpec.describe "Api::V1 Me updates", type: :request do
 
       patch "/api/v1/me",
             params: {
-              user: { avatar: fixture_file_upload("files/avatar.jpg", "image/jpeg") }
+              user: { avatar: fixture_file_upload("avatar.jpg", "image/jpeg") }
             },
             headers: headers
 
@@ -112,7 +112,7 @@ RSpec.describe "Api::V1 Me updates", type: :request do
 
       patch "/api/v1/me",
             params: {
-              user: { avatar: fixture_file_upload("files/avatar.txt", "text/plain") }
+              user: { avatar: fixture_file_upload("avatar.txt", "text/plain") }
             },
             headers: headers
 
@@ -124,7 +124,7 @@ RSpec.describe "Api::V1 Me updates", type: :request do
     it "clears avatar with remove_avatar" do
       stub_cloudinary_upload!
       user = create(:user)
-      user.update!(avatar: fixture_file_upload("files/avatar.jpg", "image/jpeg"))
+      user.update!(avatar: fixture_file_upload("avatar.jpg", "image/jpeg"))
       expect(user.reload.avatar?).to be(true)
 
       api_patch "/api/v1/me", user: user, params: { user: { remove_avatar: true } }

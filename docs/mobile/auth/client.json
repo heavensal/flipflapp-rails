@@ -30,8 +30,9 @@
   },
   "registerSessionRule": "Ignore any Authorization on registerUser. Session starts only after confirmUser or signIn.",
   "deviceToken": {
-    "afterJwt": "POST /api/v1/device_token after signIn or confirmUser / FCM refresh",
-    "onSignOut": "DELETE /api/v1/device_token before or with signOut while JWT is still valid"
+    "canonical": "docs/mobile/device_tokens",
+    "afterJwt": "registerDeviceToken after signIn or confirmUser / FCM refresh",
+    "onSignOut": "unregisterDeviceToken before signOut while JWT is still valid"
   },
-  "avatar": "Optional avatar field on registerUser / updateCurrentUser as implemented by CarrierWave; no separate multipart Auth contract in this bundle"
+  "avatar": "Profile photo upload/clear contract lives in docs/mobile/users (multipart user[avatar] on updateCurrentUser). registerUser may accept the same multipart field; do not invent a JSON-string avatar."
 }

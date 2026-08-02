@@ -1,0 +1,116 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    },
+    "notes": [
+      "Top-level Validation failed message is English.",
+      "Attribute details follow server I18n (default locale fr).",
+      "401 Devise unauthenticated message is French by default."
+    ]
+  },
+  "cases": {
+    "user.unauthenticated": {
+      "operationIds": ["getCurrentUser", "updateCurrentUser", "getUser"],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+        }
+      },
+      "client": "Clear JWT and route to Auth sign-in."
+    },
+    "user.not_found": {
+      "operationIds": ["getUser"],
+      "status": 404,
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      },
+      "client": "Treat as missing; do not distinguish private vs gone."
+    },
+    "user.validation.email_invalid": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "email": ["L'adresse email n'est pas valide."]
+          }
+        }
+      },
+      "client": "Bind details.email to the email field; do not navigate as success."
+    },
+    "user.validation.email_taken": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "email": ["Cette adresse email est déjà utilisée."]
+          }
+        }
+      },
+      "client": "Bind details.email; keep editing."
+    },
+    "user.validation.names_blank": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "first_name": ["Le prénom est obligatoire."],
+            "last_name": ["Le nom est obligatoire."]
+          }
+        }
+      },
+      "client": "Bind blank-name details to the name fields."
+    },
+    "user.validation.password_mismatch": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "password_confirmation": ["La confirmation du mot de passe ne correspond pas."]
+          }
+        }
+      },
+      "client": "Bind confirmation mismatch; JWT unchanged."
+    },
+    "user.validation.password_too_short": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "password": ["Le mot de passe est trop court (minimum 6 caractères)."]
+          }
+        }
+      },
+      "client": "Require 6..128 characters."
+    },
+    "user.validation.avatar_format": {
+      "operationIds": ["updateCurrentUser"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "avatar": ["Le format du fichier n'est pas autorisé. Formats acceptés : jpg, jpeg, png, gif."]
+          }
+        }
+      },
+      "client": "Re-prompt for jpg/jpeg/gif/png only."
+    }
+  }
+}

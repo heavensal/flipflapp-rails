@@ -115,6 +115,11 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 | `rspec spec/requests/api/v1/` | JSON API request specs |
 | `bundle exec rake rswag:specs:swaggerize` | Regenerate `swagger/v1/swagger.yaml` |
 | `bundle exec rake openapi:export` | Export `swagger/v1/openapi.json` + `docs/api/v1/openapi.json` (after swaggerize) |
+| `bundle exec rake mobile:export_auth_docs` | Export full OpenAPI JSON into `docs/mobile/auth/` (companions must already exist) |
+| `bundle exec rake mobile:export_users_docs` | Export full OpenAPI JSON into `docs/mobile/users/` (companions must already exist) |
+| `bundle exec rake mobile:export_events_docs` | Export full OpenAPI JSON into `docs/mobile/events/` (companions must already exist) |
+| `bundle exec rake mobile:export_notifications_docs` | Export full OpenAPI JSON into `docs/mobile/notifications/` |
+| `bundle exec rake mobile:export_device_tokens_docs` | Export full OpenAPI JSON into `docs/mobile/device_tokens/` |
 | `bin/rubocop` | Style (CI: lint job) |
 | `bin/brakeman --no-pager` | Security scan (CI: scan_ruby job) |
 

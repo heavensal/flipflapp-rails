@@ -5,6 +5,7 @@ namespace :openapi do
   task export: :environment do
     require "yaml"
     require "json"
+    require_relative "../openapi_users_request_body"
 
     yaml_path = Rails.root.join("swagger/v1/swagger.yaml")
     abort "Missing #{yaml_path}. Run: bundle exec rake rswag:specs:swaggerize" unless yaml_path.file?
@@ -14,6 +15,7 @@ namespace :openapi do
       permitted_classes: [ Date, Time, DateTime ],
       aliases: true
     )
+    OpenapiUsersRequestBody.patch!(document)
     payload = JSON.pretty_generate(document) + "\n"
 
     json_paths = [

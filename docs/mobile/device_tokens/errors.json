@@ -1,0 +1,35 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    }
+  },
+  "cases": {
+    "device_token.unauthenticated": {
+      "operationIds": ["registerDeviceToken", "unregisterDeviceToken"],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+        }
+      },
+      "client": "Clear JWT → Auth sign-in."
+    },
+    "device_token.validation.platform": {
+      "operationIds": ["registerDeviceToken"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "platform": ["n'est pas inclus(e) dans la liste"]
+          }
+        }
+      },
+      "client": "Send only android or ios."
+    }
+  }
+}

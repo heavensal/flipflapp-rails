@@ -1,0 +1,44 @@
+{
+  "flows": {
+    "registerAfterSession": {
+      "objective": "Register FCM token after Auth session starts.",
+      "steps": [
+        {
+          "from": "docs/mobile/auth",
+          "operationIds": ["signIn", "confirmUser"],
+          "next": "Persist JWT."
+        },
+        {
+          "operationId": "registerDeviceToken",
+          "body": { "device_token": { "token": "<fcm>", "platform": "android" } },
+          "success": "200 empty"
+        }
+      ]
+    },
+    "refreshFcmToken": {
+      "objective": "OS refreshed the FCM token while signed in.",
+      "steps": [
+        {
+          "operationId": "registerDeviceToken",
+          "body": { "device_token": { "token": "<new-fcm>", "platform": "android" } },
+          "success": "200 empty; reassigns if token existed under another user"
+        }
+      ]
+    },
+    "unregisterOnSignOut": {
+      "objective": "Stop push before revoking JWT.",
+      "steps": [
+        {
+          "operationId": "unregisterDeviceToken",
+          "body": { "device_token": { "token": "<fcm>" } },
+          "success": "204 even if already gone"
+        },
+        {
+          "operationId": "signOut",
+          "bundle": "docs/mobile/auth",
+          "next": "Clear local JWT."
+        }
+      ]
+    }
+  }
+}

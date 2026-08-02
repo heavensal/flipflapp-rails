@@ -1,0 +1,49 @@
+{
+  "basePath": "/api/v1",
+  "resourceNames": {
+    "use": ["notifications"],
+    "never": ["alerts", "inbox", "pushes"]
+  },
+  "operationIds": [
+    "listNotifications",
+    "readNotification",
+    "readAllNotifications",
+    "deleteNotification"
+  ],
+  "headers": {
+    "request": {
+      "Accept": "application/json",
+      "Authorization": "Bearer <jwt> required"
+    },
+    "response": {
+      "Authorization": "Notifications ops never issue JWT"
+    }
+  },
+  "inbox": {
+    "maxItems": 20,
+    "order": "newest first",
+    "excludes": ["friendship_requested"],
+    "kinds": ["invited", "joined", "left", "updated", "canceled", "reminder"]
+  },
+  "friendshipRequested": {
+    "inInbox": false,
+    "lookup": "404 if client has the id",
+    "push": "May still arrive via FCM — route to Friendships received, not this inbox",
+    "badge": "listFriendships.received.length"
+  },
+  "statusHandling": {
+    "200": "Parse Notification or Notification[]",
+    "204": "Empty body — do not JSON-parse (read_all, delete)",
+    "401": "Clear session → Auth sign-in",
+    "404": "Missing, foreign, or friendship_requested id"
+  },
+  "timeoutAndOffline": {
+    "writes": "Do not optimistic-commit read/delete",
+    "retry": "Retry on user action when online"
+  },
+  "crossLinks": {
+    "deviceTokens": "docs/mobile/device_tokens — push delivery registration",
+    "friendships": "docs/api/v1 — friendship_requested UX",
+    "events": "docs/mobile/events — producers of invited/joined/left/updated/canceled"
+  }
+}

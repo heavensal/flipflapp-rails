@@ -6,7 +6,17 @@ Domain rules: [DOMAIN.md](DOMAIN.md). Feature workflow: [TESTING.md](TESTING.md)
 
 **Mobile Auth handoff (LLM-ready):** [`docs/mobile/auth/`](mobile/auth/) — `openapi.json`, `errors.json`, `flows.json`, `client.json`. Prefer that bundle over Swagger UI when implementing iOS/Android Auth.
 
+**Mobile Users / profile handoff (LLM-ready):** [`docs/mobile/users/`](mobile/users/) — `openapi.json`, `errors.json`, `flows.json`, `client.json`, `CLIENT_CONTRACT.md`.
+
+**Mobile Events handoff (LLM-ready):** [`docs/mobile/events/`](mobile/events/) — Events CRUD, participants, invitations.
+
+**Mobile Notifications handoff (LLM-ready):** [`docs/mobile/notifications/`](mobile/notifications/).
+
+**Mobile DeviceTokens handoff (LLM-ready):** [`docs/mobile/device_tokens/`](mobile/device_tokens/).
+
 **Mobile EventTeams + Friendships handoff (LLM-ready):** [`docs/api/v1/`](api/v1/) — `openapi.json`, `errors.json`, `flows.json`, `CLIENT_CONTRACT.md`.
+
+**Index of all mobile bundles:** [`docs/mobile/README.md`](mobile/README.md).
 
 ## Conventions
 
@@ -38,9 +48,9 @@ Domain rules: [DOMAIN.md](DOMAIN.md). Feature workflow: [TESTING.md](TESTING.md)
 | `resetPasswordWithPut` | `PUT` | `/api/v1/users/password` | Alias of `resetPassword` |
 | `resendConfirmation` | `POST` | `/api/v1/users/confirmation` | Resend instructions; `204` / `422` |
 | `confirmUser` | `PATCH` | `/api/v1/users/confirmation` | `{ confirmation_token }` → `200` + JWT |
-| `getCurrentUser` | `GET` | `/api/v1/me` | Bearer required |
-| `updateCurrentUser` | `PATCH` | `/api/v1/me` | Profile update; email change is **reconfirmable** (no `current_password` required) |
-| `getUser` | `GET` | `/api/v1/users/:id` | Public profile fields |
+| `getCurrentUser` | `GET` | `/api/v1/me` | Bearer required; `CurrentUser` includes `unconfirmed_email` |
+| `updateCurrentUser` | `PATCH` | `/api/v1/me` | Profile update; email **reconfirmable**; avatar via **multipart**; no `current_password` — see [`docs/mobile/users/`](mobile/users/) |
+| `getUser` | `GET` | `/api/v1/users/:id` | `PublicUser` only (no email/role) |
 
 Typical signup: `registerUser` → email token → `confirmUser` (JWT) → `POST /device_token`.  
 Typical return visit: `signIn` → `POST /device_token`.  
@@ -68,7 +78,7 @@ All Auth (and API) JSON errors use one nested shape:
 
 ### Events
 
-**Mobile Events handoff (LLM-ready):** [`swagger/v1/mobile/`](../swagger/v1/mobile/) — `openapi.json` (via export) + [`events_companion.json`](../swagger/v1/mobile/events_companion.json). Prefer that bundle over Swagger UI when implementing iOS/Android Events.
+**Mobile Events handoff (LLM-ready):** [`docs/mobile/events/`](mobile/events/) — prefer that bundle over Swagger UI for Events / participants / invitations.
 
 | operationId | Method | Path |
 |-------------|--------|------|
@@ -82,7 +92,7 @@ Index = visible upcoming only. Event JSON includes `current_user`: `{ participan
 
 ### Event teams & participants (granular for iOS)
 
-**Mobile EventTeams handoff (LLM-ready):** [`docs/api/v1/`](api/v1/) — `openapi.json`, [`errors.json`](api/v1/errors.json), [`flows.json`](api/v1/flows.json), [`CLIENT_CONTRACT.md`](api/v1/CLIENT_CONTRACT.md). Prefer that bundle for `event_teams` screens.
+**Mobile EventTeams handoff (LLM-ready):** [`docs/api/v1/`](api/v1/) — prefer that bundle for `event_teams` rename. Participants join/leave also documented in [`docs/mobile/events/`](mobile/events/).
 
 | operationId | Method | Path |
 |-------------|--------|------|
@@ -105,6 +115,8 @@ Invite picker: `listFriendships` (accepted) − `listEventParticipants` − `lis
 For each accepted Friendship, other user = `sender_id == me.id ? receiver : sender`.
 
 ### Invitations
+
+**LLM contract:** [`docs/mobile/events/`](mobile/events/) (invite flows + errors).
 
 | operationId | Method | Path |
 |-------------|--------|------|
@@ -132,32 +144,37 @@ LLM contract: [`docs/api/v1/`](api/v1/) (`CLIENT_CONTRACT.md`, `flows.json` → 
 
 ### Notifications
 
-| Method | Path |
-|--------|------|
-| `GET` | `/api/v1/notifications` |
-| `PATCH` | `/api/v1/notifications/:id/read` |
-| `PATCH` | `/api/v1/notifications/read_all` |
-| `DELETE` | `/api/v1/notifications/:id` |
+**LLM contract:** [`docs/mobile/notifications/`](mobile/notifications/).
+
+| operationId | Method | Path |
+|-------------|--------|------|
+| `listNotifications` | `GET` | `/api/v1/notifications` |
+| `readNotification` | `PATCH` | `/api/v1/notifications/:id/read` |
+| `readAllNotifications` | `PATCH` | `/api/v1/notifications/read_all` |
+| `deleteNotification` | `DELETE` | `/api/v1/notifications/:id` |
 
 Inbox excludes `friendship_requested` (same as web). Friends-request UX = `listFriendships.received` badge. Push may still deliver `friendship_requested` — route to friendships screen, not the inbox.
 
 ### Device tokens (mobile push)
 
-| Method | Path |
-|--------|------|
-| `POST` | `/api/v1/device_token` |
-| `DELETE` | `/api/v1/device_token` |
+**LLM contract:** [`docs/mobile/device_tokens/`](mobile/device_tokens/).
+
+| operationId | Method | Path |
+|-------------|--------|------|
+| `registerDeviceToken` | `POST` | `/api/v1/device_token` |
+| `unregisterDeviceToken` | `DELETE` | `/api/v1/device_token` |
 
 Body: `{ "device_token": { "token": "<fcm-token>", "platform": "android" } }` (`platform` optional on create, defaults to `android`; allowed: `android`, `ios`).  
-Register after sign-in / confirm / FCM token refresh; unregister on sign-out. Re-registering the same token reassigns it to the current user.
+Register after sign-in / confirm / FCM token refresh (**200** empty); unregister on sign-out (**204** idempotent). Re-registering the same token reassigns it to the current user.
 
 ## OpenAPI / testing
 
 - Specs: `spec/requests/api/v1/`
 - Generate OpenAPI: `bundle exec rake rswag:specs:swaggerize`
 - Export JSON: `bundle exec rake openapi:export` → `swagger/v1/openapi.json` and `docs/api/v1/openapi.json`
-- Artifacts: `swagger/v1/swagger.yaml`, `swagger/v1/openapi.json`, `docs/api/v1/` (EventTeams LLM bundle), `swagger/v1/mobile/events_companion.json`
-- Mobile Auth export: `bundle exec rake mobile:export_auth_docs` → `docs/mobile/auth/`
+- Artifacts: `swagger/v1/swagger.yaml`, `swagger/v1/openapi.json`, `docs/api/v1/`, `docs/mobile/*`
+- Mobile exports: `mobile:export_auth_docs`, `mobile:export_users_docs`, `mobile:export_events_docs`, `mobile:export_notifications_docs`, `mobile:export_device_tokens_docs`
+- Index: [`docs/mobile/README.md`](mobile/README.md)
 - UI: `/api-docs`
 
 ## Versioning
@@ -172,7 +189,15 @@ When a feature changes behavior that mobile clients consume:
 1. Update [DOMAIN.md](DOMAIN.md) if the rule changed
 2. Model specs first ([TESTING.md](TESTING.md))
 3. Update web if needed
-4. Update **`/api/v1`** controllers, serializers, request specs, and OpenAPI **in the same change**
-5. If Auth changed, re-export `docs/mobile/auth/`
+4. Update `/api/v1` controllers, serializers, and `spec/requests/api/v1/` **in the same change**
+5. Regenerate OpenAPI (`rswag:specs:swaggerize` → `openapi:export`)
+6. **Required documentation gate:** update every affected LLM-ready bundle in the same change:
+   - Auth → [`docs/mobile/auth/`](mobile/auth/) (+ `rake mobile:export_auth_docs`)
+   - Users / me → [`docs/mobile/users/`](mobile/users/) (+ `rake mobile:export_users_docs`)
+   - Events / participants / invitations → [`docs/mobile/events/`](mobile/events/) (+ `rake mobile:export_events_docs`)
+   - Notifications → [`docs/mobile/notifications/`](mobile/notifications/) (+ `rake mobile:export_notifications_docs`)
+   - Device tokens → [`docs/mobile/device_tokens/`](mobile/device_tokens/) (+ `rake mobile:export_device_tokens_docs`)
+   - EventTeams / Friendships → [`docs/api/v1/`](api/v1/) (`errors.json`, `flows.json`, `CLIENT_CONTRACT.md`)
+7. Feature incomplete if `/api/v1` behavior changed but the matching LLM bundle was not updated
 
-See also `app/controllers/api/AGENTS.md`.
+Index: [docs/mobile/README.md](mobile/README.md). See also `app/controllers/api/AGENTS.md`.

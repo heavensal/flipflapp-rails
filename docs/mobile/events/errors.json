@@ -1,0 +1,91 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    },
+    "notes": [
+      "404 is opaque for private/missing/not-joinable events.",
+      "Invitation empty selection uses English message No users to invite."
+    ]
+  },
+  "cases": {
+    "event.unauthenticated": {
+      "operationIds": [
+        "listEvents",
+        "createEvent",
+        "getEvent",
+        "updateEvent",
+        "deleteEvent",
+        "joinOrSwitchEventParticipant",
+        "deleteEventParticipant",
+        "listEventInvitations",
+        "createEventInvitations"
+      ],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+        }
+      },
+      "client": "Clear JWT → Auth sign-in."
+    },
+    "event.not_viewable": {
+      "operationIds": ["getEvent", "updateEvent", "deleteEvent", "listEventInvitations", "createEventInvitations"],
+      "status": 404,
+      "example": { "error": { "message": "Not found" } },
+      "client": "Treat as missing; never ask for access."
+    },
+    "event.forbidden_author": {
+      "operationIds": ["updateEvent", "deleteEvent"],
+      "status": 403,
+      "meaning": "Event is viewable but current user is not author.",
+      "example": { "error": { "message": "Forbidden" } },
+      "client": "Show forbidden; do not retry as create."
+    },
+    "event.validation": {
+      "operationIds": ["createEvent", "updateEvent"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": { "title": ["ne peut pas être vide"] }
+        }
+      },
+      "client": "Bind details to form fields."
+    },
+    "event_participant.not_joinable": {
+      "operationIds": ["joinOrSwitchEventParticipant"],
+      "status": 404,
+      "meaning": "Event not joinable (private stranger) or team missing.",
+      "example": { "error": { "message": "Not found" } },
+      "client": "Opaque 404."
+    },
+    "event_participant.team_full": {
+      "operationIds": ["joinOrSwitchEventParticipant"],
+      "status": 422,
+      "meaning": "Countable team at capacity; bench may still be available.",
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": { "event_team": ["est complet"] }
+        }
+      },
+      "client": "Offer bench or another team; do not treat as success."
+    },
+    "invitation.forbidden": {
+      "operationIds": ["createEventInvitations"],
+      "status": 403,
+      "meaning": "Viewer is not a participant (cannot invite).",
+      "example": { "error": { "message": "Forbidden" } }
+    },
+    "invitation.no_users": {
+      "operationIds": ["createEventInvitations"],
+      "status": 422,
+      "example": { "error": { "message": "No users to invite" } },
+      "client": "Empty or ineligible user_ids — refresh picker composition."
+    }
+  }
+}

@@ -20,7 +20,7 @@ Codex must understand the task before editing. For every non-trivial change:
 
 1. [docs/PROJECT.md](docs/PROJECT.md) — scope and MVP completion gates
 2. [docs/DOMAIN.md](docs/DOMAIN.md) — business rules
-3. [docs/TESTING.md](docs/TESTING.md) — feature workflow (clarify → migrations if approved → specs → code → API if mobile contract changes)
+3. [docs/TESTING.md](docs/TESTING.md) — feature workflow (clarify → migrations if approved → specs → model validations/limits → controllers → API + LLM mobile docs if `/api/v1` touched → feature validation)
 4. [docs/RAILS_STYLEGUIDE.md](docs/RAILS_STYLEGUIDE.md) — Rails, RuboCop, &lt;150 lines
 5. [docs/FRONTEND.md](docs/FRONTEND.md) — ERB, Tailwind, components, Stimulus
 6. [docs/API.md](docs/API.md) — JSON `/api/v1` for mobile
@@ -29,6 +29,7 @@ Codex must understand the task before editing. For every non-trivial change:
 ## Hard limits
 
 - TDD: `spec/models/` first for behavior changes; `spec/requests/` only for HTTP contracts
+- Any `/api/v1` change must update the matching LLM-ready mobile bundle in the same change ([docs/API.md](docs/API.md))
 - Do not run commands, generators, migrations, commits, pushes, or deploys unless explicitly requested
 - No service objects unless explicitly requested
 - Schema: `db/schema.rb` — migration policy below

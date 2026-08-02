@@ -22,8 +22,9 @@
           "next": "Hydrate profile cache."
         },
         {
-          "path": "POST /api/v1/device_token",
-          "note": "Full device_token OpenAPI is a separate wave; register FCM token after JWT is stored."
+          "operationId": "registerDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
+          "note": "Canonical device_token contract: docs/mobile/device_tokens."
         }
       ]
     },
@@ -39,7 +40,8 @@
           "optional": true
         },
         {
-          "path": "POST /api/v1/device_token",
+          "operationId": "registerDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
           "note": "Register or refresh FCM token."
         }
       ]
@@ -48,7 +50,8 @@
       "objective": "End push delivery and revoke JWT.",
       "steps": [
         {
-          "path": "DELETE /api/v1/device_token",
+          "operationId": "unregisterDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
           "note": "Unregister FCM token while JWT is still valid."
         },
         {
@@ -76,11 +79,12 @@
       ]
     },
     "updateProfile": {
-      "objective": "Update profile; handle reconfirmable email change.",
+      "objective": "Thin Auth stub — full profile edit lives in docs/mobile/users.",
+      "see": "docs/mobile/users flows: editProfileNames, changeEmail, changePasswordLoggedIn, uploadAvatar, removeAvatar",
       "steps": [
         {
           "operationId": "updateCurrentUser",
-          "next": "If email changed, login email stays until confirmUser with the new confirmation token; tell the user to check email."
+          "next": "See docs/mobile/users. If email changed, confirm via confirmUser; CurrentUser exposes unconfirmed_email."
         },
         {
           "operationId": "confirmUser",
@@ -90,11 +94,12 @@
       ]
     },
     "viewPublicProfile": {
-      "objective": "Load another user's public profile.",
+      "objective": "Thin Auth stub — full public profile + add-friend lives in docs/mobile/users.",
+      "see": "docs/mobile/users flow openPublicProfileAddFriend",
       "steps": [
         {
           "operationId": "getUser",
-          "next": "Render PublicUser fields only."
+          "next": "Render PublicUser fields only; compose friendship via docs/api/v1."
         }
       ]
     }

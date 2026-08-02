@@ -1,0 +1,51 @@
+{
+  "flows": {
+    "openInbox": {
+      "objective": "Load the notifications inbox.",
+      "steps": [
+        {
+          "operationId": "listNotifications",
+          "success": "200 Notification[] max 20",
+          "next": "Never expect friendship_requested in this list."
+        }
+      ]
+    },
+    "markOneRead": {
+      "objective": "Mark one inbox row read.",
+      "steps": [
+        {
+          "operationId": "readNotification",
+          "success": "200 Notification with read true",
+          "on404": "Gone or not inbox-scoped."
+        }
+      ]
+    },
+    "markAllRead": {
+      "objective": "Clear unread badge for inbox.",
+      "steps": [
+        {
+          "operationId": "readAllNotifications",
+          "success": "204 empty"
+        }
+      ]
+    },
+    "deleteOne": {
+      "objective": "Remove one inbox notification.",
+      "steps": [
+        {
+          "operationId": "deleteNotification",
+          "success": "204 empty"
+        }
+      ]
+    },
+    "handleFriendshipRequestedPush": {
+      "objective": "Push kind friendship_requested is not an inbox item.",
+      "steps": [
+        {
+          "client": "Open Friendships received / badge — do not call listNotifications expecting that row.",
+          "bundle": "docs/api/v1"
+        }
+      ]
+    }
+  }
+}

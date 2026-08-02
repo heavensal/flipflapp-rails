@@ -1,30 +1,11 @@
-# FlipFlapp mobile Events contract bundle
+# Events mobile docs moved
 
-Exportable handoff for iOS/Android (and LLM agents). No Rails repo required.
+The LLM-ready Events contract now lives at **[`docs/mobile/events/`](../../../docs/mobile/events/)**.
 
-## Files
-
-| File | Role |
-|------|------|
-| [`../openapi.json`](../openapi.json) | Full OpenAPI 3.0.1 contract (`/api/v1`) |
-| [`../swagger.yaml`](../swagger.yaml) | Same contract in YAML (rswag source artifact) |
-| [`events_companion.json`](events_companion.json) | Events intents, flows, viewer CTAs, client rules |
-
-## How to use
-
-1. Load `openapi.json` for paths, schemas, `operationId`s, request/response examples, and status codes.
-2. Load `events_companion.json` for “what next?”, invite-picker composition, offline/timeout rules, and `current_user` → CTA mapping.
-3. Auth: send `Authorization: Bearer <jwt>` on every Events operation. Do not re-implement Auth from Events docs alone — use Auth ops in the same OpenAPI file (`signIn`, etc.).
-
-## Regenerate (from the Rails repo)
+Use that directory (`CLIENT_CONTRACT.md`, `client.json`, `errors.json`, `flows.json`, `openapi.json`) instead of this folder.
 
 ```bash
-bundle exec rake rswag:specs:swaggerize
-bundle exec rake openapi:export
+bundle exec rake mobile:export_events_docs
 ```
 
-## Events operationIds
-
-`listEvents`, `createEvent`, `getEvent`, `updateEvent`, `deleteEvent`, `listEventTeams`, `getEventTeam`, `updateEventTeam`, `listEventParticipants`, `listEventTeamParticipants`, `joinOrSwitchEventParticipant`, `deleteEventParticipant`, `listEventInvitations`, `createEventInvitations`.
-
-Resource path names stay Convention over Configuration: `events`, `event_teams`, `event_participants`, `invitations` — no aliases.
+Parent OpenAPI remains [`../openapi.json`](../openapi.json) after `openapi:export`.

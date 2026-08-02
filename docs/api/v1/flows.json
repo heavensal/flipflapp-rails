@@ -200,6 +200,7 @@
       },
       "invite_picker_compose": {
         "objective": "Build invite candidates for an event (no invitees resource).",
+        "note": "Full Events invite contract: docs/mobile/events (inviteFriendsCompose).",
         "steps": [
           {
             "operationId": "listFriendships",
@@ -225,10 +226,11 @@
       },
       "profile_add_friend": {
         "objective": "Send a request from a public profile.",
+        "note": "Full profile contract: docs/mobile/users (openPublicProfileAddFriend).",
         "steps": [
           {
             "operationId": "getUser",
-            "next": "Show Add friend when no Friendship exists with that user."
+            "next": "Show Add friend when no Friendship exists with that user. PublicUser only — see docs/mobile/users."
           },
           {
             "operationId": "createFriendship",
@@ -239,13 +241,14 @@
       },
       "push_friendship_requested": {
         "objective": "Handle FCM/APNs for friendship_requested without using the notifications inbox.",
+        "note": "Inbox contract: docs/mobile/notifications. Device registration: docs/mobile/device_tokens.",
         "steps": [
           {
             "client": "On push kind friendship_requested (path historically /friendships), open friends UI / received bucket."
           },
           {
             "operationId": "listFriendships",
-            "next": "Do not call listNotifications expecting this kind — inbox excludes it."
+            "next": "Refresh received badge; do not expect the row in listNotifications."
           }
         ]
       }
