@@ -1,0 +1,67 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    },
+    "algorithm": [
+      "Parse JSON body when Content-Type is JSON and status is not 204.",
+      "Read error.message (always present on Auth error responses).",
+      "If error.details is present, bind field keys to form inputs.",
+      "Do not expect a top-level string error value."
+    ]
+  },
+  "statuses": {
+    "401": {
+      "meaning": "Missing/invalid JWT, bad credentials, or unconfirmed sign-in attempt",
+      "example": {
+        "error": {
+          "message": "Invalid Email or password."
+        }
+      },
+      "client": "Clear local session (except on the register-waiting screen) and route to sign-in."
+    },
+    "403": {
+      "meaning": "Authenticated but not allowed",
+      "example": {
+        "error": {
+          "message": "Forbidden"
+        }
+      },
+      "client": "Show message; do not clear session unless product requires it."
+    },
+    "404": {
+      "meaning": "Missing resource or not viewable",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      },
+      "client": "Treat as missing."
+    },
+    "422": {
+      "meaning": "Validation failed",
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "email": ["Email has already been taken"]
+          }
+        }
+      },
+      "client": "Show error.message and field details."
+    },
+    "204": {
+      "meaning": "Success with empty body",
+      "example": null,
+      "client": "Do not JSON-parse the body."
+    }
+  },
+  "authMessages": {
+    "unconfirmedSignIn": "You have to confirm your email address before continuing.",
+    "missingJwt": "You need to sign in or sign up before continuing.",
+    "invalidCredentials": "Invalid Email or password."
+  }
+}

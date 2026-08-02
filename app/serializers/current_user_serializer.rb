@@ -3,7 +3,7 @@
 class CurrentUserSerializer
   include Alba::Resource
 
-  attributes :id, :email, :first_name, :last_name, :username, :role
+  attributes :id, :email, :unconfirmed_email, :first_name, :last_name, :username, :role
 
   attribute :avatar_url do |user|
     user.avatar.url.presence

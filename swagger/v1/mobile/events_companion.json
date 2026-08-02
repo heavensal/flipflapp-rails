@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "resource": "events",
+  "openapi_ref": "../openapi.json",
+  "operation_ids": [
+    "listEvents",
+    "createEvent",
+    "getEvent",
+    "updateEvent",
+    "deleteEvent",
+    "listEventTeams",
+    "getEventTeam",
+    "updateEventTeam",
+    "listEventParticipants",
+    "listEventTeamParticipants",
+    "joinOrSwitchEventParticipant",
+    "deleteEventParticipant",
+    "listEventInvitations",
+    "createEventInvitations"
+  ],
+  "client_rules": {
+    "auth_header": "Authorization: Bearer <jwt>",
+    "timeouts": {
+      "connect_ms": 10000,
+      "request_ms": 30000
+    },
+    "offline": "Do not optimistically commit join, leave, invite, create, update, or delete. Show retry UI only.",
+    "404_opacity": "Never distinguish missing vs private vs not joinable. Treat all 404 the same.",
+    "401": "Clear local session and re-authenticate via Auth sign-in.",
+    "403": "Show forbidden. Do not retry the same call as a different verb.",
+    "422": "Surface error.message and error.details when present. Do not navigate as if the write succeeded.",
+    "204": "Empty body is success.",
+    "decimals": "Send price, latitude, longitude as numbers on write. Expect decimal strings on Event responses."
+  },
+  "viewer_contexts": [
+    {
+      "name": "author",
+      "current_user": {
+        "participant": true,
+        "can_invite": true,
+        "author": true,
+        "invited": false
+      },
+      "ctas": ["edit", "delete", "invite", "switch_team", "leave"]
+    },
+    {
+      "name": "participant",
+      "current_user": {
+        "participant": true,
+        "can_invite": true,
+        "author": false,
+        "invited": false
+      },
+      "ctas": ["invite", "switch_team", "leave"]
+    },
+    {
+      "name": "invited",
+      "current_user": {
+        "participant": false,
+        "can_invite": false,
+        "author": false,
+        "invited": true
+      },
+      "ctas": ["join"]
+    },
+    {
+      "name": "public_stranger",
+      "current_user": {
+        "participant": false,
+        "can_invite": false,
+        "author": false,
+        "invited": false
+      },
+      "ctas": ["join"]
+    },
+    {
+      "name": "private_stranger",
+      "note": "getEvent returns 404; no Event payload and no CTAs.",
+      "ctas": []
+    }
+  ],
+  "operations": {
+    "listEvents": {
+      "intent": "Browse matches the viewer may see that are still upcoming.",
+      "includes": "visible_to(current_user) + start_time > now",
+      "excludes": ["past events", "private events the viewer cannot see"],
+      "next": ["getEvent"]
+    },
+    "createEvent": {
+      "intent": "Organizer creates a match.",
+      "side_effects": [
+        "Creates three event_teams (team_one, team_two, bench)",
+        "Author auto-joined on team_one",
+        "Bench reminder job scheduled"
+      ],
+      "next": ["listEventTeams", "createEventInvitations"]
+    },
+    "getEvent": {
+      "intent": "Load one match plus current_user flags for CTAs.",
+      "next": ["listEventTeams", "listEventParticipants", "joinOrSwitchEventParticipant"]
+    },
+    "updateEvent": {
+      "intent": "Author edits match details.",
+      "who": "author only; viewable non-author → 403; not viewable → 404",
+      "next": ["use response body or getEvent"]
+    },
+    "deleteEvent": {
+      "intent": "Author cancels/destroys the match.",
+      "next": ["listEvents"]
+    },
+    "listEventTeams": {
+      "intent": "Show the three slots for team UI.",
+      "next": ["listEventTeamParticipants", "listEventParticipants"]
+    },
+    "getEventTeam": {
+      "intent": "Single team detail for rename screen or team sheet.",
+      "next": ["updateEventTeam", "listEventTeamParticipants"]
+    },
+    "updateEventTeam": {
+      "intent": "Rename a countable team label (not bench).",
+      "next": ["update local team label; no full event refetch required"]
+    },
+    "listEventParticipants": {
+      "intent": "Full roster for invite picker and event detail.",
+      "next": ["createEventInvitations"]
+    },
+    "listEventTeamParticipants": {
+      "intent": "Roster for one team; preferred refetch after join/switch.",
+      "next": []
+    },
+    "joinOrSwitchEventParticipant": {
+      "intent": "Join the event or switch team (same endpoint).",
+      "success": { "first_join": 201, "switch": 200 },
+      "refetch": "listEventTeamParticipants for the target team (not the full event tree)"
+    },
+    "deleteEventParticipant": {
+      "intent": "Current user leaves (own participation only).",
+      "next": ["getEvent", "listEvents"]
+    },
+    "listEventInvitations": {
+      "intent": "See who is already invited.",
+      "next": ["createEventInvitations"]
+    },
+    "createEventInvitations": {
+      "intent": "Participant invites accepted friends not already in or invited.",
+      "picker_compose": "listFriendships.accepted → other_user (sender_id==me ? receiver : sender) − listEventParticipants − listEventInvitations",
+      "next": ["listEventInvitations"]
+    }
+  },
+  "flows": [
+    {
+      "id": "browse_and_open",
+      "steps": ["listEvents", "getEvent", "listEventTeams", "listEventParticipants"]
+    },
+    {
+      "id": "create_event",
+      "steps": ["createEvent", "listEventTeams"],
+      "notes": "Author is already on team_one after create."
+    },
+    {
+      "id": "join_then_refetch",
+      "steps": ["joinOrSwitchEventParticipant", "listEventTeamParticipants"],
+      "notes": "Prefer team participants refetch over full event tree."
+    },
+    {
+      "id": "switch_team",
+      "steps": ["joinOrSwitchEventParticipant", "listEventTeamParticipants"]
+    },
+    {
+      "id": "leave",
+      "steps": ["deleteEventParticipant", "getEvent"]
+    },
+    {
+      "id": "invite_friends",
+      "steps": [
+        "listFriendships",
+        "listEventParticipants",
+        "listEventInvitations",
+        "createEventInvitations"
+      ],
+      "compose": "accepted Friendships → derive other user per row; minus current participants; minus existing invitations. No invitees resource."
+    }
+  ],
+  "side_effects": [
+    {
+      "after": "createEvent",
+      "expect": [
+        "three event_teams",
+        "author participant on team_one"
+      ]
+    },
+    {
+      "after": [
+        "joinOrSwitchEventParticipant",
+        "deleteEventParticipant",
+        "createEventInvitations",
+        "updateEvent",
+        "deleteEvent"
+      ],
+      "expect": "May create inbox and push notifications (joined, left, invited, updated, canceled). APNs/iOS push may still be pending."
+    }
+  ]
+}

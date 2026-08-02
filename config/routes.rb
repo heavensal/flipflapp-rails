@@ -63,6 +63,7 @@ Rails.application.routes.draw do
         patch "users/password", to: "users/passwords#update"
         put "users/password", to: "users/passwords#update"
         post "users/confirmation", to: "users/confirmations#create"
+        patch "users/confirmation", to: "users/confirmations#update"
       end
 
       get "me", to: "users#me"

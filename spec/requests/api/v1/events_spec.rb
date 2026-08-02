@@ -4,16 +4,19 @@ require "rails_helper"
 
 RSpec.describe "Api::V1 Events", type: :request do
   describe "GET /api/v1/events" do
-    it "lists visible upcoming events" do
+    it "lists visible upcoming events and excludes past and hidden private" do
       user = create(:user)
       visible = create(:event, user: user, is_private: false)
       create(:event, is_private: true)
+      past = create(:event, user: user, is_private: false)
+      past.update_columns(start_time: 1.day.ago)
 
       api_get "/api/v1/events", user: user
 
       expect(response).to have_http_status(:ok)
       ids = JSON.parse(response.body).map { |e| e["id"] }
       expect(ids).to include(visible.id)
+      expect(ids).not_to include(past.id)
     end
   end
 
@@ -25,18 +28,24 @@ RSpec.describe "Api::V1 Events", type: :request do
       api_get "/api/v1/events/#{event.id}", user: stranger
 
       expect(response).to have_http_status(:not_found)
+      expect(JSON.parse(response.body)).to eq("error" => { "message" => "Not found" })
     end
 
-    it "returns the event with current_user context for the author" do
+    it "returns the event with current_user context and string decimals for the author" do
       user = create(:user)
-      event = create(:event, user: user)
+      event = create(:event, user: user, price: 8.0, latitude: 48.862725, longitude: 2.249899)
 
       api_get "/api/v1/events/#{event.id}", user: user
 
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body["id"]).to eq(event.id)
-      expect(body["current_user"]).to include("author" => true, "participant" => true)
+      expect(body["current_user"]).to include(
+        "author" => true, "participant" => true, "can_invite" => true, "invited" => false
+      )
+      expect(body["price"]).to be_a(String)
+      expect(body["latitude"]).to be_a(String)
+      expect(body["longitude"]).to be_a(String)
     end
   end
 
@@ -61,7 +70,9 @@ RSpec.describe "Api::V1 Events", type: :request do
       }.to change(Event, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(JSON.parse(response.body)["title"]).to eq("API Match")
+      body = JSON.parse(response.body)
+      expect(body["title"]).to eq("API Match")
+      expect(body["current_user"]).to include("author" => true, "participant" => true)
     end
   end
 
@@ -97,6 +108,18 @@ RSpec.describe "Api::V1 Events", type: :request do
       }.to change(Event, :count).by(-1)
 
       expect(response).to have_http_status(:no_content)
+      expect(response.body).to be_blank
+    end
+
+    it "forbids non-authors who can view the event" do
+      organizer = create(:user)
+      friend = create(:user)
+      create(:friendship, sender: organizer, receiver: friend, status: "accepted")
+      event = create(:event, user: organizer, is_private: true)
+
+      api_delete "/api/v1/events/#{event.id}", user: friend
+
+      expect(response).to have_http_status(:forbidden)
     end
   end
 end

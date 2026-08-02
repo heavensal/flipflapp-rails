@@ -30,13 +30,21 @@ Every `User` is a **player** who can also **organize** `Event` records. There is
 
 ### Authentication
 
-- Email and password via Devise: **registerable**, **confirmable**, **recoverable**, **rememberable**, **validatable**.
-- Follow the **current Devise flow** end to end (sign up, email confirmation, sign in, password reset, account update).
+- Email and password via Devise: **registerable**, **confirmable**, **recoverable**, **rememberable**, **validatable**, plus **reconfirmable** email changes (`unconfirmed_email` until confirmed).
+- Unconfirmed users cannot use the app (`allow_unconfirmed_access_for` = 0).
+- **Web:** Devise session cookies; confirmation and password-reset links open web routes.
+- **API (`/api/v1`):** Bearer JWT (`devise-jwt`, 7-day TTL, `jwt_denylist` on sign-out). Mobile Auth flow:
+  1. Register (`POST /users`) → unconfirmed account + confirmation email; **no JWT**
+  2. Confirm with token (`PATCH /users/confirmation`) → JWT session starts
+  3. Or sign in after confirmation (`POST /users/sign_in`) → JWT
+  4. Resend confirmation (`POST /users/confirmation`); password reset request/update; `GET|PATCH /me`; public `GET /users/:id`
+- Password reset via API does **not** issue a JWT — client must sign in afterward.
 - Required profile fields: `first_name`, `last_name`, `username` (unique, case-insensitive).
 - `username` is auto-generated on create if blank (`firstnamel#NNNN` pattern).
 - `provider` / `uid`: email users use `provider: email`, `uid` synced with `email`.
 - Optional `avatar` (CarrierWave / Cloudinary).
 - **Google OAuth is out of scope** — remove residual OAuth code; email auth only.
+- JSON API Auth contract for mobile: [API.md](API.md) and export bundle `docs/mobile/auth/`.
 
 ### What an authenticated `User` sees
 

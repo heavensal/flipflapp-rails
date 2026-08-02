@@ -8,7 +8,8 @@ module Api
       def index
         scope = @event.event_participants.includes(:user)
         if params[:event_team_id].present?
-          scope = scope.where(event_team_id: params[:event_team_id])
+          event_team = @event.event_teams.find(params[:event_team_id])
+          scope = scope.where(event_team: event_team)
         end
         render json: EventParticipantSerializer.new(scope).serializable_hash
       end

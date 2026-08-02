@@ -1,0 +1,102 @@
+{
+  "flows": {
+    "registerAndConfirm": {
+      "objective": "Create an account, confirm email via API token, start a JWT session, register push token.",
+      "steps": [
+        {
+          "operationId": "registerUser",
+          "next": "Show check-email UI. Do not store Authorization even if present."
+        },
+        {
+          "operationId": "resendConfirmation",
+          "optional": true,
+          "next": "User can request another email."
+        },
+        {
+          "operationId": "confirmUser",
+          "next": "Persist Authorization Bearer JWT from response header."
+        },
+        {
+          "operationId": "getCurrentUser",
+          "optional": true,
+          "next": "Hydrate profile cache."
+        },
+        {
+          "path": "POST /api/v1/device_token",
+          "note": "Full device_token OpenAPI is a separate wave; register FCM token after JWT is stored."
+        }
+      ]
+    },
+    "signInSession": {
+      "objective": "Return visit for a confirmed user.",
+      "steps": [
+        {
+          "operationId": "signIn",
+          "next": "Persist Authorization Bearer JWT."
+        },
+        {
+          "operationId": "getCurrentUser",
+          "optional": true
+        },
+        {
+          "path": "POST /api/v1/device_token",
+          "note": "Register or refresh FCM token."
+        }
+      ]
+    },
+    "signOutSession": {
+      "objective": "End push delivery and revoke JWT.",
+      "steps": [
+        {
+          "path": "DELETE /api/v1/device_token",
+          "note": "Unregister FCM token while JWT is still valid."
+        },
+        {
+          "operationId": "signOut",
+          "next": "Clear local JWT. Expect 204 even without a token."
+        }
+      ]
+    },
+    "passwordReset": {
+      "objective": "Reset password via email token, then sign in.",
+      "steps": [
+        {
+          "operationId": "requestPasswordReset",
+          "next": "Show check-email UI."
+        },
+        {
+          "operationId": "resetPassword",
+          "alternates": ["resetPasswordWithPut"],
+          "next": "No JWT issued. Prompt for signIn with new password."
+        },
+        {
+          "operationId": "signIn",
+          "next": "Persist JWT; optionally register device_token."
+        }
+      ]
+    },
+    "updateProfile": {
+      "objective": "Update profile; handle reconfirmable email change.",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "next": "If email changed, login email stays until confirmUser with the new confirmation token; tell the user to check email."
+        },
+        {
+          "operationId": "confirmUser",
+          "optional": true,
+          "next": "Only when confirming a pending email change token from email."
+        }
+      ]
+    },
+    "viewPublicProfile": {
+      "objective": "Load another user's public profile.",
+      "steps": [
+        {
+          "operationId": "getUser",
+          "next": "Render PublicUser fields only."
+        }
+      ]
+    }
+  }
+}

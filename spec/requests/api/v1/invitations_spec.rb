@@ -19,6 +19,32 @@ RSpec.describe "Api::V1 Invitations", type: :request do
       expect(response).to have_http_status(:created)
       expect(JSON.parse(response.body).first["user_id"]).to eq(friend.id)
     end
+
+    it "forbids non-participants" do
+      organizer = create(:user)
+      event = create(:event, user: organizer, is_private: false)
+      stranger = create(:user)
+      friend = create(:user)
+      create(:friendship, sender: stranger, receiver: friend, status: "accepted")
+
+      api_post "/api/v1/events/#{event.id}/invitations", user: stranger, params: {
+        user_ids: [ friend.id ]
+      }
+
+      expect(response).to have_http_status(:forbidden)
+    end
+
+    it "returns 422 when no eligible users remain" do
+      organizer = create(:user)
+      event = create(:event, user: organizer)
+
+      api_post "/api/v1/events/#{event.id}/invitations", user: organizer, params: {
+        user_ids: []
+      }
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(JSON.parse(response.body)).to eq("error" => { "message" => "No users to invite" })
+    end
   end
 
   describe "GET /api/v1/events/:event_id/invitations" do

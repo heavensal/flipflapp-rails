@@ -9,7 +9,7 @@ module Api
       before_action :authorize_countable_team!, only: :update
 
       def index
-        event_teams = @event.event_teams.order(:slot)
+        event_teams = @event.event_teams.in_order_of(:slot, Event::TEAM_SLOTS)
         render json: EventTeamSerializer.new(event_teams).serializable_hash
       end
 
@@ -37,11 +37,15 @@ module Api
       end
 
       def authorize_participant!
-        render_forbidden unless @event.in_this_event?(current_user)
+        return if @event.in_this_event?(current_user)
+
+        render_forbidden(I18n.t("event_team.flash.authorization.participant_required"))
       end
 
       def authorize_countable_team!
-        render_forbidden unless @event_team.countable?
+        return if @event_team.countable?
+
+        render_forbidden(I18n.t("event_team.flash.authorization.bench_not_renamable"))
       end
 
       def event_team_params

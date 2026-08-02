@@ -114,6 +114,7 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 | `rspec spec/models/event_spec.rb:42` | Single example |
 | `rspec spec/requests/api/v1/` | JSON API request specs |
 | `bundle exec rake rswag:specs:swaggerize` | Regenerate `swagger/v1/swagger.yaml` |
+| `bundle exec rake openapi:export` | Export `swagger/v1/openapi.json` + `docs/api/v1/openapi.json` (after swaggerize) |
 | `bin/rubocop` | Style (CI: lint job) |
 | `bin/brakeman --no-pager` | Security scan (CI: scan_ruby job) |
 

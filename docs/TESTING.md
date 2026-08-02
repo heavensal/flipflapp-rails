@@ -118,7 +118,9 @@ Specs lock **backend behavior** from [DOMAIN.md](DOMAIN.md). They are the source
 
 - Bearer JWT auth, status codes, JSON shapes
 - Resource names identical to web (`event_participants`, not aliases)
-- Regenerate `swagger/v1/swagger.yaml` after OpenAPI examples change
+- Regenerate `swagger/v1/swagger.yaml` after OpenAPI examples change, then `bundle exec rake openapi:export` for `swagger/v1/openapi.json` and `docs/api/v1/openapi.json`
+- EventTeams LLM bundle: `docs/api/v1/` (`errors.json`, `flows.json`, `CLIENT_CONTRACT.md`)
+- Events mobile companion: `swagger/v1/mobile/events_companion.json` (flows / viewer CTAs / client rules)
 
 Example: accepting a `Friendship` request **creates a `Notification`** → test in model or request spec.  
 Example: a **flash message** after the action → do **not** test; verify visually in the browser.
