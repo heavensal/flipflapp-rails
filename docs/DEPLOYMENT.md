@@ -120,7 +120,8 @@ Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage).
 1. Firebase project + Android app `fr.flipflapp.android` → `google-services.json` in the Android repo.
 2. Service account with Firebase Cloud Messaging access → `FCM_SERVICE_ACCOUNT_JSON` (single-line JSON) and `FCM_PROJECT_ID`.
 3. Same values in local `.env`, `.kamal/secrets`, and GitHub environment `production` secrets (wired through `config/deploy.yml`, `.kamal/secrets.cd`, and the deploy job in `.github/workflows/ci.yml`).
-4. Redeploy so production containers receive the vars. Without them, `Notifications::MobilePushJob` no-ops (inbox + Web Push still work).
+4. `Flipflapp::FcmConfig` normalizes PEM `\\n` sequences mangled by secret/env injection into real newlines before googleauth runs.
+5. Redeploy so production containers receive the vars. Without them, `Notifications::MobilePushJob` no-ops (inbox + Web Push still work).
 
 ### Kamal files
 
