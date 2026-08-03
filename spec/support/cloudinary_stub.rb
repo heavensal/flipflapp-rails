@@ -14,8 +14,18 @@ module CloudinaryStub
   }.freeze
 
   def stub_cloudinary_upload!
+    configure_cloudinary_for_test!
     allow(Cloudinary::Uploader).to receive(:upload).and_return(UPLOAD_RESPONSE.dup)
     allow(Cloudinary::Uploader).to receive(:destroy).and_return("result" => "ok")
+  end
+
+  def configure_cloudinary_for_test!
+    # Upload is stubbed; URL helpers still require cloud_name (unset in CI test job).
+    Cloudinary.config do |config|
+      config.cloud_name = ENV["CLOUDINARY_CLOUD_NAME"].presence || "demo"
+      config.api_key = ENV["CLOUDINARY_API_KEY"].presence || "test_key"
+      config.api_secret = ENV["CLOUDINARY_API_SECRET"].presence || "test_secret"
+    end
   end
 end
 
