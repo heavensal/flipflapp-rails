@@ -1,0 +1,227 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    },
+    "notes": [
+      "Message text follows server I18n (default locale fr).",
+      "Attribute validation messages for label are currently English ActiveRecord strings even when flash/auth copy is French.",
+      "Friendships 403 uses hardcoded English Forbidden (not French EventTeams flash keys)."
+    ]
+  },
+  "cases": {
+    "event_team.unauthenticated": {
+      "operationIds": ["listEventTeams", "getEventTeam", "updateEventTeam", "listEventTeamParticipants"],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "You need to sign in or sign up before continuing."
+        }
+      },
+      "client": "Clear JWT and route to sign-in."
+    },
+    "event_team.not_viewable": {
+      "operationIds": ["listEventTeams", "getEventTeam", "updateEventTeam", "listEventTeamParticipants"],
+      "status": 404,
+      "meaning": "Event missing or current user cannot view it (private stranger).",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      },
+      "client": "Treat as missing; do not distinguish private vs gone."
+    },
+    "event_team.not_found": {
+      "operationIds": ["getEventTeam", "updateEventTeam"],
+      "status": 404,
+      "meaning": "Team id not on this event.",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      }
+    },
+    "event_team.roster.team_not_found": {
+      "operationIds": ["listEventTeamParticipants"],
+      "status": 404,
+      "meaning": "event_team_id missing or not belonging to the event.",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      },
+      "client": "Do not treat as empty roster."
+    },
+    "event_team.rename.not_participant": {
+      "operationIds": ["updateEventTeam"],
+      "status": 403,
+      "meaning": "Viewer can see a public event but is not an EventParticipant.",
+      "example": {
+        "error": {
+          "message": "Seuls les participants peuvent renommer une équipe."
+        }
+      },
+      "exampleEn": {
+        "error": {
+          "message": "Only participants can rename a team."
+        }
+      },
+      "client": "Hide/disable rename CTA for non-participants."
+    },
+    "event_team.rename.bench": {
+      "operationIds": ["updateEventTeam"],
+      "status": 403,
+      "meaning": "Bench label is not renameable (countable false).",
+      "example": {
+        "error": {
+          "message": "Le banc ne peut pas être renommé."
+        }
+      },
+      "exampleEn": {
+        "error": {
+          "message": "The bench cannot be renamed."
+        }
+      },
+      "client": "Never show rename CTA for slot bench."
+    },
+    "event_team.label.invalid": {
+      "operationIds": ["updateEventTeam"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "label": ["Label is invalid"]
+          }
+        }
+      },
+      "triggers": ["punctuation/symbols", "blank after normalize"]
+    },
+    "event_team.label.too_long": {
+      "operationIds": ["updateEventTeam"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "label": ["Label is too long (maximum is 24 characters)"]
+          }
+        }
+      }
+    },
+    "event_team.label.taken": {
+      "operationIds": ["updateEventTeam"],
+      "status": 422,
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "label": ["Label has already been taken"]
+          }
+        }
+      },
+      "triggers": ["duplicate within event", "case-insensitive match"]
+    },
+    "friendship.unauthenticated": {
+      "operationIds": [
+        "listFriendships",
+        "createFriendship",
+        "searchFriendshipCandidates",
+        "updateFriendship",
+        "deleteFriendship"
+      ],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "You need to sign in or sign up before continuing."
+        }
+      },
+      "client": "Clear JWT and route to sign-in."
+    },
+    "friendship.target_not_found": {
+      "operationIds": ["createFriendship"],
+      "status": 404,
+      "meaning": "user_id does not match any User (User.find).",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      },
+      "client": "Treat as missing user; do not invent a soft-fail empty create."
+    },
+    "friendship.not_found": {
+      "operationIds": ["updateFriendship", "deleteFriendship"],
+      "status": 404,
+      "meaning": "Friendship id missing.",
+      "example": {
+        "error": {
+          "message": "Not found"
+        }
+      }
+    },
+    "friendship.forbidden_transition": {
+      "operationIds": ["updateFriendship"],
+      "status": 403,
+      "meaning": "Caller is not the receiver, or Friendship is not pending.",
+      "example": {
+        "error": {
+          "message": "Forbidden"
+        }
+      },
+      "client": "Hide accept/decline for sender and for non-pending rows."
+    },
+    "friendship.forbidden_delete": {
+      "operationIds": ["deleteFriendship"],
+      "status": 403,
+      "meaning": "Destroy not allowed for this role×status (e.g. receiver+pending, sender+declined).",
+      "example": {
+        "error": {
+          "message": "Forbidden"
+        }
+      },
+      "client": "Only offer cancel (sender+pending), unfriend (either+accepted), remove declined (receiver+declined)."
+    },
+    "friendship.validation": {
+      "operationIds": ["createFriendship"],
+      "status": 422,
+      "meaning": "Self-friend, duplicate directed pair, or reverse pair already exists.",
+      "example": {
+        "error": {
+          "message": "Validation failed",
+          "details": {
+            "receiver_id": ["Vous ne pouvez pas vous envoyer une demande d'amitié à vous-même."]
+          }
+        }
+      },
+      "examples": {
+        "duplicate": {
+          "error": {
+            "message": "Validation failed",
+            "details": {
+              "sender_id": ["Demande d'amitié déjà envoyée."]
+            }
+          }
+        },
+        "reverse": {
+          "error": {
+            "message": "Validation failed",
+            "details": {
+              "base": ["Une demande d'amitié existe déjà entre ces utilisateurs."]
+            }
+          }
+        }
+      },
+      "client": "Show message / bind details; do not navigate as success."
+    },
+    "friendship.search_empty_query": {
+      "operationIds": ["searchFriendshipCandidates"],
+      "status": 200,
+      "meaning": "Not an HTTP error. Missing or blank q returns [] — never the full user list.",
+      "example": [],
+      "client": "Do not invent a 422 for empty search; treat as empty results."
+    }
+  }
+}

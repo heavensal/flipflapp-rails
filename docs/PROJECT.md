@@ -57,7 +57,7 @@ When requirements compete, decide in this order:
 3. Complete web MVP flow for the normal player journey.
 4. Simple conventional Rails implementation.
 5. UI polish using the existing Tailwind language.
-6. Keep `/api/v1` and OpenAPI in sync when a feature changes the mobile HTTP contract ([API.md](API.md)).
+6. Keep `/api/v1`, OpenAPI, **and** LLM-ready mobile bundles in sync when a feature changes the mobile HTTP contract ([API.md](API.md), [mobile/README.md](mobile/README.md)).
 
 ## Out of scope
 

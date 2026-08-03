@@ -1,0 +1,38 @@
+{
+  "basePath": "/api/v1",
+  "headers": {
+    "request": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer <jwt> on protected routes only"
+    },
+    "response": {
+      "Authorization": "Persist only from successful signIn or confirmUser"
+    }
+  },
+  "jwt": {
+    "ttlDays": 7,
+    "refreshEndpoint": null,
+    "storage": "Platform secure storage; never log the token",
+    "issuers": ["signIn", "confirmUser"],
+    "nonIssuers": ["registerUser", "resetPassword", "requestPasswordReset", "resendConfirmation"]
+  },
+  "statusHandling": {
+    "204": "Success with empty body — do not JSON-parse",
+    "401": "Clear local session and show sign-in UI (except register-waiting screen)",
+    "422": "Show error.message; bind error.details to fields",
+    "404": "Treat as missing / not viewable"
+  },
+  "timeoutAndOffline": {
+    "noResponse": "Do not mutate local auth state; let the user retry",
+    "offline": "Do not queue Auth writes; show offline; retry on user action when online",
+    "autoRetry": "Do not blindly auto-retry registerUser, signIn, password, or confirmation writes"
+  },
+  "registerSessionRule": "Ignore any Authorization on registerUser. Session starts only after confirmUser or signIn.",
+  "deviceToken": {
+    "canonical": "docs/mobile/device_tokens",
+    "afterJwt": "registerDeviceToken after signIn or confirmUser / FCM refresh",
+    "onSignOut": "unregisterDeviceToken before signOut while JWT is still valid"
+  },
+  "avatar": "Profile photo upload/clear contract lives in docs/mobile/users (multipart user[avatar] on updateCurrentUser). registerUser may accept the same multipart field; do not invent a JSON-string avatar."
+}

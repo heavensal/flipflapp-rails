@@ -4,9 +4,9 @@ require "rails_helper"
 
 RSpec.describe "Api::V1 Friendships", type: :request do
   describe "GET /api/v1/friendships" do
-    it "returns friendship buckets" do
+    it "returns all four buckets with nested PublicUser shapes" do
       user = create(:user)
-      friend = create(:user)
+      friend = create(:user, first_name: "Ada", last_name: "Lovelace", username: "ada#0001")
       create(:friendship, sender: user, receiver: friend, status: "accepted")
 
       api_get "/api/v1/friendships", user: user
@@ -14,7 +14,27 @@ RSpec.describe "Api::V1 Friendships", type: :request do
       expect(response).to have_http_status(:ok)
       body = JSON.parse(response.body)
       expect(body.keys).to match_array(%w[accepted sent received declined])
+      expect(body["sent"]).to eq([])
+      expect(body["received"]).to eq([])
+      expect(body["declined"]).to eq([])
       expect(body["accepted"].length).to eq(1)
+
+      row = body["accepted"].first
+      expect(row).to include("id", "sender_id", "receiver_id", "status" => "accepted")
+      expect(row["sender"]).to include(
+        "id" => user.id,
+        "first_name" => user.first_name,
+        "last_name" => user.last_name,
+        "username" => user.username
+      )
+      expect(row["receiver"]).to include(
+        "id" => friend.id,
+        "first_name" => "Ada",
+        "last_name" => "Lovelace",
+        "username" => "ada#0001"
+      )
+      expect(row["sender"]).not_to include("email", "role")
+      expect(row["receiver"]).not_to include("email", "role")
     end
   end
 
@@ -28,7 +48,12 @@ RSpec.describe "Api::V1 Friendships", type: :request do
       }.to change(Friendship, :count).by(1)
 
       expect(response).to have_http_status(:created)
-      expect(JSON.parse(response.body)["status"]).to eq("pending")
+      body = JSON.parse(response.body)
+      expect(body["status"]).to eq("pending")
+      expect(body["sender_id"]).to eq(user.id)
+      expect(body["receiver_id"]).to eq(other.id)
+      expect(body["sender"]).to include("id" => user.id)
+      expect(body["receiver"]).to include("id" => other.id)
     end
   end
 
@@ -42,6 +67,7 @@ RSpec.describe "Api::V1 Friendships", type: :request do
 
       expect(response).to have_http_status(:ok)
       expect(friendship.reload.status).to eq("accepted")
+      expect(JSON.parse(response.body)["status"]).to eq("accepted")
     end
   end
 
@@ -50,7 +76,8 @@ RSpec.describe "Api::V1 Friendships", type: :request do
       user = create(:user)
       other = create(:user, first_name: "Zinedine", last_name: "Zidane", username: "zizou#0001")
 
-      api_get "/api/v1/friendships/search", user: user, params: { q: { first_name_or_last_name_or_username_cont: "Zinedine" } }
+      api_get "/api/v1/friendships/search", user: user,
+              params: { q: { first_name_or_last_name_or_username_cont: "Zinedine" } }
 
       expect(response).to have_http_status(:ok)
       result = JSON.parse(response.body).find { |search_user| search_user["id"] == other.id }

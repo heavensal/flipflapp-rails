@@ -1,0 +1,126 @@
+{
+  "basePath": "/api/v1",
+  "resourceNames": {
+    "use": ["me", "users"],
+    "never": ["profile", "account", "players"]
+  },
+  "operationIds": [
+    "getCurrentUser",
+    "updateCurrentUser",
+    "getUser"
+  ],
+  "headers": {
+    "request": {
+      "Accept": "application/json",
+      "Authorization": "Bearer <jwt> required on all Users ops",
+      "Content-Type": {
+        "application/json": "Text-only PATCH /me (first_name, last_name, email, password, password_confirmation, remove_avatar)",
+        "multipart/form-data": "Required when uploading user[avatar] file; other user[...] fields as form parts"
+      }
+    },
+    "response": {
+      "Authorization": "Users ops never issue JWT"
+    }
+  },
+  "jwt": {
+    "issuers": [],
+    "nonIssuers": ["getCurrentUser", "updateCurrentUser", "getUser"],
+    "afterPasswordChangeViaMe": "Existing Bearer stays valid until expiry or signOut",
+    "loadFrom": "docs/mobile/auth — signIn or confirmUser"
+  },
+  "schemas": {
+    "CurrentUser": {
+      "fields": [
+        "id",
+        "email",
+        "unconfirmed_email",
+        "first_name",
+        "last_name",
+        "username",
+        "role",
+        "avatar_url"
+      ],
+      "notes": [
+        "Only GET|PATCH /me returns CurrentUser",
+        "unconfirmed_email is null when no pending email change",
+        "role is player|admin — display-only for player apps; no mobile admin API"
+      ]
+    },
+    "PublicUser": {
+      "fields": ["id", "first_name", "last_name", "username", "avatar_url"],
+      "neverIncludes": ["email", "role", "unconfirmed_email"],
+      "alsoReturnedBy": [
+        "getUser",
+        "searchFriendshipCandidates",
+        "nested sender/receiver on Friendship",
+        "nested user on EventParticipant / Invitation"
+      ]
+    }
+  },
+  "writability": {
+    "id": "read",
+    "email": "read_write_reconfirmable",
+    "unconfirmed_email": "read_server_set",
+    "first_name": "read_write",
+    "last_name": "read_write",
+    "username": "read_create_only_ignored_on_patch",
+    "role": "read_ignored_on_patch",
+    "avatar_url": "read_response_only",
+    "avatar": "write_multipart_file_only",
+    "remove_avatar": "write_boolean_clear",
+    "password": "write_no_current_password",
+    "password_confirmation": "write_with_password"
+  },
+  "username": {
+    "formatExample": "ada#0001",
+    "generation": "Auto on create from first_name + last initial + #NNNN; unique case-insensitive",
+    "client": "Display as-is from API; do not rebuild from names; do not send on PATCH"
+  },
+  "emailChange": {
+    "afterPatch": {
+      "email": "still the confirmed login email",
+      "unconfirmed_email": "the new pending address",
+      "sideEffect": "confirmation email sent"
+    },
+    "completeVia": "Auth confirmUser with token from email",
+    "afterConfirm": {
+      "email": "new address",
+      "unconfirmed_email": null
+    }
+  },
+  "password": {
+    "viaMe": "Logged-in change: PATCH /me with password + password_confirmation (6..128); no current_password; JWT stays valid",
+    "viaAuthReset": "Forgot password: requestPasswordReset → resetPassword → signIn (no JWT from reset)"
+  },
+  "avatar": {
+    "responseField": "avatar_url",
+    "upload": {
+      "operationId": "updateCurrentUser",
+      "contentType": "multipart/form-data",
+      "field": "user[avatar]",
+      "formats": ["jpg", "jpeg", "gif", "png"],
+      "jsonAvatar": "Not supported — do not send avatar as a JSON string"
+    },
+    "clear": {
+      "field": "user[remove_avatar]",
+      "value": true,
+      "result": "avatar_url null"
+    },
+    "registerNote": "registerUser may also accept multipart user[avatar]; canonical mobile upload contract is updateCurrentUser — see this bundle"
+  },
+  "statusHandling": {
+    "200": "Parse CurrentUser or PublicUser JSON",
+    "401": "Clear session → Auth sign-in",
+    "404": "Opaque missing user — do not prompt request access",
+    "422": "Show error.message; bind error.details to fields (details locale fr; top-level message often English Validation failed)"
+  },
+  "timeoutAndOffline": {
+    "noResponse": "Do not mutate local profile cache; let the user retry",
+    "offline": "Do not queue profile writes; show offline; retry on user action when online",
+    "autoRetry": "Do not blindly auto-retry updateCurrentUser"
+  },
+  "crossLinks": {
+    "auth": "docs/mobile/auth — JWT, confirmUser, passwordReset",
+    "friendships": "docs/api/v1 — createFriendship, searchFriendshipCandidates, profile_add_friend flow"
+  }
+}

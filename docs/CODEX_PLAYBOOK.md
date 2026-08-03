@@ -12,7 +12,7 @@ For every non-trivial task, Codex follows this sequence:
 4. **Bound** — state what is in scope, what is deliberately out of scope, ambiguities, and whether approval is required.
 5. **Choose Rails-native mechanics** — prefer installed framework APIs. Identify any appropriate generator or command before hand-writing boilerplate.
 6. **Request permission** — commands, generators, migrations, new dependencies, new Stimulus controllers, service objects, commits, pushes, and deploys require explicit approval.
-7. **Build in dependency order** — domain/spec first, then model, HTTP, view, and JavaScript only if needed.
+7. **Build in dependency order** — domain/spec first, then model (validations/limits), HTTP, view/JS if needed, then OpenAPI + LLM-ready mobile docs when `/api/v1` changed.
 8. **Verify proportionally** — inspect the diff and static consistency always; run requested tests, lint, security scans, or browser checks only with permission.
 9. **Report** — summarize behavior delivered, files changed, verification performed/not performed, and remaining decisions.
 
@@ -68,6 +68,7 @@ Flag ambiguities and approval gates before editing.
 If framework boilerplate is needed, propose the Rails-native generator first.
 Propose migrations for approval before creating files; never run them implicitly.
 Write model specs first, then the smallest conventional Rails implementation.
+If /api/v1 is touched, complete TESTING.md Step 7 (OpenAPI + matching docs/mobile or docs/api/v1 bundle) — feature incomplete without it.
 Do not run commands unless I approve the exact command.
 ```
 
@@ -105,6 +106,7 @@ Codex must end with:
 - the user-visible or domain outcome;
 - the important implementation choices;
 - files or layers changed;
+- which LLM-ready mobile bundle was updated, or explicitly **no `/api/v1` impact**;
 - tests/checks run and their results, or an explicit note that none were run;
 - migrations, commands, dependencies, or decisions still awaiting approval;
 - any known gap against the MVP quality gates in [PROJECT.md](PROJECT.md).

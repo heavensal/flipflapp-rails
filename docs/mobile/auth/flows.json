@@ -1,0 +1,107 @@
+{
+  "flows": {
+    "registerAndConfirm": {
+      "objective": "Create an account, confirm email via API token, start a JWT session, register push token.",
+      "steps": [
+        {
+          "operationId": "registerUser",
+          "next": "Show check-email UI. Do not store Authorization even if present."
+        },
+        {
+          "operationId": "resendConfirmation",
+          "optional": true,
+          "next": "User can request another email."
+        },
+        {
+          "operationId": "confirmUser",
+          "next": "Persist Authorization Bearer JWT from response header."
+        },
+        {
+          "operationId": "getCurrentUser",
+          "optional": true,
+          "next": "Hydrate profile cache."
+        },
+        {
+          "operationId": "registerDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
+          "note": "Canonical device_token contract: docs/mobile/device_tokens."
+        }
+      ]
+    },
+    "signInSession": {
+      "objective": "Return visit for a confirmed user.",
+      "steps": [
+        {
+          "operationId": "signIn",
+          "next": "Persist Authorization Bearer JWT."
+        },
+        {
+          "operationId": "getCurrentUser",
+          "optional": true
+        },
+        {
+          "operationId": "registerDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
+          "note": "Register or refresh FCM token."
+        }
+      ]
+    },
+    "signOutSession": {
+      "objective": "End push delivery and revoke JWT.",
+      "steps": [
+        {
+          "operationId": "unregisterDeviceToken",
+          "bundle": "docs/mobile/device_tokens",
+          "note": "Unregister FCM token while JWT is still valid."
+        },
+        {
+          "operationId": "signOut",
+          "next": "Clear local JWT. Expect 204 even without a token."
+        }
+      ]
+    },
+    "passwordReset": {
+      "objective": "Reset password via email token, then sign in.",
+      "steps": [
+        {
+          "operationId": "requestPasswordReset",
+          "next": "Show check-email UI."
+        },
+        {
+          "operationId": "resetPassword",
+          "alternates": ["resetPasswordWithPut"],
+          "next": "No JWT issued. Prompt for signIn with new password."
+        },
+        {
+          "operationId": "signIn",
+          "next": "Persist JWT; optionally register device_token."
+        }
+      ]
+    },
+    "updateProfile": {
+      "objective": "Thin Auth stub — full profile edit lives in docs/mobile/users.",
+      "see": "docs/mobile/users flows: editProfileNames, changeEmail, changePasswordLoggedIn, uploadAvatar, removeAvatar",
+      "steps": [
+        {
+          "operationId": "updateCurrentUser",
+          "next": "See docs/mobile/users. If email changed, confirm via confirmUser; CurrentUser exposes unconfirmed_email."
+        },
+        {
+          "operationId": "confirmUser",
+          "optional": true,
+          "next": "Only when confirming a pending email change token from email."
+        }
+      ]
+    },
+    "viewPublicProfile": {
+      "objective": "Thin Auth stub — full public profile + add-friend lives in docs/mobile/users.",
+      "see": "docs/mobile/users flow openPublicProfileAddFriend",
+      "steps": [
+        {
+          "operationId": "getUser",
+          "next": "Render PublicUser fields only; compose friendship via docs/api/v1."
+        }
+      ]
+    }
+  }
+}

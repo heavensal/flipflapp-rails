@@ -1,0 +1,57 @@
+{
+  "basePath": "/api/v1",
+  "resourceNames": {
+    "use": ["device_token"],
+    "never": ["push_tokens", "fcm_tokens", "device_tokens"]
+  },
+  "operationIds": ["registerDeviceToken", "unregisterDeviceToken"],
+  "path": "/api/v1/device_token",
+  "headers": {
+    "request": {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+      "Authorization": "Bearer <jwt> required"
+    },
+    "response": {
+      "Authorization": "DeviceToken ops never issue JWT",
+      "registerSuccess": "200 with empty body — do not JSON-parse",
+      "unregisterSuccess": "204 empty — idempotent if token missing"
+    }
+  },
+  "body": {
+    "register": {
+      "device_token": {
+        "token": "string required",
+        "platform": "android|ios optional default android"
+      }
+    },
+    "unregister": {
+      "device_token": {
+        "token": "string required"
+      }
+    }
+  },
+  "platforms": {
+    "allowed": ["android", "ios"],
+    "rejected": ["web"],
+    "note": "Web push uses PushSubscription, not this API"
+  },
+  "reassignment": "Same token registered by a new user moves ownership to that user",
+  "lifecycle": {
+    "afterJwt": "registerDeviceToken after signIn or confirmUser or FCM refresh",
+    "beforeSignOut": "unregisterDeviceToken while JWT still valid, then Auth signOut"
+  },
+  "statusHandling": {
+    "200": "Register success empty body",
+    "204": "Unregister success empty body",
+    "401": "Clear session → Auth sign-in",
+    "422": "Bind validation details (e.g. invalid platform)"
+  },
+  "timeoutAndOffline": {
+    "writes": "Do not queue blindly; retry on user action when online"
+  },
+  "crossLinks": {
+    "auth": "docs/mobile/auth — JWT issuers; thin deviceToken pointers here",
+    "notifications": "docs/mobile/notifications — inbox; this bundle is delivery registration only"
+  }
+}

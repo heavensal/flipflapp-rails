@@ -1,0 +1,34 @@
+{
+  "parse": {
+    "shape": {
+      "error": {
+        "message": "string",
+        "details": "optional object of field -> string[]"
+      }
+    }
+  },
+  "cases": {
+    "notification.unauthenticated": {
+      "operationIds": [
+        "listNotifications",
+        "readNotification",
+        "readAllNotifications",
+        "deleteNotification"
+      ],
+      "status": 401,
+      "example": {
+        "error": {
+          "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+        }
+      },
+      "client": "Clear JWT → Auth sign-in."
+    },
+    "notification.not_found": {
+      "operationIds": ["readNotification", "deleteNotification"],
+      "status": 404,
+      "meaning": "Missing, owned by another user, or friendship_requested (not inbox).",
+      "example": { "error": { "message": "Not found" } },
+      "client": "Remove from local inbox cache if present."
+    }
+  }
+}

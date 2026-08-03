@@ -1,0 +1,264 @@
+{
+  "event_teams": {
+    "does_not_exist": [
+      {
+        "method": "POST",
+        "path": "/api/v1/events/{event_id}/event_teams",
+        "reason": "Exactly three teams are created with the Event (team_one, team_two, bench)."
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/v1/events/{event_id}/event_teams/{id}",
+        "reason": "Teams are not destroyed independently of the Event."
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/events/{event_id}/event_teams/{id}",
+        "forbiddenBodyFields": ["slot"],
+        "reason": "slot is immutable; strong params permit label only."
+      },
+      {
+        "aliasPaths": ["/api/v1/teams", "/api/v1/events/{event_id}/teams"],
+        "reason": "No alias resources — use event_teams only."
+      }
+    ],
+    "flows": {
+      "open_event_teams": {
+        "objective": "Open a match and render the three team columns with rosters.",
+        "steps": [
+          {
+            "operationId": "getEvent",
+            "next": "Read participants_count, spots_remaining, fill_level for capacity UI."
+          },
+          {
+            "operationId": "listEventTeams",
+            "expect": "Array of 3 in order team_one, team_two, bench with countable true/true/false."
+          },
+          {
+            "operationId": "listEventTeamParticipants",
+            "repeat": "Once per event_team id",
+            "next": "Render roster under each label."
+          },
+          {
+            "operationId": "updateEventTeam",
+            "optional": true,
+            "when": "Viewer is participant and team.countable is true"
+          }
+        ]
+      },
+      "rename_countable_team": {
+        "objective": "Rename a countable team display label.",
+        "steps": [
+          {
+            "operationId": "getEventTeam",
+            "optional": true,
+            "next": "Confirm countable true before showing rename form."
+          },
+          {
+            "operationId": "updateEventTeam",
+            "body": { "event_team": { "label": "Les Bleus" } },
+            "success": "200 EventTeam; side effects none.",
+            "next": "Apply label locally or refetch listEventTeams / getEventTeam. Do not refetch participants."
+          }
+        ],
+        "traps": [
+          "bench → 403 event_team.rename.bench",
+          "non-participant on public event → 403 event_team.rename.not_participant",
+          "invalid/duplicate/too-long label → 422 with details.label"
+        ]
+      },
+      "after_join_refetch_roster": {
+        "objective": "Refresh only the target team roster after join or switch.",
+        "steps": [
+          {
+            "operationId": "joinOrSwitchEventParticipant",
+            "body": { "event_participant": { "event_team_id": 10 } },
+            "success": "201 first join; 200 switch"
+          },
+          {
+            "operationId": "listEventTeamParticipants",
+            "pathParams": { "event_team_id": "target team id from join body" },
+            "next": "Do not refetch the full event tree or all three teams unless UI needs it."
+          }
+        ]
+      }
+    },
+    "parentEventCapacity": {
+      "fields": ["participants_count", "spots_remaining", "fill_level"],
+      "note": "On Event JSON only. Countable slots only; bench never included. Per-team caps enforced on join (422), not exposed on EventTeam."
+    }
+  },
+  "friendships": {
+    "does_not_exist": [
+      {
+        "aliasPaths": ["/api/v1/friends", "/api/v1/requests", "/api/v1/friend_requests"],
+        "reason": "Resource name is friendships only — Convention over Configuration."
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/friendships/{id}",
+        "reason": "No show action; keep ids from listFriendships / createFriendship / updateFriendship."
+      },
+      {
+        "transition": "declined→accepted",
+        "reason": "Cannot accept from declined. Receiver deletes declined, then either party may createFriendship."
+      },
+      {
+        "who": "sender",
+        "action": "accept_or_decline",
+        "reason": "Only the receiver of a pending Friendship may call updateFriendship."
+      },
+      {
+        "search": "email",
+        "reason": "Ransackable attributes are first_name, last_name, username only."
+      },
+      {
+        "resource": "invitees",
+        "reason": "No invitees endpoint. Compose invite picker client-side from listFriendships.accepted."
+      }
+    ],
+    "flows": {
+      "search_and_request": {
+        "objective": "Find a player with no existing Friendship row and send a pending request.",
+        "steps": [
+          {
+            "operationId": "searchFriendshipCandidates",
+            "query": "q[first_name_or_last_name_or_username_cont]=Zinedine",
+            "expect": "PublicUser[]; blank/missing q → []. avatar_url typically null.",
+            "traps": ["Do not search by email", "Do not call until query non-blank if UI wants no empty flash"]
+          },
+          {
+            "operationId": "createFriendship",
+            "body": { "user_id": 3 },
+            "success": "201 pending Friendship; side effect friendship_requested to receiver.",
+            "next": "Refetch listFriendships (sent). Target disappears from search."
+          }
+        ]
+      },
+      "receive_accept": {
+        "objective": "Receiver accepts a pending request from the received bucket.",
+        "steps": [
+          {
+            "operationId": "listFriendships",
+            "next": "Render received; badge = received.length."
+          },
+          {
+            "operationId": "updateFriendship",
+            "body": { "status": "accepted" },
+            "when": "current user is receiver and status is pending",
+            "success": "200 status accepted",
+            "next": "Refetch listFriendships (received shrinks; accepted grows). Enables private events + invites."
+          }
+        ],
+        "traps": ["sender PATCH → 403 friendship.forbidden_transition"]
+      },
+      "receive_decline": {
+        "objective": "Receiver soft-rejects a pending request.",
+        "steps": [
+          {
+            "operationId": "updateFriendship",
+            "body": { "status": "declined" },
+            "success": "200 status declined; friendship_requested cleaned up",
+            "next": "Refetch listFriendships — row moves to declined (receiver only). Sender has no declined UI."
+          }
+        ]
+      },
+      "cancel_pending": {
+        "objective": "Sender cancels an outgoing pending request.",
+        "steps": [
+          {
+            "operationId": "deleteFriendship",
+            "when": "current user is sender and status is pending",
+            "success": "204 empty body",
+            "next": "Refetch listFriendships (sent)."
+          }
+        ],
+        "traps": ["receiver DELETE pending → 403 friendship.forbidden_delete"]
+      },
+      "unfriend": {
+        "objective": "Either party ends an accepted friendship.",
+        "steps": [
+          {
+            "operationId": "deleteFriendship",
+            "when": "status is accepted and current user is sender or receiver",
+            "success": "204 empty body",
+            "next": "Refetch listFriendships (accepted). Private visibility for that friend's events ends."
+          }
+        ]
+      },
+      "remove_declined_then_rerequest": {
+        "objective": "Receiver clears a declined row so either party can request again.",
+        "steps": [
+          {
+            "operationId": "deleteFriendship",
+            "when": "current user is receiver and status is declined",
+            "success": "204 empty body",
+            "next": "Either party may createFriendship; user reappears in searchFriendshipCandidates."
+          }
+        ],
+        "traps": ["sender DELETE declined → 403"]
+      },
+      "invite_picker_compose": {
+        "objective": "Build invite candidates for an event (no invitees resource).",
+        "note": "Full Events invite contract: docs/mobile/events (inviteFriendsCompose).",
+        "steps": [
+          {
+            "operationId": "listFriendships",
+            "next": "Take accepted bucket only."
+          },
+          {
+            "client": "For each Friendship, other_user = (sender_id == me.id) ? receiver : sender"
+          },
+          {
+            "operationId": "listEventParticipants",
+            "next": "Subtract participant user ids."
+          },
+          {
+            "operationId": "listEventInvitations",
+            "next": "Subtract already-invited user ids."
+          },
+          {
+            "operationId": "createEventInvitations",
+            "body": { "user_ids": [2, 5] },
+            "when": "Viewer can_invite and remaining ids non-empty"
+          }
+        ]
+      },
+      "profile_add_friend": {
+        "objective": "Send a request from a public profile.",
+        "note": "Full profile contract: docs/mobile/users (openPublicProfileAddFriend).",
+        "steps": [
+          {
+            "operationId": "getUser",
+            "next": "Show Add friend when no Friendship exists with that user. PublicUser only — see docs/mobile/users."
+          },
+          {
+            "operationId": "createFriendship",
+            "body": { "user_id": "<profile user id>" },
+            "success": "201 pending"
+          }
+        ]
+      },
+      "push_friendship_requested": {
+        "objective": "Handle FCM/APNs for friendship_requested without using the notifications inbox.",
+        "note": "Inbox contract: docs/mobile/notifications. Device registration: docs/mobile/device_tokens.",
+        "steps": [
+          {
+            "client": "On push kind friendship_requested (path historically /friendships), open friends UI / received bucket."
+          },
+          {
+            "operationId": "listFriendships",
+            "next": "Refresh received badge; do not expect the row in listNotifications."
+          }
+        ]
+      }
+    },
+    "ui_by_bucket": {
+      "accepted": "Show friend; actions: unfriend (deleteFriendship). Other user via sender/receiver compare.",
+      "sent": "Outgoing pending; action: cancel (deleteFriendship as sender).",
+      "received": "Incoming pending; actions: accept / decline (updateFriendship). Badge source.",
+      "declined": "Receiver-only history; action: remove declined (deleteFriendship). No accept CTA."
+    },
+    "timeout_offline": "Do not optimistic-commit create, accept, decline, cancel, unfriend, or remove declined. Leave local state unchanged; offer retry when online."
+  }
+}

@@ -30,13 +30,22 @@ Every `User` is a **player** who can also **organize** `Event` records. There is
 
 ### Authentication
 
-- Email and password via Devise: **registerable**, **confirmable**, **recoverable**, **rememberable**, **validatable**.
-- Follow the **current Devise flow** end to end (sign up, email confirmation, sign in, password reset, account update).
+- Email and password via Devise: **registerable**, **confirmable**, **recoverable**, **rememberable**, **validatable**, plus **reconfirmable** email changes (`unconfirmed_email` until confirmed).
+- Unconfirmed users cannot use the app (`allow_unconfirmed_access_for` = 0).
+- **Web:** Devise session cookies; confirmation and password-reset links open web routes.
+- **API (`/api/v1`):** Bearer JWT (`devise-jwt`, 7-day TTL, `jwt_denylist` on sign-out). Mobile Auth flow:
+  1. Register (`POST /users`) → unconfirmed account + confirmation email; **no JWT**
+  2. Confirm with token (`PATCH /users/confirmation`) → JWT session starts
+  3. Or sign in after confirmation (`POST /users/sign_in`) → JWT
+  4. Resend confirmation (`POST /users/confirmation`); password reset request/update; `GET|PATCH /me`; public `GET /users/:id`
+- Password reset via API does **not** issue a JWT — client must sign in afterward.
 - Required profile fields: `first_name`, `last_name`, `username` (unique, case-insensitive).
-- `username` is auto-generated on create if blank (`firstnamel#NNNN` pattern).
+- `username` is auto-generated on create if blank (`firstnamel#NNNN` pattern); **not** writable via `PATCH /me`.
 - `provider` / `uid`: email users use `provider: email`, `uid` synced with `email`.
-- Optional `avatar` (CarrierWave / Cloudinary).
+- Optional `avatar` (CarrierWave / Cloudinary). Mobile upload: **multipart** `user[avatar]` on `PATCH /me`; clear with `remove_avatar`. Response field `avatar_url`.
+- API `GET|PATCH /me` returns `CurrentUser` including nullable `unconfirmed_email` (pending reconfirm address). `GET /users/:id` returns `PublicUser` only (no email/role/unconfirmed_email).
 - **Google OAuth is out of scope** — remove residual OAuth code; email auth only.
+- JSON API Auth contract for mobile: [API.md](API.md) and `docs/mobile/auth/`. Users / profile: `docs/mobile/users/`.
 
 ### What an authenticated `User` sees
 
@@ -455,6 +464,23 @@ Participation includes `bench` for `updated`, `canceled`, and as **recipients** 
 
 ---
 
+## DeviceToken
+
+Mobile push registration for FCM (Android today; iOS reuses the same table with `platform: ios`).
+
+### Rules
+
+- Belongs to one `User`. Token string is **unique** globally.
+- `platform` must be `android` or `ios` (API default on create: `android`). **No** `web` platform on `/api/v1/device_token` (web uses `PushSubscription` / VAPID).
+- `DeviceToken.register_for(user, token:, platform:)` finds or initializes by token and **reassigns** `user` to the current account (same physical device switching accounts).
+- API: singular resource `POST|DELETE /api/v1/device_token`. Register success is **200** empty body. Unregister is **204** and **idempotent** when the token is missing for that user.
+- Lifecycle: register after JWT (`signIn` / `confirmUser`) or FCM token refresh; unregister **before** `signOut` while JWT is still valid.
+- Delivery: `Notifications::MobilePushJob` fans out to the recipient’s `DeviceToken` rows. APNs/iOS delivery may still be pending; Android FCM is implemented.
+
+JSON contract: [API.md](API.md) and `docs/mobile/device_tokens/`.
+
+---
+
 ## Admin
 
 An **admin** is a `User` with `role: admin`. Admins use the same app as players — they can create `Event` records, join matches, send `Friendship` requests, and receive `Notification` records like any other `User`.
@@ -516,7 +542,7 @@ Out of scope: payments, chat, rankings, Google OAuth. See [PROJECT.md](PROJECT.m
 
 ## TDD workflow
 
-See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → migrations (if approved) → failing model specs → implementation.
+See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → migrations (if approved) → failing model specs → implementation → API + LLM mobile docs if `/api/v1` touched → feature validation.
 
 ---
 

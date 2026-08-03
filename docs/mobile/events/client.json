@@ -1,0 +1,63 @@
+{
+  "basePath": "/api/v1",
+  "resourceNames": {
+    "use": ["events", "event_participants", "invitations", "event_teams"],
+    "never": ["teams", "participants", "invitees", "matches"]
+  },
+  "operationIds": {
+    "owned": [
+      "listEvents",
+      "createEvent",
+      "getEvent",
+      "updateEvent",
+      "deleteEvent",
+      "listEventParticipants",
+      "listEventTeamParticipants",
+      "joinOrSwitchEventParticipant",
+      "deleteEventParticipant",
+      "listEventInvitations",
+      "createEventInvitations"
+    ],
+    "crossLinkHub": ["listEventTeams", "getEventTeam", "updateEventTeam"]
+  },
+  "headers": {
+    "request": {
+      "Accept": "application/json",
+      "Content-Type": "application/json when body present",
+      "Authorization": "Bearer <jwt> required"
+    },
+    "response": {
+      "Authorization": "Events ops never issue JWT"
+    }
+  },
+  "decimals": "Send price, latitude, longitude as numbers on write. Expect decimal strings on Event responses.",
+  "viewerFlags": {
+    "field": "current_user on getEvent (and create/update responses)",
+    "keys": ["participant", "can_invite", "author", "invited"],
+    "privateStranger": "getEvent returns 404 — no payload, no CTAs"
+  },
+  "statusHandling": {
+    "401": "Clear session → Auth sign-in",
+    "403": "Show forbidden; do not retry as another verb; do not treat as 404",
+    "404": "Opaque — missing OR private OR not joinable. Never prompt request access",
+    "422": "Show message / bind details; do not navigate as success",
+    "204": "Empty body success"
+  },
+  "timeoutAndOffline": {
+    "writes": "Do not optimistic-commit create/update/delete/join/leave/invite",
+    "retry": "Show offline; retry on user action when online"
+  },
+  "refetch": {
+    "afterJoinOrSwitch": "listEventTeamParticipants for target event_team_id only — not full event tree",
+    "afterLeave": "getEvent and/or listEvents as needed (may lose private visibility)",
+    "afterRenameTeam": "docs/api/v1 EventTeams — local label or getEventTeam; do not refetch participants",
+    "afterInvite": "listEventInvitations"
+  },
+  "invitePicker": "listFriendships.accepted → other user per row − listEventParticipants − listEventInvitations → createEventInvitations { user_ids }. No /invitees.",
+  "crossLinks": {
+    "eventTeams": "docs/api/v1 — slot/label/countable rename",
+    "friendships": "docs/api/v1 — accepted friends for invite picker",
+    "users": "docs/mobile/users — nested PublicUser on participants/invitations",
+    "notifications": "docs/mobile/notifications — invited/joined/left/updated/canceled"
+  }
+}

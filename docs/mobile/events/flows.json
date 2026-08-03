@@ -1,0 +1,83 @@
+{
+  "flows": {
+    "browseUpcoming": {
+      "objective": "Browse visible upcoming matches and open one.",
+      "steps": [
+        { "operationId": "listEvents", "next": "Show upcoming visible events only." },
+        { "operationId": "getEvent", "next": "Use current_user flags for CTAs." },
+        {
+          "operationId": "listEventTeams",
+          "bundle": "docs/api/v1",
+          "next": "Three slots; rename via hub updateEventTeam."
+        },
+        { "operationId": "listEventParticipants", "optional": true }
+      ]
+    },
+    "createMatch": {
+      "objective": "Organizer creates a match.",
+      "steps": [
+        {
+          "operationId": "createEvent",
+          "success": "201 Event; three teams created; author on team_one",
+          "next": "Optionally createEventInvitations."
+        }
+      ]
+    },
+    "editCancelAsAuthor": {
+      "objective": "Author edits or cancels.",
+      "steps": [
+        {
+          "operationId": "updateEvent",
+          "when": "author",
+          "on403": "Viewable non-author",
+          "on404": "Not viewable"
+        },
+        {
+          "operationId": "deleteEvent",
+          "success": "204; notifies other participants canceled"
+        }
+      ]
+    },
+    "joinSwitchLeave": {
+      "objective": "Join, switch team, or leave.",
+      "steps": [
+        {
+          "operationId": "joinOrSwitchEventParticipant",
+          "body": { "event_participant": { "event_team_id": 123 } },
+          "success": "201 first join / 200 switch",
+          "next": "Refetch listEventTeamParticipants for target team only."
+        },
+        {
+          "operationId": "deleteEventParticipant",
+          "path": "/api/v1/event_participants/{id}",
+          "success": "204",
+          "next": "May lose private visibility — getEvent or listEvents."
+        }
+      ]
+    },
+    "inviteFriendsCompose": {
+      "objective": "Invite accepted friends not already in or invited.",
+      "steps": [
+        { "operationId": "listFriendships", "bundle": "docs/api/v1", "next": "Use accepted bucket." },
+        { "operationId": "listEventParticipants" },
+        { "operationId": "listEventInvitations" },
+        {
+          "operationId": "createEventInvitations",
+          "body": { "user_ids": [2, 5] },
+          "success": "201 Invitation[]",
+          "on422": "No users to invite"
+        }
+      ]
+    },
+    "openPrivateAsStranger404": {
+      "objective": "Private event stranger gets opaque 404.",
+      "steps": [
+        {
+          "operationId": "getEvent",
+          "on": "404",
+          "client": "Treat as missing; no CTA."
+        }
+      ]
+    }
+  }
+}

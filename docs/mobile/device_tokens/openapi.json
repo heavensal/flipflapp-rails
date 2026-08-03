@@ -1,0 +1,4383 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "FlipFlapp API V1",
+    "version": "v1",
+    "description": "JSON API for FlipFlapp iOS/Android clients. Resource names mirror the web app (Convention over Configuration)."
+  },
+  "paths": {
+    "/api/v1/users/confirmation": {
+      "post": {
+        "summary": "Resend confirmation instructions",
+        "operationId": "resendConfirmation",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Resends signup or reconfirmable email instructions. Next: confirmUser with the new token.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "confirmation instructions requested"
+          },
+          "422": {
+            "description": "request validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "email": [
+                            "Email was already confirmed, please try signing in"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "email"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "email": "ada@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "patch": {
+        "summary": "Confirm account or email change with a token",
+        "operationId": "confirmUser",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Confirms the account (or pending unconfirmed_email) and issues a JWT. Persist Authorization from the response.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "confirmed and signed in",
+            "headers": {
+              "Authorization": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Bearer JWT for authenticated requests"
+              }
+            },
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 1,
+                      "email": "ada@example.com",
+                      "first_name": "Ada",
+                      "last_name": "Lovelace",
+                      "username": "ada#0001",
+                      "role": "player",
+                      "unconfirmed_email": null,
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "confirmation validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "confirmation_token": [
+                            "Confirmation token is invalid"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "confirmation_token"
+                    ],
+                    "properties": {
+                      "confirmation_token": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "confirmation_token": "raw-token-from-email"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/events": {
+      "get": {
+        "summary": "List visible upcoming events",
+        "operationId": "listEvents",
+        "tags": [
+          "Events"
+        ],
+        "description": "Returns events visible to the current user with start_time in the future. Excludes past events and private events the viewer cannot see. Each Event includes current_user viewer flags.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "upcoming visible events",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "list": {
+                    "value": [
+                      {
+                        "id": 42,
+                        "title": "Wednesday 5-a-side — Bois de Boulogne",
+                        "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                        "location": "Bois de Boulogne, Paris 16e",
+                        "start_time": "2026-08-13T18:30:00.000Z",
+                        "number_of_participants": 10,
+                        "price": "8.0",
+                        "is_private": false,
+                        "latitude": "48.862725",
+                        "longitude": "2.249899",
+                        "user_id": 7,
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "participants_count": 3,
+                        "spots_remaining": 7,
+                        "fill_level": "open",
+                        "user": {
+                          "id": 7,
+                          "first_name": "Camille",
+                          "last_name": "Dupont",
+                          "username": "camilled#0007",
+                          "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                        },
+                        "current_user": {
+                          "participant": true,
+                          "can_invite": true,
+                          "author": true,
+                          "invited": false
+                        }
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an event",
+        "operationId": "createEvent",
+        "tags": [
+          "Events"
+        ],
+        "description": "Creates a match. Side effects: three event_teams (team_one, team_two, bench), author auto-joined on team_one, bench reminder scheduled. Send price/latitude/longitude as numbers; responses serialize them as strings.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "event created",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "created": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": true,
+                        "can_invite": true,
+                        "author": true,
+                        "invited": false
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "title": [
+                            "can't be blank"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event"
+                ],
+                "properties": {
+                  "event": {
+                    "$ref": "#/components/schemas/EventCreateInput"
+                  }
+                }
+              },
+              "examples": {
+                "create": {
+                  "summary": "Create match",
+                  "value": {
+                    "event": {
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": 8.0,
+                      "is_private": false,
+                      "latitude": 48.862725,
+                      "longitude": 2.249899
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/events/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Show an event",
+        "operationId": "getEvent",
+        "tags": [
+          "Events"
+        ],
+        "description": "Loads one event plus current_user flags for CTAs. Private or non-viewable events return 404 (not 403) — never distinguish missing vs hidden.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "event found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "author": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": true,
+                        "can_invite": true,
+                        "author": true,
+                        "invited": false
+                      }
+                    }
+                  },
+                  "participant": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": true,
+                        "can_invite": true,
+                        "author": false,
+                        "invited": false
+                      }
+                    }
+                  },
+                  "invited": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": false,
+                        "can_invite": false,
+                        "author": false,
+                        "invited": true
+                      }
+                    }
+                  },
+                  "public_stranger": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": false,
+                        "can_invite": false,
+                        "author": false,
+                        "invited": false
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update an event",
+        "operationId": "updateEvent",
+        "tags": [
+          "Events"
+        ],
+        "description": "Author-only edit. Viewable non-author → 403; not viewable → 404. Tracked field changes may notify other participants (updated).",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "event updated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "updated": {
+                    "value": {
+                      "id": 42,
+                      "title": "Wednesday 5-a-side — Bois de Boulogne",
+                      "description": "Casual kickabout on the Paris 16 synthetic pitch. Bring dark and light shirts.",
+                      "location": "Bois de Boulogne, Paris 16e",
+                      "start_time": "2026-08-13T18:30:00.000Z",
+                      "number_of_participants": 10,
+                      "price": "8.0",
+                      "is_private": false,
+                      "latitude": "48.862725",
+                      "longitude": "2.249899",
+                      "user_id": 7,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "participants_count": 3,
+                      "spots_remaining": 7,
+                      "fill_level": "open",
+                      "user": {
+                        "id": 7,
+                        "first_name": "Camille",
+                        "last_name": "Dupont",
+                        "username": "camilled#0007",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/camilled-0007/medium.jpg"
+                      },
+                      "current_user": {
+                        "participant": true,
+                        "can_invite": true,
+                        "author": true,
+                        "invited": false
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Event"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not the author",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "forbidden": {
+                    "value": {
+                      "error": {
+                        "message": "Forbidden"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "title": [
+                            "can't be blank"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event"
+                ],
+                "properties": {
+                  "event": {
+                    "$ref": "#/components/schemas/EventInput"
+                  }
+                }
+              },
+              "examples": {
+                "update": {
+                  "summary": "Patch fields",
+                  "value": {
+                    "event": {
+                      "title": "Wednesday 5-a-side — Parc des Princes warm-up",
+                      "price": 10.0
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "summary": "Delete an event",
+        "operationId": "deleteEvent",
+        "tags": [
+          "Events"
+        ],
+        "description": "Author cancels the match (204 empty body). Notifies other participants (canceled); cascades teams, participants, and invitations.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "event deleted"
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not the author",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "forbidden": {
+                    "value": {
+                      "error": {
+                        "message": "Forbidden"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{event_id}/event_teams": {
+      "parameters": [
+        {
+          "name": "event_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "List event teams",
+        "operationId": "listEventTeams",
+        "tags": [
+          "EventTeams"
+        ],
+        "description": "Load the three squad slots for team UI (labels + countable). Order is always team_one, team_two, bench (Event::TEAM_SLOTS). Show label in UI; keep slot for logic. Disable rename when countable is false. No POST /event_teams — teams are created with the Event. Next: listEventTeamParticipants per team, or getEventTeam → updateEventTeam when the viewer is a participant.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "event teams listed in domain slot order",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "teams": {
+                    "value": [
+                      {
+                        "id": 10,
+                        "event_id": 42,
+                        "slot": "team_one",
+                        "label": "Bleus",
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "countable": true
+                      },
+                      {
+                        "id": 11,
+                        "event_id": 42,
+                        "slot": "team_two",
+                        "label": "Rouges",
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "countable": true
+                      },
+                      {
+                        "id": 12,
+                        "event_id": 42,
+                        "slot": "bench",
+                        "label": "On the bench",
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "countable": false
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventTeam"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{event_id}/event_teams/{id}": {
+      "parameters": [
+        {
+          "name": "event_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Show an event team",
+        "operationId": "getEventTeam",
+        "tags": [
+          "EventTeams"
+        ],
+        "description": "Single team for rename sheet / team detail. 404 if event/team missing or event not viewable (same opacity as Events). Next: updateEventTeam when countable and viewer is a participant; else listEventTeamParticipants.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "event team found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "team": {
+                    "value": {
+                      "id": 10,
+                      "event_id": 42,
+                      "slot": "team_one",
+                      "label": "Bleus",
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "countable": true
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EventTeam"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event or team missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Rename a countable event team",
+        "operationId": "updateEventTeam",
+        "tags": [
+          "EventTeams"
+        ],
+        "description": "Rename display label only on a countable team (team_one / team_two). Must be a participant (in_this_event?). Bench → 403. Viewable public stranger → 403 (not 404). Body permits label only — slot is immutable and ignored if sent. Side effects: none (no capacity change, no notifications). Next: apply response locally or refetch getEventTeam / listEventTeams; do not refetch participants. No DELETE /event_teams.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "event team renamed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "renamed": {
+                    "value": {
+                      "id": 10,
+                      "event_id": 42,
+                      "slot": "team_one",
+                      "label": "France 98",
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "countable": true
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EventTeam"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not a participant or team is bench",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_participant": {
+                    "value": {
+                      "error": {
+                        "message": "Seuls les participants peuvent renommer une équipe."
+                      }
+                    }
+                  },
+                  "bench": {
+                    "value": {
+                      "error": {
+                        "message": "Le banc ne peut pas être renommé."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event or team missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "label validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invalid_characters": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "label": [
+                            "Label is invalid"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "taken": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "label": [
+                            "Label has already been taken"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "too_long": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "label": [
+                            "Label is too long (maximum is 24 characters)"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event_team"
+                ],
+                "properties": {
+                  "event_team": {
+                    "type": "object",
+                    "required": [
+                      "label"
+                    ],
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "maxLength": 24,
+                        "description": "Letters, digits, spaces only. Trimmed and collapsed server-side."
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "rename": {
+                  "summary": "Rename label",
+                  "value": {
+                    "event_team": {
+                      "label": "France 98"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/events/{event_id}/event_participants": {
+      "parameters": [
+        {
+          "name": "event_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "List all event participants",
+        "operationId": "listEventParticipants",
+        "tags": [
+          "EventParticipants"
+        ],
+        "description": "Full roster for the event (all teams). Use when composing the invite picker.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "participants listed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "roster": {
+                    "value": [
+                      {
+                        "id": 20,
+                        "event_id": 42,
+                        "event_team_id": 10,
+                        "user_id": 12,
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "user": {
+                          "id": 12,
+                          "first_name": "Lucas",
+                          "last_name": "Bernard",
+                          "username": "lucasb#0012",
+                          "avatar_url": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventParticipant"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Join an event or switch team",
+        "operationId": "joinOrSwitchEventParticipant",
+        "tags": [
+          "EventParticipants"
+        ],
+        "description": "First join → 201; already a participant switching team → 200. Not joinable or foreign event_team_id → 404 (opaque). Team/countable full → 422 with details. After success, refetch listEventTeamParticipants for the target team.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "switched team",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "switched": {
+                    "value": {
+                      "id": 20,
+                      "event_id": 42,
+                      "event_team_id": 10,
+                      "user_id": 12,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "user": {
+                        "id": 12,
+                        "first_name": "Lucas",
+                        "last_name": "Bernard",
+                        "username": "lucasb#0012",
+                        "avatar_url": null
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EventParticipant"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "joined",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "joined": {
+                    "value": {
+                      "id": 20,
+                      "event_id": 42,
+                      "event_team_id": 10,
+                      "user_id": 12,
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "user": {
+                        "id": 12,
+                        "first_name": "Lucas",
+                        "last_name": "Bernard",
+                        "username": "lucasb#0012",
+                        "avatar_url": null
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/EventParticipant"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "not joinable or team not on event",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "team or countable full",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "full": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "event_team": [
+                            "Event team this team is full"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "event_participant"
+                ],
+                "properties": {
+                  "event_participant": {
+                    "type": "object",
+                    "required": [
+                      "event_team_id"
+                    ],
+                    "properties": {
+                      "event_team_id": {
+                        "type": "integer",
+                        "format": "int64"
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "join": {
+                  "summary": "Join or switch",
+                  "value": {
+                    "event_participant": {
+                      "event_team_id": 10
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/events/{event_id}/event_teams/{event_team_id}/event_participants": {
+      "parameters": [
+        {
+          "name": "event_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        {
+          "name": "event_team_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "List participants for one event team",
+        "operationId": "listEventTeamParticipants",
+        "tags": [
+          "EventParticipants"
+        ],
+        "description": "Roster for one event_team (iOS granular refetch after joinOrSwitchEventParticipant). Valid empty team → 200 []. Unknown event_team_id on the event → 404 (not empty array). Event missing or not viewable → 404.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "team participants listed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "team_roster": {
+                    "value": [
+                      {
+                        "id": 20,
+                        "event_id": 42,
+                        "event_team_id": 10,
+                        "user_id": 12,
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "user": {
+                          "id": 12,
+                          "first_name": "Lucas",
+                          "last_name": "Bernard",
+                          "username": "lucasb#0012",
+                          "avatar_url": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EventParticipant"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event or team missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/event_participants/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "delete": {
+        "summary": "Leave an event",
+        "operationId": "deleteEventParticipant",
+        "tags": [
+          "EventParticipants"
+        ],
+        "description": "Current user deletes own participation only (204 empty). Other user's id → 404. Leaving a countable team may notify remaining players (left).",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "participation deleted"
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "participation not found for current user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/{event_id}/invitations": {
+      "parameters": [
+        {
+          "name": "event_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "List event invitations",
+        "operationId": "listEventInvitations",
+        "tags": [
+          "Invitations"
+        ],
+        "description": "Pending invitations for the event. Any viewer of the event may list them.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "invitations listed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "invites": {
+                    "value": [
+                      {
+                        "id": 30,
+                        "event_id": 42,
+                        "user_id": 12,
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "user": {
+                          "id": 12,
+                          "first_name": "Lucas",
+                          "last_name": "Bernard",
+                          "username": "lucasb#0012",
+                          "avatar_url": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invitation"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Invite accepted friends to an event",
+        "operationId": "createEventInvitations",
+        "tags": [
+          "Invitations"
+        ],
+        "description": "Participant invites eligible accepted friends (not already in or invited). Compose picker: listFriendships accepted − listEventParticipants − listEventInvitations. Empty or ineligible selection → 422 No users to invite. Creates invited notifications.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "friends invited",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "created": {
+                    "value": [
+                      {
+                        "id": 30,
+                        "event_id": 42,
+                        "user_id": 12,
+                        "created_at": "2026-08-02T10:00:00.000Z",
+                        "updated_at": "2026-08-02T10:00:00.000Z",
+                        "user": {
+                          "id": 12,
+                          "first_name": "Lucas",
+                          "last_name": "Bernard",
+                          "username": "lucasb#0012",
+                          "avatar_url": null
+                        }
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Invitation"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "not a participant",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "forbidden": {
+                    "value": {
+                      "error": {
+                        "message": "Forbidden"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "event missing or not viewable",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "no eligible users",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "none": {
+                    "value": {
+                      "error": {
+                        "message": "No users to invite"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user_ids"
+                ],
+                "properties": {
+                  "user_ids": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "integer",
+                      "format": "int64"
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "invite": {
+                  "summary": "Invite friends",
+                  "value": {
+                    "user_ids": [
+                      12
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/friendships/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64",
+            "example": 10
+          }
+        }
+      ],
+      "patch": {
+        "summary": "Accept or decline a friendship request",
+        "operationId": "updateFriendship",
+        "tags": [
+          "Friendships"
+        ],
+        "description": "Only the **receiver** of a **pending** Friendship may PATCH; otherwise 403. Body: `{ \"status\": \"accepted\" }` or `{ \"status\": \"declined\" }` (required enum). Runtime trap: if status is exactly `\"declined\"` → decline; **any other value** (including missing/garbage) takes the accept branch — clients must send only the enum. Accept → `accepted` (private event visibility + invites). Decline → `declined` (visible only in receiver `declined` bucket; cleans up friendship_requested). Cannot accept from declined — delete then createFriendship. Next: refetch listFriendships (`received` + `accepted` or `declined`).",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "friendship request updated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "accepted": {
+                    "value": {
+                      "id": 10,
+                      "sender_id": 1,
+                      "receiver_id": 2,
+                      "status": "accepted",
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:05:00.000Z",
+                      "sender": {
+                        "id": 1,
+                        "first_name": "Ada",
+                        "last_name": "Lovelace",
+                        "username": "ada#0001",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+                      },
+                      "receiver": {
+                        "id": 2,
+                        "first_name": "Grace",
+                        "last_name": "Hopper",
+                        "username": "grace#0002",
+                        "avatar_url": null
+                      }
+                    }
+                  },
+                  "declined": {
+                    "value": {
+                      "id": 10,
+                      "sender_id": 1,
+                      "receiver_id": 2,
+                      "status": "declined",
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:05:00.000Z",
+                      "sender": {
+                        "id": 1,
+                        "first_name": "Ada",
+                        "last_name": "Lovelace",
+                        "username": "ada#0001",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+                      },
+                      "receiver": {
+                        "id": 2,
+                        "first_name": "Grace",
+                        "last_name": "Hopper",
+                        "username": "grace#0002",
+                        "avatar_url": null
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Friendship"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "current user cannot transition this friendship",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "forbidden": {
+                    "value": {
+                      "error": {
+                        "message": "Forbidden"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "friendship not found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "friendship validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "sender_id": [
+                            "Demande d'amitié déjà envoyée."
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "accepted",
+                      "declined"
+                    ],
+                    "description": "Receiver-only transition from pending."
+                  }
+                },
+                "example": {
+                  "status": "accepted"
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "summary": "Cancel, unfriend, or remove a declined friendship",
+        "operationId": "deleteFriendship",
+        "tags": [
+          "Friendships"
+        ],
+        "description": "Destroy authz matrix (else 403; missing id → 404; success → 204 empty body): (1) sender + pending → cancel request; (2) sender or receiver + accepted → unfriend; (3) receiver + declined → remove declined (either party may then re-request). Receiver cannot delete pending; sender cannot delete declined. Cleans up friendship_requested notification when present. Next: refetch listFriendships.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "friendship deleted"
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "current user cannot delete this friendship",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "forbidden": {
+                    "value": {
+                      "error": {
+                        "message": "Forbidden"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "friendship not found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/friendships": {
+      "get": {
+        "summary": "List friendships grouped by state",
+        "operationId": "listFriendships",
+        "tags": [
+          "Friendships"
+        ],
+        "description": "Return four always-present buckets for the current user: `accepted` (all accepted involving me), `sent` (pending where I am sender), `received` (pending where I am receiver), `declined` (declined where I am receiver only — sender is soft-ghosted). Empty arrays are returned, never omitted keys. Each Friendship includes nested PublicUser `sender` and `receiver`; pick the other user by comparing `me.id` to `sender_id`/`receiver_id`. Friends badge / unread requests UX = `received.length` (not notifications inbox). Next: updateFriendship / deleteFriendship, or invite-picker compose from `accepted`.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "friendship buckets returned",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "buckets": {
+                    "value": {
+                      "accepted": [
+                        {
+                          "id": 10,
+                          "sender_id": 1,
+                          "receiver_id": 2,
+                          "status": "accepted",
+                          "created_at": "2026-08-02T10:00:00.000Z",
+                          "updated_at": "2026-08-02T10:05:00.000Z",
+                          "sender": {
+                            "id": 1,
+                            "first_name": "Ada",
+                            "last_name": "Lovelace",
+                            "username": "ada#0001",
+                            "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+                          },
+                          "receiver": {
+                            "id": 2,
+                            "first_name": "Grace",
+                            "last_name": "Hopper",
+                            "username": "grace#0002",
+                            "avatar_url": null
+                          }
+                        }
+                      ],
+                      "sent": [
+                        {
+                          "id": 10,
+                          "sender_id": 1,
+                          "receiver_id": 2,
+                          "status": "pending",
+                          "created_at": "2026-08-02T10:00:00.000Z",
+                          "updated_at": "2026-08-02T10:00:00.000Z",
+                          "sender": {
+                            "id": 1,
+                            "first_name": "Ada",
+                            "last_name": "Lovelace",
+                            "username": "ada#0001",
+                            "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+                          },
+                          "receiver": {
+                            "id": 2,
+                            "first_name": "Grace",
+                            "last_name": "Hopper",
+                            "username": "grace#0002",
+                            "avatar_url": null
+                          }
+                        }
+                      ],
+                      "received": [],
+                      "declined": []
+                    }
+                  },
+                  "empty": {
+                    "value": {
+                      "accepted": [],
+                      "sent": [],
+                      "received": [],
+                      "declined": []
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/FriendshipBuckets"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Send a friendship request",
+        "operationId": "createFriendship",
+        "tags": [
+          "Friendships"
+        ],
+        "description": "Create a pending Friendship (`sender` = current user, `receiver` = `user_id`). Body is top-level `{ \"user_id\": <id> }` — not nested under `friendship`. Side effect: enqueues `friendship_requested` notification for the receiver (hidden from notifications inbox; may still push — route to friendships `received`). Fails 404 if user missing; 422 for self, duplicate pair, or reverse existing pair. Next: refetch `listFriendships` (`sent`); target disappears from search.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "friendship request created",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "pending": {
+                    "value": {
+                      "id": 10,
+                      "sender_id": 1,
+                      "receiver_id": 2,
+                      "status": "pending",
+                      "created_at": "2026-08-02T10:00:00.000Z",
+                      "updated_at": "2026-08-02T10:00:00.000Z",
+                      "sender": {
+                        "id": 1,
+                        "first_name": "Ada",
+                        "last_name": "Lovelace",
+                        "username": "ada#0001",
+                        "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+                      },
+                      "receiver": {
+                        "id": 2,
+                        "first_name": "Grace",
+                        "last_name": "Hopper",
+                        "username": "grace#0002",
+                        "avatar_url": null
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Friendship"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "target user not found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "friendship validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "self": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "receiver_id": [
+                            "Vous ne pouvez pas vous envoyer une demande d'amitié à vous-même."
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "duplicate": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "sender_id": [
+                            "Demande d'amitié déjà envoyée."
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "reverse": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "base": [
+                            "Une demande d'amitié existe déjà entre ces utilisateurs."
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user_id"
+                ],
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "description": "Receiver user id. Top-level key — not nested.",
+                    "example": 2
+                  }
+                },
+                "example": {
+                  "user_id": 2
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/friendships/search": {
+      "get": {
+        "summary": "Search users without an existing friendship",
+        "operationId": "searchFriendshipCandidates",
+        "tags": [
+          "Friendships"
+        ],
+        "description": "Ransack candidates for a new request. Scope: `User.users_without_friendship` — excludes self and anyone with any Friendship row (pending/accepted/declined). Searchable attributes only: first_name, last_name, username — **not email**. If `q` is missing or blank → `200` with `[]` (not all users). Returns PublicUser[] (no email/role). Search selects limited columns so `avatar_url` is typically null. Example: `GET /api/v1/friendships/search?q[first_name_or_last_name_or_username_cont]=Zinedine`. Next: createFriendship with chosen `user_id`.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "schema": {
+              "type": "object",
+              "description": "Ransack filter. Only first_name, last_name and username are searchable.",
+              "properties": {
+                "first_name_or_last_name_or_username_cont": {
+                  "type": "string",
+                  "example": "Zinedine"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "matching users returned",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "hits": {
+                    "value": [
+                      {
+                        "id": 3,
+                        "first_name": "Zinedine",
+                        "last_name": "Zidane",
+                        "username": "zizou#0003",
+                        "avatar_url": null
+                      }
+                    ]
+                  },
+                  "empty_query": {}
+                },
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublicUser"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthorized": {
+                    "value": {
+                      "error": {
+                        "message": "You need to sign in or sign up before continuing."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/password": {
+      "post": {
+        "summary": "Request password reset instructions",
+        "operationId": "requestPasswordReset",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Emails reset instructions. Next: resetPassword with the email token.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "reset instructions requested"
+          },
+          "422": {
+            "description": "request validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "email": [
+                            "Email not found"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "email"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "email": "ada@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "patch": {
+        "summary": "Reset a password with a token",
+        "operationId": "resetPassword",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Sets a new password. Does not issue a JWT. Next: signIn with the new password.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "password reset"
+          },
+          "422": {
+            "description": "reset validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "reset_password_token": [
+                            "Reset password token is invalid"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "reset_password_token",
+                      "password",
+                      "password_confirmation"
+                    ],
+                    "properties": {
+                      "reset_password_token": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 6
+                      },
+                      "password_confirmation": {
+                        "type": "string",
+                        "format": "password"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "reset_password_token": "raw-token-from-email",
+                    "password": "newpassword123",
+                    "password_confirmation": "newpassword123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "put": {
+        "summary": "Reset a password (PUT alias)",
+        "operationId": "resetPasswordWithPut",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Alias of resetPassword.",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "password reset"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "reset_password_token",
+                      "password",
+                      "password_confirmation"
+                    ],
+                    "properties": {
+                      "reset_password_token": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 6
+                      },
+                      "password_confirmation": {
+                        "type": "string",
+                        "format": "password"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "summary": "Register an unconfirmed user",
+        "operationId": "registerUser",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Creates an unconfirmed account and sends a confirmation email. Does not issue a JWT. Next: confirmUser with the email token.",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "user registered (unconfirmed, no session)",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 1,
+                      "email": "new.player@example.com",
+                      "first_name": "Ada",
+                      "last_name": "Lovelace",
+                      "username": "ada#0001",
+                      "role": "player",
+                      "unconfirmed_email": null,
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "registration validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "email": [
+                            "Email has already been taken"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "email",
+                      "password",
+                      "password_confirmation",
+                      "first_name",
+                      "last_name"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 6
+                      },
+                      "password_confirmation": {
+                        "type": "string",
+                        "format": "password"
+                      },
+                      "first_name": {
+                        "type": "string"
+                      },
+                      "last_name": {
+                        "type": "string"
+                      },
+                      "avatar": {
+                        "type": "string",
+                        "nullable": true,
+                        "description": "CarrierWave upload value"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "email": "new.player@example.com",
+                    "password": "password123",
+                    "password_confirmation": "password123",
+                    "first_name": "Ada",
+                    "last_name": "Lovelace"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/users/sign_in": {
+      "post": {
+        "summary": "Sign in a confirmed user and issue a JWT",
+        "operationId": "signIn",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Authenticates a confirmed user. Persist Authorization from the response header. Unconfirmed accounts receive 401.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "signed in",
+            "headers": {
+              "Authorization": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Bearer JWT for authenticated requests"
+              }
+            },
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 1,
+                      "email": "ada@example.com",
+                      "first_name": "Ada",
+                      "last_name": "Lovelace",
+                      "username": "ada#0001",
+                      "role": "player",
+                      "unconfirmed_email": null,
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid credentials or unconfirmed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Invalid Email or password."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "email",
+                      "password"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "password": {
+                        "type": "string",
+                        "format": "password"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "email": "ada@example.com",
+                    "password": "password123"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/users/sign_out": {
+      "delete": {
+        "summary": "Sign out and revoke the JWT when present",
+        "operationId": "signOut",
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Always returns 204. When Authorization is present, the JWT is revoked via jwt_denylist.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "signed out"
+          }
+        }
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "summary": "Return the authenticated profile",
+        "operationId": "getCurrentUser",
+        "tags": [
+          "Users"
+        ],
+        "description": "Bootstrap CurrentUser after Auth. Never issues JWT. Includes unconfirmed_email (nullable) for pending reconfirmable email changes.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "current user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 1,
+                      "email": "ada@example.com",
+                      "unconfirmed_email": null,
+                      "first_name": "Ada",
+                      "last_name": "Lovelace",
+                      "username": "ada#0001",
+                      "role": "player",
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update the current user profile",
+        "operationId": "updateCurrentUser",
+        "tags": [
+          "Users"
+        ],
+        "description": "Update writable profile fields. Username and role are ignored if sent. Email is reconfirmable: response keeps old email and sets unconfirmed_email. No current_password required. Password change does not revoke JWT. Avatar upload requires multipart/form-data with user[avatar] file (jpg/jpeg/gif/png). Clear avatar with user[remove_avatar]=true. JSON body is for text fields only.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "current user updated",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 1,
+                      "email": "ada@example.com",
+                      "unconfirmed_email": null,
+                      "first_name": "Updated",
+                      "last_name": "Lovelace",
+                      "username": "ada#0001",
+                      "role": "player",
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "profile validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "email": [
+                            "L'adresse email n'est pas valide."
+                          ]
+                        }
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "user"
+                ],
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "description": "JSON: text fields only. For avatar file use multipart user[avatar].",
+                    "properties": {
+                      "first_name": {
+                        "type": "string"
+                      },
+                      "last_name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "password": {
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 6,
+                        "maxLength": 128
+                      },
+                      "password_confirmation": {
+                        "type": "string",
+                        "format": "password"
+                      },
+                      "remove_avatar": {
+                        "type": "boolean",
+                        "description": "When true, clears avatar; avatar_url becomes null."
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "user": {
+                    "first_name": "Updated"
+                  }
+                }
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user[first_name]": {
+                    "type": "string"
+                  },
+                  "user[last_name]": {
+                    "type": "string"
+                  },
+                  "user[email]": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "user[password]": {
+                    "type": "string",
+                    "format": "password",
+                    "minLength": 6,
+                    "maxLength": 128
+                  },
+                  "user[password_confirmation]": {
+                    "type": "string",
+                    "format": "password"
+                  },
+                  "user[avatar]": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Profile photo file (jpg, jpeg, gif, png)."
+                  },
+                  "user[remove_avatar]": {
+                    "type": "boolean",
+                    "description": "When true, clears avatar; avatar_url becomes null."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Show a public user profile",
+        "operationId": "getUser",
+        "tags": [
+          "Users"
+        ],
+        "description": "PublicUser only — never email, role, or unconfirmed_email. Bearer required. Friendship status is not embedded; compose via Friendships. Full profile contract: docs/mobile/users/.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "id": 2,
+                      "first_name": "Grace",
+                      "last_name": "Hopper",
+                      "username": "grace#0001",
+                      "avatar_url": null
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PublicUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "user not found",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example_0": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "summary": "List recent inbox notifications",
+        "operationId": "listNotifications",
+        "tags": [
+          "Notifications"
+        ],
+        "description": "Returns at most 20 recent inbox notifications (newest first). Excludes friendship_requested — friends-request UX is listFriendships.received. Push for friendship_requested may still arrive — route to friendships, not inbox. Full contract: docs/mobile/notifications/.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "notifications listed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": [
+                      {
+                        "id": 10,
+                        "kind": "invited",
+                        "read": false,
+                        "payload": {
+                          "sender": "Ada"
+                        },
+                        "created_at": "2026-08-02T18:00:00.000Z",
+                        "notifiable_type": "Event",
+                        "notifiable_id": 3
+                      }
+                    ]
+                  }
+                },
+                "schema": {
+                  "type": "array",
+                  "maxItems": 20,
+                  "items": {
+                    "$ref": "#/components/schemas/Notification"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": {
+                      "error": {
+                        "message": "Vous devez vous connecter ou vous inscrire pour continuer."
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "patch": {
+        "summary": "Mark a notification as read",
+        "operationId": "readNotification",
+        "tags": [
+          "Notifications"
+        ],
+        "description": "Marks one inbox notification read. friendship_requested ids → 404 (not in inbox scope).",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "notification marked as read",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": {
+                      "id": 10,
+                      "kind": "invited",
+                      "read": true,
+                      "payload": {
+                        "sender": "Ada"
+                      },
+                      "created_at": "2026-08-02T18:00:00.000Z",
+                      "notifiable_type": "Event",
+                      "notifiable_id": 3
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "inbox notification not found for current user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/read_all": {
+      "patch": {
+        "summary": "Mark every inbox notification as read",
+        "operationId": "readAllNotifications",
+        "tags": [
+          "Notifications"
+        ],
+        "description": "Marks all inbox unread as read. Empty body 204. Does not affect friendship_requested rows.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "all inbox notifications marked as read"
+          },
+          "401": {
+            "description": "authentication required"
+          }
+        }
+      }
+    },
+    "/api/v1/notifications/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      ],
+      "delete": {
+        "summary": "Delete an inbox notification",
+        "operationId": "deleteNotification",
+        "tags": [
+          "Notifications"
+        ],
+        "description": "Destroys one inbox notification owned by current user. 204 empty. Missing/foreign/friendship_requested → 404.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "notification deleted"
+          },
+          "401": {
+            "description": "authentication required"
+          },
+          "404": {
+            "description": "inbox notification not found for current user",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": {
+                      "error": {
+                        "message": "Not found"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/device_token": {
+      "post": {
+        "summary": "Register a mobile push device token",
+        "operationId": "registerDeviceToken",
+        "tags": [
+          "DeviceTokens"
+        ],
+        "description": "Registers an FCM token for the current user. Success 200 empty body (not 201). Reassigns the token if it already belonged to another account. platform android|ios (default android). No web platform. Call after signIn/confirmUser or FCM refresh. Canonical contract: docs/mobile/device_tokens/.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "device token registered (empty body)"
+          },
+          "401": {
+            "description": "authentication required"
+          },
+          "422": {
+            "description": "validation failed",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "example": {
+                    "value": {
+                      "error": {
+                        "message": "Validation failed",
+                        "details": {
+                          "platform": [
+                            "n'est pas inclus(e) dans la liste"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "device_token"
+                ],
+                "properties": {
+                  "device_token": {
+                    "type": "object",
+                    "required": [
+                      "token"
+                    ],
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "example": "fcm-abc"
+                      },
+                      "platform": {
+                        "type": "string",
+                        "enum": [
+                          "android",
+                          "ios"
+                        ],
+                        "default": "android"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "device_token": {
+                    "token": "fcm-abc",
+                    "platform": "android"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "summary": "Unregister a mobile push device token",
+        "operationId": "unregisterDeviceToken",
+        "tags": [
+          "DeviceTokens"
+        ],
+        "description": "Removes the token for the current user. Always 204 (idempotent if missing). Call before signOut while JWT is still valid.",
+        "security": [
+          {
+            "bearer_auth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "device token removed (or already absent)"
+          },
+          "401": {
+            "description": "authentication required"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "device_token"
+                ],
+                "properties": {
+                  "device_token": {
+                    "type": "object",
+                    "required": [
+                      "token"
+                    ],
+                    "properties": {
+                      "token": {
+                        "type": "string",
+                        "example": "fcm-abc"
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "device_token": {
+                    "token": "fcm-abc"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "message"
+            ],
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Validation failed"
+              },
+              "details": {
+                "type": "object",
+                "nullable": true,
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "example": {
+                  "email": [
+                    "Email has already been taken"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "PublicUser": {
+        "type": "object",
+        "required": [
+          "id",
+          "first_name",
+          "last_name",
+          "username",
+          "avatar_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "first_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "last_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "username": {
+            "type": "string",
+            "nullable": true,
+            "example": "ada#0001"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true
+          }
+        }
+      },
+      "CurrentUser": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PublicUser"
+          },
+          {
+            "type": "object",
+            "required": [
+              "email",
+              "unconfirmed_email",
+              "role"
+            ],
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Confirmed login email. Unchanged until a pending email change is confirmed."
+              },
+              "unconfirmed_email": {
+                "type": "string",
+                "format": "email",
+                "nullable": true,
+                "description": "Pending email after PATCH /me; null when none. Confirm via Auth confirmUser."
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "player",
+                  "admin"
+                ],
+                "description": "Informational for player apps; no mobile admin API in MVP."
+              }
+            }
+          }
+        ]
+      },
+      "EventViewerContext": {
+        "type": "object",
+        "required": [
+          "participant",
+          "can_invite",
+          "author",
+          "invited"
+        ],
+        "properties": {
+          "participant": {
+            "type": "boolean",
+            "description": "Viewer has joined the event."
+          },
+          "can_invite": {
+            "type": "boolean",
+            "description": "Viewer may invite accepted friends."
+          },
+          "author": {
+            "type": "boolean",
+            "description": "Viewer created the event."
+          },
+          "invited": {
+            "type": "boolean",
+            "description": "Viewer has a pending invitation."
+          }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "description": "Upcoming football event. GET /api/v1/events returns visible upcoming events; show includes current_user viewer context when authenticated.",
+        "required": [
+          "id",
+          "title",
+          "description",
+          "location",
+          "start_time",
+          "number_of_participants",
+          "price",
+          "is_private",
+          "latitude",
+          "longitude",
+          "user_id",
+          "created_at",
+          "updated_at",
+          "participants_count",
+          "spots_remaining",
+          "fill_level",
+          "user",
+          "current_user"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "number_of_participants": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price": {
+            "type": "string",
+            "pattern": "^-?\\d+(?:\\.\\d+)?$",
+            "example": "10.0",
+            "description": "Serialized as decimal string in responses; send as number in create/update requests."
+          },
+          "is_private": {
+            "type": "boolean"
+          },
+          "latitude": {
+            "type": "string",
+            "pattern": "^-?\\d+(?:\\.\\d+)?$",
+            "example": "48.856613",
+            "description": "Serialized as decimal string in responses; send as number in create/update requests."
+          },
+          "longitude": {
+            "type": "string",
+            "pattern": "^-?\\d+(?:\\.\\d+)?$",
+            "example": "2.352222",
+            "description": "Serialized as decimal string in responses; send as number in create/update requests."
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "participants_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "spots_remaining": {
+            "type": "integer"
+          },
+          "fill_level": {
+            "type": "string",
+            "enum": [
+              "open",
+              "tight",
+              "full"
+            ]
+          },
+          "user": {
+            "$ref": "#/components/schemas/PublicUser"
+          },
+          "current_user": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EventViewerContext"
+              }
+            ],
+            "nullable": true
+          }
+        }
+      },
+      "EventTeam": {
+        "type": "object",
+        "description": "Squad slot for an Event. Exactly three per event (team_one, team_two, bench). slot is immutable identity; label is display-only (renameable on countable teams). countable true only for team_one/team_two (bench never counts toward Event capacity). No nested roster — use listEventTeamParticipants. No POST/DELETE event_teams.",
+        "required": [
+          "id",
+          "event_id",
+          "slot",
+          "label",
+          "created_at",
+          "updated_at",
+          "countable"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "slot": {
+            "type": "string",
+            "enum": [
+              "team_one",
+              "team_two",
+              "bench"
+            ],
+            "description": "Immutable squad identity. Domain capacity and notifications key off slot, never label."
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 24,
+            "description": "Display name. Letters, digits, spaces only (Unicode alnum). Server strips/collapses whitespace. Unique case-insensitively within the event. Defaults at Event create from I18n (en: Team 1 / Team 2 / On the bench; fr: Equipe 1 / Equipe 2 / Sur le Banc)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "countable": {
+            "type": "boolean",
+            "description": "true for team_one and team_two; false for bench. Only countable teams count toward participants_count."
+          }
+        },
+        "example": {
+          "id": 10,
+          "event_id": 42,
+          "slot": "team_one",
+          "label": "Bleus",
+          "created_at": "2026-08-02T10:00:00.000Z",
+          "updated_at": "2026-08-02T10:00:00.000Z",
+          "countable": true
+        }
+      },
+      "EventParticipant": {
+        "type": "object",
+        "required": [
+          "id",
+          "event_id",
+          "event_team_id",
+          "user_id",
+          "created_at",
+          "updated_at",
+          "user"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_team_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "$ref": "#/components/schemas/PublicUser"
+          }
+        }
+      },
+      "Invitation": {
+        "type": "object",
+        "required": [
+          "id",
+          "event_id",
+          "user_id",
+          "created_at",
+          "updated_at",
+          "user"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "event_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "user": {
+            "$ref": "#/components/schemas/PublicUser"
+          }
+        }
+      },
+      "Friendship": {
+        "type": "object",
+        "description": "Link between two users. Status machine: pending → accepted|declined; destroy rules differ by role (cancel / unfriend / remove declined). Mobile picks the other user by comparing current user id to sender_id/receiver_id. Accepted enables private event visibility and invites; pending/declined do not.",
+        "required": [
+          "id",
+          "sender_id",
+          "receiver_id",
+          "status",
+          "created_at",
+          "updated_at",
+          "sender",
+          "receiver"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sender_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "receiver_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined"
+            ],
+            "description": "pending: request open; accepted: friends; declined: soft reject (receiver-only visibility in index declined bucket)."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sender": {
+            "$ref": "#/components/schemas/PublicUser"
+          },
+          "receiver": {
+            "$ref": "#/components/schemas/PublicUser"
+          }
+        },
+        "example": {
+          "id": 10,
+          "sender_id": 1,
+          "receiver_id": 2,
+          "status": "pending",
+          "created_at": "2026-08-02T10:00:00.000Z",
+          "updated_at": "2026-08-02T10:00:00.000Z",
+          "sender": {
+            "id": 1,
+            "first_name": "Ada",
+            "last_name": "Lovelace",
+            "username": "ada#0001",
+            "avatar_url": "https://cdn.flipflapp.test/avatars/ada-0001/medium.jpg"
+          },
+          "receiver": {
+            "id": 2,
+            "first_name": "Grace",
+            "last_name": "Hopper",
+            "username": "grace#0002",
+            "avatar_url": null
+          }
+        }
+      },
+      "FriendshipBuckets": {
+        "type": "object",
+        "description": "Asymmetric index for the current user. Keys always present (use empty arrays). accepted: all accepted involving me; sent: pending I sent; received: pending I received; declined: declined where I am receiver only.",
+        "required": [
+          "accepted",
+          "sent",
+          "received",
+          "declined"
+        ],
+        "properties": {
+          "accepted": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Friendship"
+            }
+          },
+          "sent": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Friendship"
+            }
+          },
+          "received": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Friendship"
+            }
+          },
+          "declined": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Friendship"
+            }
+          }
+        },
+        "example": {
+          "accepted": [],
+          "sent": [
+            {
+              "id": 10,
+              "sender_id": 1,
+              "receiver_id": 2,
+              "status": "pending",
+              "created_at": "2026-08-02T10:00:00.000Z",
+              "updated_at": "2026-08-02T10:00:00.000Z",
+              "sender": {
+                "id": 1,
+                "first_name": "Ada",
+                "last_name": "Lovelace",
+                "username": "ada#0001",
+                "avatar_url": null
+              },
+              "receiver": {
+                "id": 2,
+                "first_name": "Grace",
+                "last_name": "Hopper",
+                "username": "grace#0002",
+                "avatar_url": null
+              }
+            }
+          ],
+          "received": [],
+          "declined": []
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "kind",
+          "read",
+          "payload",
+          "notifiable_type",
+          "notifiable_id",
+          "created_at",
+          "updated_at"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "updated",
+              "canceled",
+              "reminder",
+              "joined",
+              "left",
+              "invited",
+              "friendship_requested"
+            ]
+          },
+          "read": {
+            "type": "boolean"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "notifiable_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "notifiable_id": {
+            "type": "integer",
+            "format": "int64",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "EventInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "number_of_participants": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "is_private": {
+            "type": "boolean"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "EventCreateInput": {
+        "type": "object",
+        "required": [
+          "title",
+          "location",
+          "start_time",
+          "number_of_participants",
+          "price",
+          "latitude",
+          "longitude"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "location": {
+            "type": "string"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "number_of_participants": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "price": {
+            "type": "number",
+            "format": "double"
+          },
+          "is_private": {
+            "type": "boolean"
+          },
+          "latitude": {
+            "type": "number",
+            "format": "double"
+          },
+          "longitude": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "http://{defaultHost}",
+      "variables": {
+        "defaultHost": {
+          "default": "localhost:3000"
+        }
+      }
+    }
+  ]
+}

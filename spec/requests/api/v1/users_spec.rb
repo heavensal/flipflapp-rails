@@ -1,67 +1,60 @@
 # frozen_string_literal: true
 
-require "rails_helper"
+require "swagger_helper"
 
 RSpec.describe "Api::V1 Users", type: :request do
-  describe "POST /api/v1/users" do
-    it "registers a user" do
-      expect {
-        post "/api/v1/users", params: {
-          user: {
-            email: "new.player@example.com",
-            password: "password123",
-            password_confirmation: "password123",
-            first_name: "Ada",
-            last_name: "Lovelace"
-          }
-        }, as: :json
-      }.to change(User, :count).by(1)
+  path "/api/v1/users/{id}" do
+    parameter name: :id, in: :path, required: true, schema: { type: :integer, format: :int64 }
 
-      expect(response).to have_http_status(:created)
-      expect(JSON.parse(response.body)).to include("email" => "new.player@example.com", "first_name" => "Ada")
-    end
-  end
+    get "Show a public user profile" do
+      operationId "getUser"
+      tags "Users"
+      description "PublicUser only — never email, role, or unconfirmed_email. " \
+                  "Bearer required. Friendship status is not embedded; compose via Friendships. " \
+                  "Full profile contract: docs/mobile/users/."
+      produces "application/json"
+      security [ { bearer_auth: [] } ]
 
-  describe "GET /api/v1/me" do
-    it "returns the current user" do
-      user = create(:user)
-      api_get "/api/v1/me", user: user
+      response "200", "user found" do
+        schema "$ref" => "#/components/schemas/PublicUser"
+        examples "application/json" => {
+          id: 2, first_name: "Grace", last_name: "Hopper",
+          username: "grace#0001", avatar_url: nil
+        }
+        let(:user_record) { create(:user) }
+        let(:other) { create(:user) }
+        let(:id) { other.id }
+        let(:Authorization) { api_auth_headers_for(user_record)["Authorization"] }
 
-      expect(response).to have_http_status(:ok)
-      expect(JSON.parse(response.body)).to include("id" => user.id, "email" => user.email)
-    end
+        run_test! do |response|
+          body = JSON.parse(response.body)
+          expect(body).to include("id" => other.id, "username" => other.username)
+          expect(body.keys).not_to include("email", "role", "unconfirmed_email")
+        end
+      end
 
-    it "rejects unauthenticated requests" do
-      get "/api/v1/me", as: :json
-      expect(response).to have_http_status(:unauthorized)
-    end
-  end
+      response "401", "authentication required" do
+        schema "$ref" => "#/components/schemas/Error"
+        examples "application/json" => {
+          error: { message: "Vous devez vous connecter ou vous inscrire pour continuer." }
+        }
+        let(:id) { 1 }
+        let(:Authorization) { nil }
+        run_test!
+      end
 
-  describe "PATCH /api/v1/me" do
-    it "updates the current user profile" do
-      user = create(:user)
-      api_patch "/api/v1/me", user: user, params: { user: { first_name: "Updated" } }
-
-      expect(response).to have_http_status(:ok)
-      expect(user.reload.first_name).to eq("Updated")
-    end
-  end
-
-  describe "GET /api/v1/users/:id" do
-    it "returns the user" do
-      user = create(:user)
-      other = create(:user)
-      api_get "/api/v1/users/#{other.id}", user: user
-
-      expect(response).to have_http_status(:ok)
-      body = JSON.parse(response.body)
-      expect(body).to include(
-        "id" => other.id,
-        "first_name" => other.first_name,
-        "last_name" => other.last_name,
-        "username" => other.username
-      )
-      expect(body).not_to include("email", "role")
+      response "404", "user not found" do
+        schema "$ref" => "#/components/schemas/Error"
+        examples "application/json" => {
+          error: { message: "Not found" }
+        }
+        let(:user_record) { create(:user) }
+        let(:id) { 0 }
+        let(:Authorization) { api_auth_headers_for(user_record)["Authorization"] }
+        run_test! do |response|
+          expect(JSON.parse(response.body).dig("error", "message")).to eq("Not found")
+        end
+      end
     end
   end
 end
