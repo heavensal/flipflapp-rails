@@ -5,7 +5,7 @@ class ApplicationMailer < ActionMailer::Base
   layout "mailer"
   before_action :attach_brand_images
 
-  # Always use deliver_later (Active Job / Solid Queue). Prefer deliver_now only in console/debug.
+  # Always use deliver_later (Active Job / Sidekiq). Prefer deliver_now only in console/debug.
 
   private
 

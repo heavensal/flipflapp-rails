@@ -32,7 +32,7 @@ All environments use **Neon** serverless Postgres in production and local dev. U
 | `TEST_NEON_DB` | `test` | Required in `.env` for local specs |
 | `PRODUCTION_NEON_DB` | `production` | Injected into the Kamal container; not needed in local `.env` unless you deploy from your machine |
 
-Production uses a single Postgres database (`PRODUCTION_NEON_DB`), including Solid Queue / Solid Cable tables.
+Production uses a single Postgres database (`PRODUCTION_NEON_DB`) for domain data only. Background jobs and live toasts use **Redis** (Sidekiq + Action Cable).
 
 ### CI test job vs Neon
 
@@ -80,11 +80,17 @@ The deploy job targets the GitHub **environment `production`**. You can require 
 
 ## Background jobs & realtime (production)
 
-Production uses **Solid Queue** (Active Job) and **Solid Cable** (Action Cable). Tables live on the primary Neon database (migration `CreateSolidQueueAndCableTables`).
+Production uses **Sidekiq** (Active Job) and **Action Cable** (Redis pub/sub). Job payloads and live Turbo Stream broadcasts live in Redis — not Neon.
 
-On the single web host, Solid Queue runs **inside Puma** via `SOLID_QUEUE_IN_PUMA=true` (no dedicated Kamal `job` machine yet). Notification create/broadcast and Devise mail (`deliver_later`) are processed by that supervisor.
+On the single web host, Sidekiq runs as a dedicated Kamal `job` container (`bin/jobs`). Redis runs as a Kamal accessory (`flipflapp_rails-redis`) on the private Docker network — not published to the public internet. Notification create/broadcast and Devise mail (`deliver_later`) are processed by that worker. Web processes subscribe to Action Cable over the same `REDIS_URL`.
 
-Live notification toasts use Turbo Streams over Solid Cable to the signed-in user’s stream.
+Boot Redis **before** the first Sidekiq / Cable deploy:
+
+```bash
+bin/kamal accessory boot redis
+```
+
+Live notification toasts use Turbo Streams over Action Cable (Redis) to the signed-in user’s stream.
 
 ---
 
@@ -99,7 +105,7 @@ Configuration: [`config/deploy.yml`](../config/deploy.yml)
 | Host | `flipflapp.fr` (SSL via Kamal proxy / Let's Encrypt) |
 | Server | `51.75.124.208` (SSH user `ubuntu`) |
 | Registry auth | `KAMAL_REGISTRY_PASSWORD` |
-| Jobs | Solid Queue in Puma (`SOLID_QUEUE_IN_PUMA`) | )
+| Jobs | Sidekiq (`job` role, `bin/jobs`) + Redis accessory |
 
 ### Secrets injected into the container
 
@@ -113,7 +119,9 @@ Listed under `env.secret` in `deploy.yml` (values from `.kamal/secrets`):
 - `VAPID_*` (Web Push / PWA)
 - `FCM_PROJECT_ID`, `FCM_SERVICE_ACCOUNT_JSON` (Android/iOS push via FCM HTTP v1; JSON must be a single line)
 
-Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage).
+Persistent volume: `flipflapp_storage` → `/rails/storage` (Active Storage). Redis data: accessory volume `data:/data` (AOF).
+
+`REDIS_URL` is set in `deploy.yml` `env.clear` (`redis://flipflapp_rails-redis:6379/0`) — not a GitHub secret.
 
 ### Android / iOS FCM
 
@@ -197,6 +205,7 @@ PR → CI (Brakeman, RuboCop, RSpec on ephemeral Postgres)
 merge to master → same CI → deploy job → Kamal → flipflapp.fr
                                                       ↓
                                             Neon (PRODUCTION_NEON_DB)
+                                            Redis accessory (Sidekiq)
 ```
 
 ---

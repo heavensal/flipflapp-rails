@@ -49,8 +49,8 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   config.cache_store = :memory_store
 
-  # Durable Active Job via Solid Queue (tables on the primary database).
-  config.active_job.queue_adapter = :solid_queue
+  # Durable Active Job via Sidekiq + Redis (not Neon).
+  config.active_job.queue_adapter = :sidekiq
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.

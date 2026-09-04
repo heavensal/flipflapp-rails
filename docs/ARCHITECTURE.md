@@ -4,7 +4,7 @@ How the Rails app is organized. Business rules: [DOMAIN.md](DOMAIN.md). How to b
 
 ## Stack
 
-Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwire/Stimulus · RSpec · Kamal → `flipflapp.fr`
+Rails 8 monolith · PostgreSQL (Neon) · Redis (Sidekiq + Action Cable) · Devise · ERB + Tailwind CSS 4 · Hotwire/Stimulus · RSpec · Kamal → `flipflapp.fr`
 
 ## Delivery phases
 
@@ -14,9 +14,9 @@ Rails 8 monolith · PostgreSQL (Neon) · Devise · ERB + Tailwind CSS 4 · Hotwi
 ## MVC layers
 
 | Layer | Path | Responsibility |
-|-------|------|----------------|
+| ------- | ------ | ---------------- |
 | Models | `app/models/` | Domain behavior, validations, callbacks, `Notification` side effects via per-model modules (`Event::Notifications`, etc.) + `Notification::Delivery` (enqueues jobs) |
-| Jobs | `app/jobs/` | Solid Queue workers — e.g. `Notifications::DeliverOneJob` / `DeliverManyJob` (persist + Turbo Stream broadcast); local rules in [app/jobs/AGENTS.md](../app/jobs/AGENTS.md) |
+| Jobs | `app/jobs/` | Sidekiq workers — e.g. `Notifications::DeliverOneJob` / `DeliverManyJob` (persist + Turbo Stream broadcast); local rules in [app/jobs/AGENTS.md](../app/jobs/AGENTS.md) |
 | Controllers | `app/controllers/` | Auth, strong params, HTTP — thin; call model domain methods |
 | API | `app/controllers/api/v1/` | JSON `/api/v1` — Bearer JWT; resource names mirror web; serializers in `app/serializers/` |
 | Views | `app/views/` | ERB + Tailwind; components under `<feature>/components/` |
@@ -49,7 +49,7 @@ Lock behavior with model specs before changing logic.
 ## Read next
 
 | Need | Doc |
-|------|-----|
+| ------ | ----- |
 | Rules | [DOMAIN.md](DOMAIN.md) |
 | JSON API | [API.md](API.md) |
 | Style | [RAILS_STYLEGUIDE.md](RAILS_STYLEGUIDE.md) |

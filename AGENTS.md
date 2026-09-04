@@ -38,7 +38,7 @@ Codex must understand the task before editing. For every non-trivial change:
 
 ## Framework-first implementation
 
-- Prefer Rails 8, Active Record, Devise (+ devise-jwt for `/api/v1`), Hotwire, Stimulus, Solid Queue, Solid Cable, Ransack, CarrierWave, Alba, and existing project APIs before custom infrastructure.
+- Prefer Rails 8, Active Record, Devise (+ devise-jwt for `/api/v1`), Hotwire, Stimulus, Sidekiq, Action Cable (Redis), Ransack, CarrierWave, Alba, and existing project APIs before custom infrastructure.
 - Before hand-writing framework boilerplate, identify the installed framework generator or command that would create it.
 - Because commands require approval, propose the exact command and expected files first. Run it only after the user approves.
 - After an approved generator runs, remove unused output and adapt the result to project conventions. Never use a generator as permission for a migration.
@@ -76,7 +76,7 @@ Codex must understand the task before editing. For every non-trivial change:
 ## Reference docs
 
 | Topic | Doc |
-|-------|-----|
+| ------- | ----- |
 | Product | [docs/PROJECT.md](docs/PROJECT.md) |
 | Domain | [docs/DOMAIN.md](docs/DOMAIN.md) |
 | JSON API | [docs/API.md](docs/API.md) |
@@ -93,7 +93,7 @@ Codex must understand the task before editing. For every non-trivial change:
 ## Tool entry points
 
 | Tool | Config |
-|------|--------|
+| ------ | -------- |
 | Cursor Agent | `.cursor/rules/flipflapp-rails.mdc` + [skill](.cursor/skills/flipflapp-rails/SKILL.md) |
 | Cursor Bugbot (PR only) | `.cursor/BUGBOT.md` — commands: [docs/BUGBOT.md](docs/BUGBOT.md#commands) |
 | GitHub Copilot | [.github/copilot-instructions.md](.github/copilot-instructions.md) |

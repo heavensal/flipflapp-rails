@@ -11,7 +11,7 @@ Use **Active Record model names** in this doc and in specs — no parallel vocab
 ## Models
 
 | Model | Role |
-|-------|------|
+| ------- | ------ |
 | `User` | Authenticated player; can create `Event` records, join via `EventParticipant`, and manage `Friendship` |
 | `Event` | Football match; owned by `event.user`; public or private (`is_private`) |
 | `EventTeam` | Fixed `slot` (`team_one`, `team_two`, `bench`) + renameable `label` per `Event` |
@@ -94,7 +94,7 @@ Both paths create the same `Friendship` record (`sender` = current `User`, `rece
 ### Lifecycle
 
 | Action | Who | Result |
-|--------|-----|--------|
+| -------- | ----- | -------- |
 | Send request | `sender` | `Friendship` with `status: pending`; **`friendship_requested` `Notification` to `receiver`** (hidden from inbox — see Notification) |
 | Accept | `receiver` (pending only) | `status` → `accepted` |
 | Decline | `receiver` (pending only) | `status` → `declined`; `friendship_requested` `Notification` removed |
@@ -144,7 +144,7 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 ### Attributes
 
 | Attribute | Rule |
-|-----------|------|
+| ----------- | ------ |
 | `title`, `location`, `start_time` | Required; `start_time` must be in the future |
 | `number_of_participants` | Positive integer — **official player capacity** for `team_one` + `team_two` combined (e.g. 10 for 5v5, 11 for 11v11) |
 | `price` | ≥ 0; whole euros only (step `1.00`); always displayed with 2 decimal places |
@@ -186,10 +186,12 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 ### `Notification` side effects
 
 **`updated`** — when `title`, `start_time`, `price`, or `number_of_participants` change:
+
 - One `Notification` per changed field per `EventParticipant` `User` (including bench), excluding `event.user`.
 - Untracked fields (`description`, `location`, `is_private`, `latitude`, `longitude`) do **not** trigger `updated`.
 
 **`canceled`** — on destroy:
+
 - Notify all `EventParticipant` `User` records except `event.user`.
 - Delete all `Notification` records with `notifiable` = this `Event`.
 - `canceled` notifications use `notifiable: nil`.
@@ -225,7 +227,7 @@ config/locales/<locale>/event_team.yml  →  event_team.slots.<slot>.default_lab
 French ships first (`fr`); adding English is a new locale file with the same keys. **`slot` is locale-independent**; only `label` varies by locale or custom rename.
 
 | `slot` | FR default `label` (example) | Countable toward `participants_count` |
-|--------|-------------------------------|--------------------------------------|
+| -------- | ------------------------------- | -------------------------------------- |
 | `team_one` | `Equipe 1` | Yes |
 | `team_two` | `Equipe 2` | Yes |
 | `bench` | `Sur le Banc` | No |
@@ -306,7 +308,7 @@ Same rules as private access above; for public `Event` records, any authenticate
 Emit `joined` / `left` only for these transitions:
 
 | Transition | Notification |
-|------------|--------------|
+| ------------ | -------------- |
 | Join event on `team_one` or `team_two` | `joined` |
 | Leave event from `team_one` or `team_two` | `left` |
 | `bench` → countable team | `joined` |
@@ -329,35 +331,41 @@ Source of truth for a pending invite to an `Event`. No accept / decline / status
 ### Attributes
 
 | Attribute | Rules |
-|-----------|--------|
+| ----------- | -------- |
 | `event` | Required; `belongs_to :event` |
 | `user` | Required; invited `User` |
 | Uniqueness | One `Invitation` per (`event_id`, `user_id`) |
 
 ### Who can invite
+
 - Any `User` with an `EventParticipant` on the `Event` may invite (`Event#can_invite?` ⇔ `Event#in_this_event?`).
 - Includes `event.user` and `User` records who joined — including `User` records **not** connected to `event.user` by accepted `Friendship`.
 
 ### Whom they can invite
+
 - `User` records returned by `get_my_friends_but_not_participants(event)`: accepted `Friendship`, no `EventParticipant`, and no existing `Invitation` for that `Event`.
 
 ### Effect (`Event#invite!`)
+
 - Creates one `Invitation` per invited `User`.
 - Creates one `Notification` per invited `User` (`kind: invited`, `notifiable: event`; `payload.sender` = inviter `first_name`).
 - Duplicate invite for the same `user` + `Event` is rejected (uniqueness).
 - Invited `User` records can view and join a private `Event` even without accepted `Friendship` with `event.user` (`Event#invited?` ⇔ `Invitation` exists for that `user`).
 
 ### Lifecycle
+
 - **No** decline / cancel / expire actions in MVP.
 - Destroyed when the invited `User` creates an `EventParticipant` on that `Event`.
 - Destroyed when the `Event` is destroyed (`dependent: :destroy`).
 - Inbox `Notification.invited` is **not** destroyed on join (history kept); click navigates to the `Event` via `notifiable: event`.
 
 ### UI
+
 - Event show lists pending invited `User` records **below the bench**.
 - Invite dialog: submit disabled until at least one friend is selected.
 
 ### HTTP (`Events::InvitationsController#create`)
+
 - Empty selection (`user_ids` blank) must not succeed — UI blocks submit; controller rejects with alert.
 - No broad `rescue` around invite delivery.
 
@@ -369,10 +377,10 @@ Source of truth for a pending invite to an `Event`. No accept / decline / status
 
 `Notification` records are the **single source of truth** for user alerts. The web app implements the full inbox; mobile clients mirror the same `kind`, `notifiable`, and `payload` via JSON API and **native push** (FCM).
 
-Web today: inbox (`NotificationsController`), mark read / mark all read / destroy, navigate via `target_url`, and a **live toast** (flash-like) for connected users via Turbo Streams + Solid Cable.  
-Mobile: same records via `/api/v1/notifications` + FCM delivery through `DeviceToken` + `Notifications::MobilePushJob` (Solid Queue). iOS can reuse the same `device_tokens` table (`platform: ios`) later.
+Web today: inbox (`NotificationsController`), mark read / mark all read / destroy, navigate via `target_url`, and a **live toast** (flash-like) for connected users via Turbo Streams + Action Cable (Redis).  
+Mobile: same records via `/api/v1/notifications` + FCM delivery through `DeviceToken` + `Notifications::MobilePushJob` (Sidekiq). iOS can reuse the same `device_tokens` table (`platform: ios`) later.
 
-Producers live in per-model modules: `Event::Notifications`, `EventParticipant::Notifications`, `Friendship::Notifications`. Fan-out goes through `Notification::Delivery`, which **enqueues** Active Job work (`Notifications::DeliverOneJob` / `Notifications::DeliverManyJob`) on Solid Queue. Jobs persist the row(s) then broadcast the toast + unread badge refresh to the recipient’s stream, enqueue **Web Push** (`Notifications::WebPushJob`) and **mobile push** (`Notifications::MobilePushJob`).
+Producers live in per-model modules: `Event::Notifications`, `EventParticipant::Notifications`, `Friendship::Notifications`. Fan-out goes through `Notification::Delivery`, which **enqueues** Active Job work (`Notifications::DeliverOneJob` / `Notifications::DeliverManyJob`) on Sidekiq. Jobs persist the row(s) then broadcast the toast + unread badge refresh to the recipient’s stream, enqueue **Web Push** (`Notifications::WebPushJob`) and **mobile push** (`Notifications::MobilePushJob`).
 
 `Invitation` rows stay synchronous inside `Event#invite!` (private access). Only the companion `Notification` is jobified. Friendship notification cleanup (destroy on accept/decline/unfriend) stays synchronous. `DeliverOneJob` skips `friendship_requested` if the `Friendship` is no longer `pending` (accept/decline raced the job).
 
@@ -381,7 +389,7 @@ Producers live in per-model modules: `Event::Notifications`, `EventParticipant::
 A `User` receives a `Notification` when:
 
 | Trigger | `kind` | `notifiable` | Recipient | Inbox |
-|---------|--------|--------------|-----------|-------|
+| --------- | -------- | -------------- | ----------- | ------- |
 | Pending `Friendship` request | `friendship_requested` | `Friendship` | `receiver` | **Hidden** — UX is the friends badge (`pending_received_friendships`) |
 | Invited to an `Event` | `invited` | `Event` | invited `User` | Shown |
 | Joins `EventTeam` `team_one` or `team_two` | `joined` | `Event` | other `User` records on official squads | Shown |
@@ -490,7 +498,7 @@ An **admin** is a `User` with `role: admin`. Admins use the same app as players 
 An admin can **create, read, update, and destroy** any MVP record, bypassing normal ownership rules:
 
 | Model | Admin access |
-|-------|----------------|
+| ------- | ---------------- |
 | `User` | Full CRUD |
 | `Event` | Full CRUD (any `event.user`) |
 | `EventTeam` | Full CRUD (including `slot` and `label`) |
@@ -519,7 +527,7 @@ Player rules still apply when an admin acts **as a player** (e.g. only `event.us
 Normal `User` (`role: player`) rules:
 
 | Action | `User` |
-|--------|--------|
+| -------- | -------- |
 | Create `Event` | Any authenticated `User` |
 | Update / destroy `Event` | `event.user` only |
 | View `Event` | Per visibility rules above |
@@ -559,7 +567,7 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 ## Known gaps (code → domain)
 
 | Rule | Status |
-|------|--------|
+| ------ | -------- |
 | Private `Event` in `Event.visible_to` for `event.user`'s accepted `Friendship` friends | **Implemented** |
 | Private `Event` in `Event#viewable_by?` for `event.user`'s accepted `Friendship` friends | **Implemented** |
 | `Event.private_visible_to(user)` (author + accepted friends only) | **Implemented** |
@@ -573,8 +581,8 @@ See [TESTING.md](TESTING.md) — feature workflow is: clarify → domain → mig
 | `Event` `latitude` / `longitude` presence (model + I18n) | **Not implemented** — HTML `required` on form only; columns still nullable in schema |
 | `Notification` on pending `Friendship` (`friendship_requested`) | **Implemented** — hidden from inbox; friends badge UX |
 | Push delivery (APNs / FCM) | **Implemented for Android (FCM)** — `DeviceToken` + `Notifications::MobilePushJob`; APNs/iOS still pending |
-| Solid Queue + Solid Cable | **Implemented** — notification jobs, Devise mail via Active Job, live toasts |
-| `reminder` `Notification` kind | **Implemented** — Solid Queue delayed job; `events.bench_reminder_job_id` for discard |
+| Sidekiq + Action Cable (Redis) | **Implemented** — notification jobs, Devise mail via Active Job, live toasts |
+| `reminder` `Notification` kind | **Implemented** — Sidekiq delayed job; `events.bench_reminder_job_id` for discard |
 | `left` recipients include bench | **Implemented** — countable leave / countable→bench |
 | `created` `Notification` kind | **Removed** |
 | Admin stats dashboard | **Later** — out of MVP admin CRUD pass |

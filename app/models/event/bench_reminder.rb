@@ -9,6 +9,12 @@ module Event::BenchReminder
     before_destroy :discard_bench_reminder_job!, prepend: true
   end
 
+  class_methods do
+    def reschedule_upcoming_bench_reminders!
+      upcoming.except(:order).find_each(&:schedule_bench_reminder!)
+    end
+  end
+
   def schedule_bench_reminder!
     discard_bench_reminder_job!
 
@@ -20,8 +26,8 @@ module Event::BenchReminder
   end
 
   def notify_bench_reminder!
-    # Clear the stored id only — do not discard the Solid Queue job that is
-    # currently executing this method (that raises UndiscardableError).
+    # Clear the stored id only — do not cancel the Sidekiq job that is
+    # currently executing this method.
     clear_bench_reminder_job_id!
     return if spots_remaining <= 0
 
@@ -66,20 +72,27 @@ module Event::BenchReminder
   end
 
   def discard_active_job(job_id)
-    if defined?(SolidQueue::Job)
-      solid_job = SolidQueue::Job.find_by(active_job_id: job_id)
-      if solid_job
-        solid_job.discard
-        return
-      end
-    end
-
     adapter = ActiveJob::Base.queue_adapter
-    return unless adapter.respond_to?(:enqueued_jobs)
+    if adapter.respond_to?(:enqueued_jobs)
+      adapter.enqueued_jobs.reject! { |job| job["job_id"] == job_id }
+    else
+      discard_sidekiq_job(job_id)
+    end
+  end
 
-    adapter.enqueued_jobs.reject! { |job| job["job_id"] == job_id }
-  rescue SolidQueue::Execution::UndiscardableError
-    # Job is already claimed/running — clearing bench_reminder_job_id is enough.
+  def discard_sidekiq_job(job_id)
+    require "sidekiq/api"
+
+    [ Sidekiq::ScheduledSet.new, Sidekiq::RetrySet.new ].each do |set|
+      set.each { |job| job.delete if sidekiq_active_job_id(job) == job_id }
+    end
+  rescue RedisClient::Error
+    # Redis down — job may still fire; BenchReminderJob no-ops if stale/destroyed.
+  end
+
+  def sidekiq_active_job_id(job)
+    payload = job.args.first
+    payload["job_id"] if payload.is_a?(Hash)
   end
 
   def reminder_already_sent_for_current_start_time?

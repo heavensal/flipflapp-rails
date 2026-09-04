@@ -185,7 +185,7 @@ class User < ApplicationRecord
 
   protected
 
-  # Devise defaults to deliver_now. Queue via Active Job / Solid Queue instead.
+  # Devise defaults to deliver_now. Queue via Active Job / Sidekiq instead.
   def send_devise_notification(notification, *args)
     devise_mailer.send(notification, self, *args).deliver_later
   end
