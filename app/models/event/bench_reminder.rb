@@ -11,7 +11,7 @@ module Event::BenchReminder
 
   class_methods do
     def reschedule_upcoming_bench_reminders!
-      upcoming.except(:order).find_each(&:schedule_bench_reminder!)
+      upcoming.find_each(&:schedule_bench_reminder!)
     end
   end
 

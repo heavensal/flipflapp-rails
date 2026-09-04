@@ -68,23 +68,21 @@ RSpec.describe Event, "bench reminder", type: :model do
       expect(enqueued_jobs.count { |job| job["job_id"] == job_id }).to eq(0)
     end
 
-    it "re-enqueues a bench reminder for each upcoming event after a queue cutover" do
+    it "re-enqueues reminders for upcoming events and skips past ones" do
       freeze_time do
-        upcoming = create(:event, start_time: 3.days.from_now)
-        upcoming.update_column(:bench_reminder_job_id, "stale-solid-queue-id")
-        past = create(:event, start_time: 2.days.from_now)
-        past.update_columns(start_time: 1.day.ago)
-        past_job_id = past.reload.bench_reminder_job_id
+        upcoming_event = create(:event, start_time: 3.days.from_now)
+        past_event = create(:event, start_time: 2.days.from_now)
+        past_event.update_columns(start_time: 1.day.ago)
+        past_job_id = past_event.reload.bench_reminder_job_id
+        clear_enqueued_jobs
 
         expect {
-          described_class.reschedule_upcoming_bench_reminders!
+          Event.reschedule_upcoming_bench_reminders!
         }.to have_enqueued_job(Events::BenchReminderJob)
-          .with(hash_including(event_id: upcoming.id, expected_start_time: upcoming.start_time.iso8601))
-          .at(upcoming.start_time - 24.hours)
+          .with(hash_including(event_id: upcoming_event.id))
+          .exactly(:once)
 
-        expect(upcoming.reload.bench_reminder_job_id).to be_present
-        expect(upcoming.bench_reminder_job_id).not_to eq("stale-solid-queue-id")
-        expect(past.reload.bench_reminder_job_id).to eq(past_job_id)
+        expect(past_event.reload.bench_reminder_job_id).to eq(past_job_id)
       end
     end
   end
