@@ -67,6 +67,24 @@ RSpec.describe Event, "bench reminder", type: :model do
 
       expect(enqueued_jobs.count { |job| job["job_id"] == job_id }).to eq(0)
     end
+
+    it "re-enqueues reminders for upcoming events and skips past ones" do
+      freeze_time do
+        upcoming_event = create(:event, start_time: 3.days.from_now)
+        past_event = create(:event, start_time: 2.days.from_now)
+        past_event.update_columns(start_time: 1.day.ago)
+        past_job_id = past_event.reload.bench_reminder_job_id
+        clear_enqueued_jobs
+
+        expect {
+          Event.reschedule_upcoming_bench_reminders!
+        }.to have_enqueued_job(Events::BenchReminderJob)
+          .with(hash_including(event_id: upcoming_event.id))
+          .exactly(:once)
+
+        expect(past_event.reload.bench_reminder_job_id).to eq(past_job_id)
+      end
+    end
   end
 
   describe "#notify_bench_reminder!", :notification_jobs do

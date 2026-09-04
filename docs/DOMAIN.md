@@ -209,9 +209,9 @@ A football match scheduled by a `User`. The organizer is always `event.user` (`b
 
 ### Schema (target)
 
-| Column | Purpose |
-|--------|---------|
-| `slot` | **Immutable** squad identity: `team_one`, `team_two`, or `bench` |
+| Column  | Purpose                                                                                                                    |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `slot`  | **Immutable** squad identity: `team_one`, `team_two`, or `bench`                                                           |
 | `label` | **Display name** shown in the UI (renameable on countable teams). Max **24** characters; letters, digits, and spaces only. |
 
 One row per `slot` per `Event` (unique `event_id` + `slot`). `label` must be unique within the `Event`.
@@ -328,7 +328,7 @@ Emit `joined` / `left` only for these transitions:
 
 Source of truth for a pending invite to an `Event`. No accept / decline / status — the row **exists** until the invited `User` joins (then it is destroyed) or the `Event` is destroyed.
 
-### Attributes
+### Invitation attributes
 
 | Attribute | Rules |
 | ----------- | -------- |
@@ -352,7 +352,7 @@ Source of truth for a pending invite to an `Event`. No accept / decline / status
 - Duplicate invite for the same `user` + `Event` is rejected (uniqueness).
 - Invited `User` records can view and join a private `Event` even without accepted `Friendship` with `event.user` (`Event#invited?` ⇔ `Invitation` exists for that `user`).
 
-### Lifecycle
+### Invitation lifecycle
 
 - **No** decline / cancel / expire actions in MVP.
 - Destroyed when the invited `User` creates an `EventParticipant` on that `Event`.
@@ -476,7 +476,7 @@ Participation includes `bench` for `updated`, `canceled`, and as **recipients** 
 
 Mobile push registration for FCM (Android today; iOS reuses the same table with `platform: ios`).
 
-### Rules
+### DeviceToken rules
 
 - Belongs to one `User`. Token string is **unique** globally.
 - `platform` must be `android` or `ios` (API default on create: `android`). **No** `web` platform on `/api/v1/device_token` (web uses `PushSubscription` / VAPID).

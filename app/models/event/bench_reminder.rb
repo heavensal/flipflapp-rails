@@ -9,6 +9,12 @@ module Event::BenchReminder
     before_destroy :discard_bench_reminder_job!, prepend: true
   end
 
+  class_methods do
+    def reschedule_upcoming_bench_reminders!
+      upcoming.find_each(&:schedule_bench_reminder!)
+    end
+  end
+
   def schedule_bench_reminder!
     discard_bench_reminder_job!
 
