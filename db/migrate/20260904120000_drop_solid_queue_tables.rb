@@ -18,8 +18,11 @@ class DropSolidQueueTables < ActiveRecord::Migration[8.0]
     solid_queue_semaphores
     solid_queue_jobs
   ].freeze
+  BENCH_REMINDER_JOB = "Events::BenchReminderJob"
 
   def up
+    reenqueue_unfinished_jobs
+    reschedule_upcoming_bench_reminders
     TABLES.each { |table| drop_table table, if_exists: true, force: :cascade }
     reschedule_upcoming_bench_reminders
   end
