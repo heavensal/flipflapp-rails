@@ -1,14 +1,12 @@
-# Solid Cable uses the primary database (same Neon URL). Do not use a separate
-# multi-db `cable:` role on the same URL — schema:load would wipe schema_migrations.
+# Action Cable over Redis pub/sub (same REDIS_URL as Sidekiq). Not Neon.
 development:
-  adapter: solid_cable
-  polling_interval: 0.1.seconds
-  message_retention: 1.day
+  adapter: redis
+  url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
 
 test:
   adapter: test
 
 production:
-  adapter: solid_cable
-  polling_interval: 0.1.seconds
-  message_retention: 1.day
+  adapter: redis
+  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/0" } %>
+  channel_prefix: flipflapp_production

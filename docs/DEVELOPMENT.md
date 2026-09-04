@@ -22,7 +22,7 @@ Asset builds run via `npm` scripts (`Procfile.dev` → `npm run build`, `npm run
 
 ## First-time setup
 
-Prerequisites: Ruby (see `.ruby-version`), Node.js, a [Neon](https://neon.tech) account.
+Prerequisites: Ruby (see `.ruby-version`), Node.js, Redis, a [Neon](https://neon.tech) account.
 
 ```bash
 git clone <repo-url>
@@ -30,6 +30,7 @@ cd flipflapp-rails
 bundle install
 npm install
 cp .env.example .env          # fill in local values (see below)
+brew install redis && brew services start redis   # or: redis-server
 bin/rails db:prepare
 bin/dev
 ```
@@ -71,6 +72,7 @@ Production URL (`PRODUCTION_NEON_DB`) is for deploy only — see [DEPLOYMENT.md]
 | `CLOUDINARY_*` | Yes (avatar uploads) |
 | `SMTP_*` | Yes (Devise confirmable emails) |
 | `GOOGLE_MAPS_KEY` | Optional locally — Places autocomplete on event forms |
+| `REDIS_URL` | Yes (Sidekiq; defaults to `redis://localhost:6379/0`) |
 | `PRODUCTION_NEON_DB` | No — deploy secrets only |
 
 ---
@@ -83,16 +85,15 @@ Prefer **`bin/…`** and direct gem binaries over `bundle exec` where available.
 
 | Command | Purpose |
 | --------- | --------- |
-| `bin/dev` | Start Rails + JS + CSS watchers + Solid Queue worker (`Procfile.dev`) |
-| `bin/jobs` | Solid Queue worker alone (also started by `bin/dev`) |
+| `bin/dev` | Start Rails + JS + CSS watchers + Sidekiq worker (`Procfile.dev`) |
+| `bin/jobs` | Sidekiq worker alone (also started by `bin/dev`) |
 | `bin/setup` | Install deps, `db:prepare`, optional start `bin/dev` |
 
 ### Background jobs & realtime
 
-- **Active Job** adapter: Solid Queue (development/production). Test uses `:test`.
-- **Action Cable** adapter: Solid Cable (development/production). Test uses `:test`.
-- Solid Queue / Solid Cable tables live on the **primary** database (same Neon URL). Do **not** use a separate multi-db `queue`/`cable` role on that URL — `db:schema:load:queue` shares `schema_migrations` and wipes primary versions.
-- `bin/dev` runs `jobs: bin/jobs` so notification delivery and Devise `deliver_later` mail run out of the web process.
+- **Active Job** adapter: Sidekiq + Redis (development/production). Test uses `:test`.
+- **Action Cable** adapter: Redis pub/sub (development/production). Test uses `:test`. Same `REDIS_URL` as Sidekiq.
+- `bin/dev` runs `jobs: bin/jobs` so notification delivery and Devise `deliver_later` mail run out of the web process. Redis must be running locally (`brew services start redis` or `redis-server`).
 - Mailers: always `deliver_later` (never `deliver_now` except console/debug). `User#send_devise_notification` queues Devise mail via Active Job after commit.
 
 ### Database

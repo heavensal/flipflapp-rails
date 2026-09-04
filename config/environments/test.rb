@@ -31,7 +31,7 @@ Rails.application.configure do
   # Store uploaded files on the local file system in a temporary directory.
   config.active_storage.service = :test
 
-  # Active Job: assert with have_enqueued_job / perform_enqueued_jobs (not Solid Queue).
+  # Active Job: assert with have_enqueued_job / perform_enqueued_jobs (not Sidekiq).
   config.active_job.queue_adapter = :test
 
   # Tell Action Mailer not to deliver emails to the real world.

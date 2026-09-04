@@ -2,7 +2,7 @@
 
 Architecture: [docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md). Domain: [docs/DOMAIN.md](../../docs/DOMAIN.md). TDD: [docs/TESTING.md](../../docs/TESTING.md).
 
-- Use Active Job with the installed Solid Queue adapter; do not add another queue system
+- Use Active Job with the installed Sidekiq adapter; do not add another queue system
 - Keep jobs thin: load records safely and call tested model/domain APIs
 - Design retries to be idempotent; handle deleted or stale records without corrupting state
 - Document scheduling, cancellation, recipient, and duplicate-delivery behavior in the domain model specs
