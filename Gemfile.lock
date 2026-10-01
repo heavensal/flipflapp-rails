@@ -362,8 +362,8 @@ GEM
       prism (>= 1.6.0)
       rbs (>= 4.0.0)
       tsort
-    redis (5.4.1)
-      redis-client (>= 0.22.0)
+    redis (6.0.0)
+      redis-client (= 0.30.1)
     redis-client (0.30.1)
       connection_pool
     regexp_parser (2.12.0)
@@ -539,7 +539,7 @@ DEPENDENCIES
   rack-cors (~> 3.0)
   rails (~> 8.0.2, >= 8.0.2.1)
   ransack
-  redis (~> 5.0)
+  redis (~> 6.0)
   rspec-rails
   rswag (~> 2.17)
   rswag-specs (~> 2.17)

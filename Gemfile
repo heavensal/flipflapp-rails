@@ -29,7 +29,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 # 7.3.10+ pins connection_pool < 3 so the Sidekiq scheduler thread can boot.
 gem "sidekiq", "~> 7.3", ">= 7.3.10"
 # Action Cable 8.0 gemspec requires redis >= 4, < 6 (redis 6 is already activated otherwise).
-gem "redis", "~> 5.0"
+gem "redis", "~> 6.0"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
