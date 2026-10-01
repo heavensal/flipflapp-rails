@@ -27,7 +27,7 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Redis for Active Job (Sidekiq) and Action Cable (live toasts). Keeps both off Neon.
 # 7.3.10+ pins connection_pool < 3 so the Sidekiq scheduler thread can boot.
-gem "sidekiq", "~> 7.3", ">= 7.3.10"
+gem "sidekiq", "~> 8.1"
 # Action Cable 8.0 gemspec requires redis >= 4, < 6 (redis 6 is already activated otherwise).
 gem "redis", "~> 5.0"
 
